@@ -2,7 +2,7 @@
 
 This bundle provides the use of Zend_Queue from Zend Framework. It allows your application to manage multiple jobs from a variety of sources.
 
-See [Reference Guide](http://framework.zend.com/manual/fr/zend.queue.html) for more information.
+See the [Programmer's Reference Guide](http://framework.zend.com/manual/fr/zend.queue.html) for more information.
 
 ## Installation
 
@@ -48,7 +48,7 @@ Following the [official ZF documentation](http://framework.zend.com/manual/en/pe
 
 ## Fixtures
 
-Create one queue. For example :
+Create a queue. For example:
 
 ```php
     namespace Heri\JobQueueBundle\DataFixtures\ORM;
