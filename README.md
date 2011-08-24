@@ -10,7 +10,7 @@ Download source from github:
 
 ```ini
     [HeriJobQueueBundle]
-    git=https://github.com/heristop/jobqueue.git
+    git=https://github.com/heristop/HeriJobQueueBundle.git
 ```
 
 Load in AppKernel 
@@ -46,9 +46,32 @@ Following the [official ZF documentation](http://framework.zend.com/manual/en/pe
     xargs -0 sed --regexp-extended --in-place 's/(require_once)/\/\/ \1/g'
 ```
 
+## Fixtures
+
+Create one queue. For example :
+
+```php
+    namespace Heri\JobQueueBundle\DataFixtures\ORM;
+
+    use Doctrine\Common\DataFixtures\FixtureInterface;
+    use Heri\JobQueueBundle\Entity\Queue;
+
+    class Fixtures implements FixtureInterface
+    {
+        public function load($manager)
+        {
+            $queue = new Queue();
+            $queue->setQueueName('erp:front');
+            $queue->setTimeout(90);
+            $manager->persist($queue);
+            $manager->flush();
+        }
+    }
+```
+
 ## Command
 
-Go int _Heri/JobQueueBundle/Command_ directory and launch this command:
+Move in _Heri/JobQueueBundle/Command_ directory and launch this command:
 
 ```shell
     sh start-queue-manager &
