@@ -1,6 +1,6 @@
 # JobQueueBundle
 
-This bundle provides the use of Zend_Queue from Zend Framework. It allows your application to manage multiple jobs from a variety of sources.
+This bundle provides the use of Zend_Queue from Zend Framework. It allows your application to manage multiple commands from a variety of sources.
 
 See the [Programmer's Reference Guide](http://framework.zend.com/manual/fr/zend.queue.html) for more information.
 
@@ -48,7 +48,7 @@ Following the [official ZF documentation](http://framework.zend.com/manual/en/pe
 
 ## Fixtures
 
-Create a queue. The queue below is named 'erp:front' for example:
+Create a queue. The queue below is named _erp:front_ for example:
 
 ```php
     namespace Heri\JobQueueBundle\DataFixtures\ORM;
@@ -75,7 +75,7 @@ Create a message. For instance:
     $queue = $this->get('jobqueue');
     $em = $this->get('doctrine.orm.entity_manager');
 
-    $queue->configure('erp:front'), $em);
+    $queue->configure('erp:front', $em);
     
     $config = array(
         'command'   => 'webservice:load',
@@ -114,3 +114,7 @@ To remove the service, use this command:
 ```shell
     update-rc.d -f jobqueue-service remove
 ```
+
+## Note
+
+This bundle can be used with HeriWebServiceBundle to manage multiple webservice connections.
