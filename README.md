@@ -13,7 +13,7 @@ Download source from github:
     git=https://github.com/heristop/HeriJobQueueBundle.git
 ```
 
-Load in AppKernel 
+Load in AppKernel: 
 
 ```php
     $bundles[] = new Heri\JobQueueBundle\HeriJobQueueBundle();
@@ -48,7 +48,7 @@ Following the [official ZF documentation](http://framework.zend.com/manual/en/pe
 
 ## Fixtures
 
-Create a queue. For example:
+Create a queue. The queue below is named 'erp:front' for example:
 
 ```php
     namespace Heri\JobQueueBundle\DataFixtures\ORM;
@@ -67,6 +67,25 @@ Create a queue. For example:
             $manager->flush();
         }
     }
+```
+
+Create a message. For instance:
+
+```php
+    $queue = $this->get('jobqueue');
+    $em = $this->get('doctrine.orm.entity_manager');
+
+    $queue->configure('erp:front'), $em);
+    
+    $config = array(
+        'command'   => 'webservice:load',
+        'arguments' => array(
+            '--record' => 1,              // option
+            'model'    => 'Notification'  // argument
+        ),
+    );
+    
+    $queue->sync($config);
 ```
 
 ## Command
