@@ -10,7 +10,8 @@ Download source from github:
 
 ```ini
     [HeriJobQueueBundle]
-    git=https://github.com/heristop/HeriJobQueueBundle.git
+        git=https://github.com/heristop/HeriJobQueueBundle.git
+        target=/bundles/Heri/Bundle/
 ```
 
 Load in AppKernel: 
@@ -25,7 +26,8 @@ Use this unofficial github mirror:
 
 ```ini
     [ZendFrameworkLibrary]
-    git=https://github.com/tjohns/zf.git
+        git=https://github.com/tjohns/zf.git
+        target=/zf
 ```
 
 Register a prefix in AppKernel:
