@@ -11,7 +11,16 @@ Download sources from github:
 ```ini
     [HeriJobQueueBundle]
         git=https://github.com/heristop/HeriJobQueueBundle.git
-        target=/bundles/Heri/Bundle/
+        target=/bundles/Heri/JobQueueBundle/
+```
+
+Register namespace in autoload:
+
+```php
+    $loader->registerNamespaces(array(
+        ...
+        'Heri' => __DIR__.'/../vendor/bundles',
+    ));
 ```
 
 Load the bundle in AppKernel: 
