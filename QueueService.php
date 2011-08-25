@@ -100,7 +100,7 @@ class QueueService
             
             $args = unserialize($message->body);
             try {
-                $input = new ArrayInput(array_merge(array(''), $args['arguments']));                
+                $input = new ArrayInput(array_merge(array(''), $args['arguments']));
                 $command = $this->application->find($args['command']);
                 $returnCode = $command->run($input, $this->output);
                 

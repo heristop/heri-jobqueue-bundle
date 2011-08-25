@@ -6,7 +6,7 @@ See the [Programmer's Reference Guide](http://framework.zend.com/manual/fr/zend.
 
 ## Installation
 
-Download source from github:
+Download sources from github:
 
 ```ini
     [HeriJobQueueBundle]
@@ -14,13 +14,19 @@ Download source from github:
         target=/bundles/Heri/Bundle/
 ```
 
-Load in AppKernel: 
+Load the bundle in AppKernel: 
 
 ```php
     $bundles[] = new Heri\JobQueueBundle\HeriJobQueueBundle();
-```   
+```
 
-## ZF installation
+Update your database:
+
+```shell
+    app/console doctrine:schema:update --force
+```
+
+## ZF Installation
 
 Use this unofficial github mirror:
 
@@ -50,7 +56,7 @@ Following the [official ZF documentation](http://framework.zend.com/manual/en/pe
 
 ## Fixtures
 
-Create a queue. The queue below is named _erp:front_ for example:
+Create a queue. For example, the queue below is named _erp:front_:
 
 ```php
     namespace Heri\JobQueueBundle\DataFixtures\ORM;
@@ -83,7 +89,7 @@ Create a message. For instance:
         'command'   => 'webservice:load',
         'arguments' => array(
             '--record' => 1,              // option
-            'model'    => 'Notification'  // argument
+            'service'  => 'Notification'  // argument
         ),
     );
     
@@ -119,4 +125,4 @@ To remove the service, use this command:
 
 ## Note
 
-This bundle can be used with HeriWebServiceBundle to manage multiple webservice connections.
+This bundle can be used with [HeriWebServiceBundle](https://github.com/heristop/HeriWebServiceBundle/) to manage multiple webservice connections.

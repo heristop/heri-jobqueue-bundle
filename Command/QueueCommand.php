@@ -27,7 +27,7 @@ class QueueCommand extends ContainerAwareCommand
     {
         $this
             ->setName('jobqueue:load')
-            ->setDescription('Initialize JobQueue to make synchronizations')
+            ->setDescription('Initialize JobQueue manager')
         ;
     }
 
