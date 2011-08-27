@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Heri\JobQueueBundle;
+namespace Heri\JobQueueBundle\Service;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Bridge\Monolog\Logger;
@@ -30,9 +30,10 @@ class QueueService
         $queue
     ;
 
-    public function __construct(Logger $logger)
+    public function __construct(Logger $logger, EntityManager $em = null)
     {
         $this->logger = $logger;
+        $this->em = $em;
     }
     
     public function configure($name, EntityManager $em)

@@ -24,6 +24,9 @@ class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->booleanNode('enabled')->defaultTrue()->end()
+                ->arrayNode('queues')
+                    ->prototype('scalar')->end()
+                ->end()
             ->end()
         ;
 

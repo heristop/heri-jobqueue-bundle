@@ -39,8 +39,10 @@ class QueueCommand extends ContainerAwareCommand
         
         if ($config['enabled'])
         {
-            $queue->configure('erp:front', $em);
-            $queue->receive(1, $this, $output);
+            foreach ($config['queues'] as $name) {
+                $queue->configure($name, $em);
+                $queue->receive(1, $this, $output);
+            }
         }
     }
 }

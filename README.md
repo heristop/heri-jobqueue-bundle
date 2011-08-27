@@ -63,9 +63,9 @@ Following the [official ZF documentation](http://framework.zend.com/manual/en/pe
     xargs -0 sed --regexp-extended --in-place 's/(require_once)/\/\/ \1/g'
 ```
 
-## Fixtures
+## Configuration
 
-Create a queue. For example, the queue below is named _erp:front_:
+Create a queue. For example, the queue below is named _my:queue_:
 
 ```php
     namespace Heri\JobQueueBundle\DataFixtures\ORM;
@@ -78,7 +78,7 @@ Create a queue. For example, the queue below is named _erp:front_:
         public function load($manager)
         {
             $queue = new Queue();
-            $queue->setQueueName('erp:front');
+            $queue->setQueueName('my:queue');
             $queue->setTimeout(90);
             $manager->persist($queue);
             $manager->flush();
@@ -86,23 +86,31 @@ Create a queue. For example, the queue below is named _erp:front_:
     }
 ```
 
-Create a message. For instance:
+Messages related to this queue will be called every 90 seconds.
+
+How to create a message?
 
 ```php
     $queue = $this->get('jobqueue');
-    $em = $this->get('doctrine.orm.entity_manager');
-
-    $queue->configure('erp:front', $em);
+    $queue->configure('my:queue');
     
     $config = array(
-        'command'   => 'webservice:load',
-        'arguments' => array(
-            '--record' => 1,              // option
-            'service'  => 'Notification'  // argument
-        ),
+        'command'   => 'demo:great',
+        'argument'  => array(
+            'name'   => 'Alexandre',
+            '--yell' => true,
+        )
     );
     
     $queue->sync($config);
+```
+
+At the end, define the queue(s) to listen:
+
+```yaml
+    heri_job_queue:  
+        enabled:  true
+        queues:   [ my:queue ]
 ```
 
 ## Command
@@ -116,7 +124,7 @@ Move in _Heri/JobQueueBundle/Command_ directory and launch this command:
 ## Service
 
 To run the command as a service, edit _jobqueue-service_ shell.
-Set the correct JOBQUEUE_BUNDLE_PATH value, and copy this file to /etc/init.d.
+Set the correct JOBQUEUE_BUNDLE_PATH value, and copy this file to _/etc/init.d_.
 
 Then use update-rc.d:
 
