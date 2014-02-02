@@ -13,20 +13,20 @@ use Doctrine\ORM\Mapping as ORM;
 class Queue
 {
     /**
-     * @var integer $queueId
+     * @var integer $id
      *
-     * @ORM\Column(name="queue_id", type="integer", nullable=false)
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $queueId;
+    private $id;
 
     /**
-     * @var string $queueName
+     * @var string $name
      *
-     * @ORM\Column(name="queue_name", type="string", length=100, nullable=false)
+     * @ORM\Column(name="name", type="string", length=100, nullable=false)
      */
-    private $queueName;
+    private $name;
 
     /**
      * @var smallint $timeout
@@ -38,33 +38,33 @@ class Queue
 
 
     /**
-     * Get queueId
+     * Get id
      *
      * @return integer 
      */
-    public function getQueueId()
+    public function getId()
     {
-        return $this->queueId;
+        return $this->id;
     }
 
     /**
-     * Set queueName
+     * Set name
      *
-     * @param string $queueName
+     * @param string $name
      */
-    public function setQueueName($queueName)
+    public function setName($name)
     {
-        $this->queueName = $queueName;
+        $this->name = $name;
     }
 
     /**
-     * Get queueName
+     * Get name
      *
      * @return string 
      */
-    public function getQueueName()
+    public function getName()
     {
-        return $this->queueName;
+        return $this->name;
     }
 
     /**

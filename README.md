@@ -14,14 +14,16 @@ Download sources from github:
         target=/bundles/Heri/JobQueueBundle/
 ```
 
-Register namespace in autoload:
+Or use composer adding the requirement below:
 
-```php
-    $loader->registerNamespaces(array(
-        ...
-        'Heri' => __DIR__.'/../vendor/bundles',
-    ));
+``` js
+{
+    "require": {
+        "heristop/jobqueue-bundle": "*"
+    }
+}
 ```
+
 
 Load the bundle in AppKernel: 
 
@@ -33,34 +35,6 @@ Update your database:
 
 ```shell
     app/console doctrine:schema:update --force
-```
-
-## ZF Installation
-
-Use this unofficial github mirror:
-
-```ini
-    [ZendFrameworkLibrary]
-        git=https://github.com/tjohns/zf.git
-        target=/zf
-```
-
-Register a prefix in AppKernel:
-
-```php
-    $loader->registerPrefixes(array(
-        ...
-        'Zend_' => __DIR__.'/../vendor/zf/library',
-    ));
-```
-
-Following the [official ZF documentation](http://framework.zend.com/manual/en/performance.classloading.html#performance.classloading.striprequires.sed), remove all _require_once()_:
-
-```shell
-    $ cd vendor/zf/library
-    $ find . -name '*.php' -not -wholename '*/Loader/Autoloader.php' \
-    -not -wholename '*/Application.php' -print0 | \
-    xargs -0 sed --regexp-extended --in-place 's/(require_once)/\/\/ \1/g'
 ```
 
 ## Configuration
@@ -78,7 +52,7 @@ Create a queue. For example, the queue below is named _my:queue_:
         public function load($manager)
         {
             $queue = new Queue();
-            $queue->setQueueName('my:queue');
+            $queue->setName('my:queue');
             $queue->setTimeout(90);
             $manager->persist($queue);
             $manager->flush();
@@ -130,7 +104,7 @@ Then use update-rc.d:
 
 ```shell
     cp jobqueue-service /etc/init.d/jobqueue-service
-    cd /etc/init.d && chmod 755 jobqueue-service
+    cd /etc/init.d && chmod 0755 jobqueue-service
     update-rc.d jobqueue-service defaults
 ```
 

@@ -20,8 +20,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class QueueCommand extends ContainerAwareCommand
 {
     protected
-      $client,
-      $input;
+        $client,
+        $input;
     
     protected function configure()
     {
@@ -30,19 +30,20 @@ class QueueCommand extends ContainerAwareCommand
             ->setDescription('Initialize JobQueue manager')
         ;
     }
-
+    
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $queue  = $this->getContainer()->get('jobqueue');
         $config = $this->getContainer()->getParameter('jobqueue.config');
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
         
-        if ($config['enabled'])
-        {
+        if ($config['enabled']) {
             foreach ($config['queues'] as $name) {
                 $queue->configure($name, $em);
                 $queue->receive(1, $this, $output);
             }
+        } else {
+            $output->writeLn('<comment>JobQueue manager deactivated</comment>');
         }
     }
 }

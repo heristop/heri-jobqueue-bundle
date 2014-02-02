@@ -17,8 +17,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use Heri\JobQueueBundle\Command\QueueCommand;
-use Heri\JobQueueBundle\Entity\Message;
-use Heri\JobQueueBundle\Entity\MessageLog;
+use Heri\JobQueueBundle\Adapter\DoctrineAdapter;
 
 class QueueService
 {
@@ -27,7 +26,8 @@ class QueueService
         $logger,
         $config,
         $output,
-        $queue
+        $queue,
+        $adapter
     ;
 
     public function __construct(Logger $logger, EntityManager $em = null)
@@ -42,19 +42,13 @@ class QueueService
         $connection = $em->getConnection();
         
         $this->config = array(
-          'name' => $name,
-          'driverOptions' => array(
-            'host'        => $connection->getHost(),
-            'port'        => $connection->getPort(),
-            'username'    => $connection->getUsername(),
-            'password'    => $connection->getPassword(),
-            'dbname'      => $connection->getDatabase(),
-            'persistent'  => true,
-            'type'        => 'pdo_mysql'
-          )
+            'name' => $name,
         );
         
-        $this->queue = new \Zend_Queue('Db', $this->config); 
+        $this->adapter = new DoctrineAdapter(array());
+        $this->adapter->setEm($em);
+        
+        $this->queue = new \ZendQueue\Queue($this->adapter, $this->config);
         $this->queue->createQueue($name);
     }
     
@@ -94,35 +88,24 @@ class QueueService
     {
         foreach ($messages as $message)
         {
-            $output = date('H:i:s') . '-' . ($message->failed ? 'failed' : 'new');
-            $output .= '['.$message->message_id.']';
+            $output = date('H:i:s') . ' - ' . ($message->failed ? 'failed' : 'new');
+            $output .= '['.$message->id.']';
             
             $this->output->writeLn('<comment>' . $output . '</comment>');
             
             $args = unserialize($message->body);
             try {
-                $input = new ArrayInput(array_merge(array(''), $args['arguments']));
+                $input = new ArrayInput(array_merge(array(''), $args['argument']));
                 $command = $this->application->find($args['command']);
                 $returnCode = $command->run($input, $this->output);
                 
                 $this->queue->deleteMessage($message);
 
-                $this->output->writeLn('<comment>  > </comment><info>Ended</info>');
+                $this->output->writeLn('<info>Ended</info>');
             }
             catch (\Exception $e) {
-
-                $this->em->createQuery('UPDATE Heri\JobQueueBundle\Entity\Message m SET m.ended = 0, m.failed = 1 WHERE m.messageId = ?1')
-                    ->setParameter(1, $message->message_id)
-                    ->execute();
-                    
-                $log = new MessageLog();
-                $log->setMessageId($message->message_id);
-                $log->setDateLog(new \DateTime("now"));
-                $log->setLog($e->getMessage());
-                $this->em->persist($log);
-                $this->em->flush();
-                
-                $this->output->writeLn('<comment>  > </comment><error>Failed</error> ' . $e->getMessage());
+                $this->adapter->logException($message, $e);
+                $this->output->writeLn('<error>Failed</error> ' . $e->getMessage());
             }
         }
     }

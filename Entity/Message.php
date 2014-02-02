@@ -13,13 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Message
 {
     /**
-     * @var bigint $messageId
+     * @var bigint $id
      *
-     * @ORM\Column(name="message_id", type="bigint", nullable=false)
+     * @ORM\Column(name="id", type="bigint", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $messageId;
+    private $id;
 
     /**
      * @var integer $queueId
@@ -84,9 +84,9 @@ class Message
      *
      * @return bigint 
      */
-    public function getMessageId()
+    public function getId()
     {
-        return $this->messageId;
+        return $this->id;
     }
 
     /**
@@ -247,5 +247,10 @@ class Message
     public function getEnded()
     {
         return $this->ended;
+    }
+    
+    public function toArray ()
+    {
+        return get_object_vars($this);
     }
 }

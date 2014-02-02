@@ -18,7 +18,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('erp_job_queue');
+        $rootNode = $treeBuilder->root('heri_job_queue');
 
         $rootNode
             ->addDefaultsIfNotSet()
