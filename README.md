@@ -1,6 +1,6 @@
 # JobQueueBundle
 
-This bundle provides the use of Zend_Queue from Zend Framework. It allows your application to manage multiple commands from a variety of sources.
+This bundle provides the use of Zend Queue from Zend Framework. It allows your application to manage multiple commands from a variety of sources.
 
 See the [Programmer's Reference Guide](http://framework.zend.com/manual/fr/zend.queue.html) for more information.
 
@@ -60,9 +60,15 @@ Create a queue. For example, the queue below is named _my:queue_:
     }
 ```
 
-Messages related to this queue will be called every 90 seconds.
+Define the queue to listen in the configuration:
 
-How to create a message?
+```yaml
+    heri_job_queue:  
+        enabled:  true
+        queues:   [ my:queue ]
+```
+
+Then we will create a message, for the example, which contains a Symfony command to call:
 
 ```php
     $queue = $this->get('jobqueue');
@@ -77,14 +83,6 @@ How to create a message?
     );
     
     $queue->sync($config);
-```
-
-At the end, define the queue(s) to listen:
-
-```yaml
-    heri_job_queue:  
-        enabled:  true
-        queues:   [ my:queue ]
 ```
 
 ## Command
