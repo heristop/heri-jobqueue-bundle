@@ -89,10 +89,10 @@ At the end, define the queue(s) to listen:
 
 ## Command
 
-Move in _Heri/JobQueueBundle/Command_ directory and launch this command:
+To run the JobQueue execute this command:
 
 ```shell
-    sh start-queue-manager &
+    app/console jobqueue:load
 ```
 
 ## Service

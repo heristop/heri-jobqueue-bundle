@@ -36,13 +36,15 @@ JOBQUEUE_BUNDLE_PATH=%jobqueue_bundle_path%
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
-DAEMON=$JOBQUEUE_BUNDLE_PATH/Batch/start-queue-manager
+DAEMON="/usr/bin/php"
+DAEMON_OPT=$JOBQUEUE_BUNDLE_PATH/app/console jobqueue:load
+
 
 #
 #  Function that starts the daemon/service.
 #
 d_start() {
-  start-stop-daemon --start --pidfile $PIDFILE --background --make-pidfile --exec $DAEMON
+  start-stop-daemon --start --pidfile $PIDFILE --background --make-pidfile --exec $DAEMON $DAEMON_OPTS
 }
 #
 #  Function that stops the daemon/service.

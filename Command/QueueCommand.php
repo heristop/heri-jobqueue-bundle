@@ -38,10 +38,13 @@ class QueueCommand extends ContainerAwareCommand
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
         
         if ($config['enabled']) {
-            foreach ($config['queues'] as $name) {
-                $queue->configure($name, $em);
-                $queue->receive(1, $this, $output);
-            }
+            do {
+                foreach ($config['queues'] as $name) {
+                    $queue->configure($name, $em);
+                    $queue->receive(1, $this, $output);
+                }
+                sleep(1);
+            } while (true);
         } else {
             $output->writeLn('<comment>JobQueue manager deactivated</comment>');
         }
