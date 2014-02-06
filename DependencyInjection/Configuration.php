@@ -1,6 +1,6 @@
 <?php
 
-namespace Heri\JobQueueBundle\DependencyInjection;
+namespace Heri\Bundle\JobQueueBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

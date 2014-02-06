@@ -19,8 +19,13 @@
         "symfony/framework-bundle": "~2.2",
         "zendframework/zend-queue": "2.0.*"
     },
+    "target-dir": "Heri/Bundle/JobQueueBundle",
     "autoload": {
-        "psr-0": { "Heri\\JobQueueBundle": "" }
+        "psr-0": { "Heri\\Bundle\\JobQueueBundle": "" }
     },
-    "target-dir": "Heri/JobQueueBundle"
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
 }

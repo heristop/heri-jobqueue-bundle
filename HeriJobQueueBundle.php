@@ -1,6 +1,6 @@
 <?php
 
-namespace Heri\JobQueueBundle;
+namespace Heri\Bundle\JobQueueBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

@@ -9,15 +9,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Heri\JobQueueBundle\Service;
+namespace Heri\Bundle\JobQueueBundle\Service;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Heri\JobQueueBundle\Command\QueueCommand;
-use Heri\JobQueueBundle\Adapter\DoctrineAdapter;
+use Heri\Bundle\JobQueueBundle\Command\QueueCommand;
+use Heri\Bundle\JobQueueBundle\Adapter\DoctrineAdapter;
 
 class QueueService
 {

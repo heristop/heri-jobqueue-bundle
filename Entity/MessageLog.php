@@ -1,11 +1,11 @@
 <?php
 
-namespace Heri\JobQueueBundle\Entity;
+namespace Heri\Bundle\JobQueueBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Heri\JobQueueBundle\Entity\MessageLog
+ * Heri\Bundle\JobQueueBundle\Entity\MessageLog
  *
  * @ORM\Table(name="message_log")
  * @ORM\Entity

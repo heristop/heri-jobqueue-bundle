@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Heri\JobQueueBundle\Command;
+namespace Heri\Bundle\JobQueueBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;

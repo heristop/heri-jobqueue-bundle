@@ -28,7 +28,7 @@ Or use composer adding the requirement below:
 Load the bundle in AppKernel: 
 
 ```php
-    $bundles[] = new Heri\JobQueueBundle\HeriJobQueueBundle();
+    $bundles[] = new Heri\Bundle\JobQueueBundle\HeriJobQueueBundle();
 ```
 
 Update your database:
@@ -42,10 +42,10 @@ Update your database:
 Create a queue. For example, the queue below is named _my:queue_:
 
 ```php
-    namespace Heri\JobQueueBundle\DataFixtures\ORM;
+    namespace Heri\Bundle\JobQueueBundle\DataFixtures\ORM;
 
     use Doctrine\Common\DataFixtures\FixtureInterface;
-    use Heri\JobQueueBundle\Entity\Queue;
+    use Heri\Bundle\JobQueueBundle\Entity\Queue;
 
     class Fixtures implements FixtureInterface
     {
