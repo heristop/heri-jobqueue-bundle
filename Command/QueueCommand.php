@@ -41,7 +41,7 @@ class QueueCommand extends ContainerAwareCommand
             do {
                 foreach ($config['queues'] as $name) {
                     $queue->configure($name, $em);
-                    $queue->receive(1, $this, $output);
+                    $queue->receive($config['max_messages'], $this, $output);
                 }
                 sleep(1);
             } while (true);

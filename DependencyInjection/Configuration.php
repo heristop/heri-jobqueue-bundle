@@ -23,9 +23,16 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
-                ->booleanNode('enabled')->defaultTrue()->end()
+                ->booleanNode('enabled')
+                    ->defaultTrue()
+                ->end()
+                ->integerNode('max_messages')
+                    ->defaultValue(1)
+                    ->min(1)
+                ->end()
                 ->arrayNode('queues')
-                    ->prototype('scalar')->end()
+                    ->prototype('scalar')
+                    ->end()
                 ->end()
             ->end()
         ;

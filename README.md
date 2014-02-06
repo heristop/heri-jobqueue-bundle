@@ -52,7 +52,7 @@ Create a queue. For example, the queue below is named _my:queue_:
         public function load($manager)
         {
             $queue = new Queue();
-            $queue->setName('my:queue');
+            $queue->setName('my:queue1');
             $queue->setTimeout(90);
             $manager->persist($queue);
             $manager->flush();
@@ -64,15 +64,16 @@ Define the queue to listen in the configuration:
 
 ```yaml
     heri_job_queue:  
-        enabled:  true
-        queues:   [ my:queue ]
+        enabled:       true
+        max_messages:  1
+        queues:        [ my:queue1 ]
 ```
 
 Then we will create a message, for the example, which contains a Symfony command to call:
 
 ```php
     $queue = $this->get('jobqueue');
-    $queue->configure('my:queue');
+    $queue->configure('my:queue1');
     
     $config = array(
         'command'   => 'demo:great',
@@ -84,6 +85,8 @@ Then we will create a message, for the example, which contains a Symfony command
     
     $queue->sync($config);
 ```
+
+If the message failed, the exception is logged in the table _message_log_, and the command is call again after the setted timeout.
 
 ## Command
 
@@ -115,3 +118,4 @@ To remove the service, use this command:
 ## Note
 
 This bundle can be used with [HeriWebServiceBundle](https://github.com/heristop/HeriWebServiceBundle/) to manage multiple webservice connections.
+The Doctrine Adapter is inspired by [SoliantDoctrineQueue] (https://github.com/TomHAnderson/SoliantDoctrineQueue).

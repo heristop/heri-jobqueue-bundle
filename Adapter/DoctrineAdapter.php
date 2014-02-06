@@ -3,8 +3,8 @@
 /*
  * This file is part of HeriJobQueueBundle.
  *
- * Original code comes from SoliantDoctrineQueue
- *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Heri\JobQueueBundle\Adapter;
@@ -24,8 +24,10 @@ class DoctrineAdapter extends AbstractAdapter
 {
     protected $em;
     
-    public function setEm($em) {
+    public function setEm($em)
+    {
         $this->em = $em;
+        
         return $this;
     }
     
@@ -71,19 +73,19 @@ class DoctrineAdapter extends AbstractAdapter
     public function create($name, $timeout = null)
     {
         if (!$this->em) throw \Exception('You must call setEm() before using this adapter');
-
+        
         if ($this->isExists($name)) {
             return false;
         }
-
+        
         $queue = new \Heri\JobQueueBundle\Entity\Queue;
         $queue->setName($name);
         $newtimeout = ($timeout === null) ? self::CREATE_TIMEOUT_DEFAULT : (int)$timeout;
         $queue->setTimeout($newtimeout);
-
+        
         $this->em->persist($queue);
         $this->em->flush();
-
+        
         return true;
     }
 
@@ -99,18 +101,18 @@ class DoctrineAdapter extends AbstractAdapter
     public function delete($name)
     {
         if (!$this->em) throw \Exception('You must call setEm() before using this adapter');
-
+        
         $id = $this->getQueueId($name); // get primary key
-
+        
         $repo = $this->em->getRepository('Heri\JobQueueBundle\Entity\Queue')->find($id);
-
+        
         foreach ($repo->messages as $message) {
             $this->em->remove($message);
         }
-
+        
         $this->em->remove($repo);
         $this->em->flush();
-
+        
         return true;
     }
 
@@ -133,7 +135,7 @@ class DoctrineAdapter extends AbstractAdapter
         
         return $list;
     }
-
+    
     /**
      * Return the approximate number of messages in the queue
      *
@@ -149,11 +151,11 @@ class DoctrineAdapter extends AbstractAdapter
             ->find($this->getQueueId($queue->getName()))
             ->count();
     }
-
+    
     /********************************************************************
     * Messsage management functions
      *********************************************************************/
-
+    
     /**
      * Send a message to the queue
      *
