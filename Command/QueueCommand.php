@@ -38,6 +38,7 @@ class QueueCommand extends ContainerAwareCommand
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
         
         if ($config['enabled']) {
+            $output->writeLn('<info>JobQueue running... press ctrl-c to stop.</info>');
             do {
                 foreach ($config['queues'] as $name) {
                     $queue->configure($name, $em);
