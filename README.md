@@ -6,20 +6,12 @@ See the [Programmer's Reference Guide](http://framework.zend.com/manual/1.9/en/z
 
 ## Installation
 
-Download sources from github:
-
-```ini
-    [HeriJobQueueBundle]
-        git=https://github.com/heristop/HeriJobQueueBundle.git
-        target=/bundles/Heri/JobQueueBundle/
-```
-
-Or use composer adding the requirement below:
+Require `heristop/jobqueue-bundle` to your `composer.json` file:
 
 ```js
 {
     "require": {
-        "heristop/jobqueue-bundle": "*"
+        "heristop/jobqueue-bundle": "*@dev"
     }
 }
 ```
@@ -38,7 +30,7 @@ Finaly, update your database:
 
 ## Configuration
 
-Create a queue. For example, the queue below is named _my:queue_:
+Create a queue. For example, the queue below is named `my:queue1`:
 
 ```php
     namespace Heri\Bundle\JobQueueBundle\DataFixtures\ORM;
@@ -68,18 +60,16 @@ Define the queue to listen in the configuration:
         queues:        [ my:queue1 ]
 ```
 
-Then we will create a message which contains a Symfony command to call:
+Then, we create a message which contains a Symfony command to call. For instance, we choose to add the clear command in the queue: 
 
 ```php
     $queue = $this->get('jobqueue');
     $queue->configure('my:queue1');
     
-    $queue->sync(array(
-        'command'   => 'cache:clear'
-    ));
+    $queue->sync(array('command' => 'cache:clear'));
 ```
 
-You can call your own commands with its arguments:
+We can also call commands with arguments:
 
 ```php
     $queue = $this->get('jobqueue');
@@ -94,10 +84,6 @@ You can call your own commands with its arguments:
     );
 ```
 
-If the message failed, the exception is logged in the table _message_log_, and the command is call again after the setted timeout:
-
-![ScreenShot](https://raw.github.com/heristop/HeriJobQueueBundle/master/src/Heri/HeriJobQueueBundle/Resources/doc/console.png)
-
 ## Command
 
 To run the JobQueue execute this command:
@@ -106,10 +92,14 @@ To run the JobQueue execute this command:
     app/console jobqueue:load
 ```
 
+If a message failed, the exception is logged in the table `message_log`, and the command is call again after the setted timeout:
+
+![ScreenShot](https://raw.github.com/heristop/HeriJobQueueBundle/master/Resources/doc/console.png)
+
 ## Service
 
-To run the command as a service, edit _jobqueue-service_ shell.
-Set the correct JOBQUEUE_BUNDLE_PATH value, and copy this file to _/etc/init.d_.
+To run the command as a service, edit `jobqueue-service` shell.
+Set the correct JOBQUEUE_BUNDLE_PATH value, and copy this file to `/etc/init.d`.
 
 Then use update-rc.d:
 
