@@ -3,7 +3,6 @@
     "description": "This bundle provides the use of Zend_Queue from Zend Framework. It allows your application to manage multiple commands from a variety of sources.",
     "keywords": [ "sf2", "queue", "job" ],
     "license": "MIT",
-    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Alexandre Mogère"
@@ -17,7 +16,8 @@
     ],
     "require": {
         "symfony/framework-bundle": "~2.2",
-        "zendframework/zend-queue": "2.0.*"
+        "zendframework/zend-queue": "2.0.*",
+        "react/event-loop": "0.4.*"
     },
     "target-dir": "Heri/Bundle/JobQueueBundle",
     "autoload": {

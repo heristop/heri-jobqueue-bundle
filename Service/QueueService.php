@@ -30,15 +30,15 @@ class QueueService
         $adapter
     ;
 
-    public function __construct(Logger $logger, EntityManager $em = null)
+    public function __construct(Logger $logger, EntityManager $em)
     {
         $this->logger = $logger;
         $this->em = $em;
     }
     
-    public function configure($name, EntityManager $em)
+    public function configure($name)
     {
-        $this->em = $em;
+        $em = $this->em;
         $connection = $em->getConnection();
         
         $this->config = array(
@@ -70,7 +70,7 @@ class QueueService
     public function sync($args)
     {
         if (!is_null($this->queue)) {
-          $this->queue->send(serialize($args));
+          $this->queue->send(json_encode($args));
         }
     }
     
@@ -86,24 +86,24 @@ class QueueService
     
     protected function execute($messages)
     {
-        foreach ($messages as $message)
-        {
+        foreach ($messages as $message) {
             $output = date('H:i:s') . ' - ' . ($message->failed ? 'failed' : 'new');
             $output .= '['.$message->id.']';
             
             $this->output->writeLn('<comment>' . $output . '</comment>');
             
-            $args = unserialize($message->body);
+            $args = (array) json_decode($message->body);
+            
             try {
-                $input = new ArrayInput(array_merge(array(''), $args['argument']));
+                $argument = isset($args['argument']) ? (array) $args['argument'] : array();
+                $input = new ArrayInput(array_merge(array(''), $argument));
                 $command = $this->application->find($args['command']);
                 $returnCode = $command->run($input, $this->output);
                 
                 $this->queue->deleteMessage($message);
-
+                
                 $this->output->writeLn('<info>Ended</info>');
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 $this->adapter->logException($message, $e);
                 $this->output->writeLn('<error>Failed</error> ' . $e->getMessage());
             }

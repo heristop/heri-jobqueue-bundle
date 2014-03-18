@@ -1,8 +1,8 @@
 # JobQueueBundle
 
-This bundle provides the use of Zend Queue from Zend Framework. It allows your application to manage multiple commands from a variety of sources.
+This bundle provides the use of `Zend Queue` from Zend Framework. It allows your Symfony application to store multiple commands in a queue.
 
-See the [Programmer's Reference Guide](http://framework.zend.com/manual/fr/zend.queue.html) for more information.
+See the [Programmer's Reference Guide](http://framework.zend.com/manual/1.9/en/zend.queue.html) for more information.
 
 ## Installation
 
@@ -16,7 +16,7 @@ Download sources from github:
 
 Or use composer adding the requirement below:
 
-``` js
+```js
 {
     "require": {
         "heristop/jobqueue-bundle": "*"
@@ -24,14 +24,13 @@ Or use composer adding the requirement below:
 }
 ```
 
-
 Load the bundle in AppKernel: 
 
 ```php
     $bundles[] = new Heri\Bundle\JobQueueBundle\HeriJobQueueBundle();
 ```
 
-Update your database:
+Finaly, update your database:
 
 ```shell
     app/console doctrine:schema:update --force
@@ -69,24 +68,35 @@ Define the queue to listen in the configuration:
         queues:        [ my:queue1 ]
 ```
 
-Then we will create a message, for the example, which contains a Symfony command to call:
+Then we will create a message which contains a Symfony command to call:
 
 ```php
     $queue = $this->get('jobqueue');
     $queue->configure('my:queue1');
     
-    $config = array(
+    $queue->sync(array(
+        'command'   => 'cache:clear'
+    ));
+```
+
+You can call your own commands with its arguments:
+
+```php
+    $queue = $this->get('jobqueue');
+    $queue->configure('my:queue1');
+    
+    $queue->sync(array(
         'command'   => 'demo:great',
         'argument'  => array(
             'name'   => 'Alexandre',
             '--yell' => true,
         )
     );
-    
-    $queue->sync($config);
 ```
 
-If the message failed, the exception is logged in the table _message_log_, and the command is call again after the setted timeout.
+If the message failed, the exception is logged in the table _message_log_, and the command is call again after the setted timeout:
+
+![ScreenShot](https://raw.github.com/heristop/HeriJobQueueBundle/master/src/Heri/HeriJobQueueBundle/Resources/doc/console.png)
 
 ## Command
 

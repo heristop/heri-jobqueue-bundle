@@ -39,13 +39,14 @@ class QueueCommand extends ContainerAwareCommand
         
         if ($config['enabled']) {
             $output->writeLn('<info>JobQueue running... press ctrl-c to stop.</info>');
-            do {
+            $loop = \React\EventLoop\Factory::create();
+            $loop->addPeriodicTimer(1, function() use($config, $queue, $output) {
                 foreach ($config['queues'] as $name) {
-                    $queue->configure($name, $em);
+                    $queue->configure($name);
                     $queue->receive($config['max_messages'], $this, $output);
                 }
-                sleep(1);
-            } while (true);
+            });
+            $loop->run();
         } else {
             $output->writeLn('<comment>JobQueue manager deactivated</comment>');
         }
