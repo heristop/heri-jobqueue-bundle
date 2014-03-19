@@ -9,11 +9,16 @@
             <argument type="service" id="logger" />
             <argument type="service" id="doctrine.orm.entity_manager" />
             <property type="service" id="doctrine.queue.adapter" name="adapter" />
+            <property type="service" id="jobqueue.load.command" name="command" />
             <tag name="monolog.logger" channel="jobqueue" />
         </service>
         <service id="doctrine.queue.adapter" class="Heri\Bundle\JobQueueBundle\Adapter\DoctrineAdapter">
             <argument type="collection" />
             <property type="service" id="doctrine.orm.entity_manager" name="em" /> 
+        </service>
+        <service id="jobqueue.load.command"
+            class="Heri\Bundle\JobQueueBundle\Command\QueueLoadCommand">
+            <tag name="console.command" />
         </service>
     </services>
     

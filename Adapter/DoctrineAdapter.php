@@ -41,9 +41,11 @@ class DoctrineAdapter extends AbstractAdapter
      */
     public function isExists($name)
     {
-        $repo = $this->em->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')->findOneBy(array(
-            'name' => $name
-        ));
+        $repo = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+            ->findOneBy(array(
+                'name' => $name
+            ));
         
         return ($repo) ? true: false;
     }
@@ -69,7 +71,7 @@ class DoctrineAdapter extends AbstractAdapter
         
         $queue = new \Heri\Bundle\JobQueueBundle\Entity\Queue;
         $queue->setName($name);
-        $newtimeout = ($timeout === null) ? self::CREATE_TIMEOUT_DEFAULT : (int)$timeout;
+        $newtimeout = ($timeout === null) ? self::CREATE_TIMEOUT_DEFAULT : (int) $timeout;
         $queue->setTimeout($newtimeout);
         
         $this->em->persist($queue);
@@ -91,7 +93,9 @@ class DoctrineAdapter extends AbstractAdapter
     {
         $id = $this->getQueueId($name); // get primary key
         
-        $repo = $this->em->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')->find($id);
+        $repo = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+            ->find($id);
         
         foreach ($repo->messages as $message) {
             $this->em->remove($message);
@@ -113,7 +117,9 @@ class DoctrineAdapter extends AbstractAdapter
      */
     public function getQueues()
     {
-        $queues = $this->em->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')->findAll();
+        $queues = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+            ->findAll();
         foreach ($queues as $queue) {
             $list[] = $queue->name;
         }
@@ -130,7 +136,8 @@ class DoctrineAdapter extends AbstractAdapter
      */
     public function count(Queue $queue = null)
     {
-        return (int)$this->em->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+        return (int)$this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
             ->find($this->getQueueId($queue->getName()))
             ->count();
     }
@@ -214,7 +221,8 @@ class DoctrineAdapter extends AbstractAdapter
         if ($maxMessages > 0) {
             $microtime = microtime(true); // cache microtime
             
-            $queueEntity = $this->em->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+            $queueEntity = $this->em
+                ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
                 ->find($this->getQueueId($queue->getName()));
             
             // Search for all messages inside our timeout
@@ -222,7 +230,8 @@ class DoctrineAdapter extends AbstractAdapter
                 SELECT m
                 FROM Heri\Bundle\JobQueueBundle\Entity\Message m
                 WHERE (m.queueId = :queue_id)
-                AND (m.handle is null OR m.handle = '' OR m.timeout + " . (int)$timeout . " < " . (int)$microtime . ")
+                AND (m.handle is null OR m.handle = '' OR m.timeout + " .
+                (int)$timeout . " < " . (int)$microtime . ")
             ");
             $query->setParameter('queue_id', $queueEntity->getId());
             $query->setMaxResults($maxMessages);
@@ -260,9 +269,11 @@ class DoctrineAdapter extends AbstractAdapter
      */
     public function deleteMessage(Message $message)
     {
-        $repo = $this->em->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')->findOneBy(array(
-            'handle' => $message->handle
-        ));
+        $repo = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
+            ->findOneBy(array(
+                'handle' => $message->handle
+            ));
         
         $this->em->remove($repo);
         $this->em->flush();
@@ -308,12 +319,14 @@ class DoctrineAdapter extends AbstractAdapter
      */
     public function logException($message, $e)
     {
-        $this->em->createQuery(
-            'UPDATE Heri\Bundle\JobQueueBundle\Entity\Message m SET m.ended = 0, m.failed = 1 '.
-            'WHERE m.id = ?1'
-        )
-        ->setParameter(1, $message->id)
-        ->execute();
+        $this->em
+            ->createQuery(
+                'UPDATE Heri\Bundle\JobQueueBundle\Entity\Message m '.
+                'SET m.ended = 0, m.failed = 1 '.
+                'WHERE m.id = ?1'
+            )
+            ->setParameter(1, $message->id)
+            ->execute();
         
         $log = new MessageLog();
         $log->setMessageId($message->id);
@@ -334,9 +347,11 @@ class DoctrineAdapter extends AbstractAdapter
      */
     protected function getQueueId($name)
     {
-        $repo = $this->em->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')->findOneBy(array(
-            'name' => $name
-        ));
+        $repo = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+            ->findOneBy(array(
+                'name' => $name
+            ));
         
         if (!$repo) throw new \Exception('Queue does not exist: ' . $name);
         

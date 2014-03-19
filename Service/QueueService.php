@@ -14,23 +14,22 @@ namespace Heri\Bundle\JobQueueBundle\Service;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\OutputInterface;
-
-use Heri\Bundle\JobQueueBundle\Command\QueueCommand;
-use Heri\Bundle\JobQueueBundle\Adapter\DoctrineAdapter;
 
 class QueueService
 {
+    public
+        $command,
+        $adapter
+    ;
+    
     protected
         $em,
         $logger,
-        $config,
         $output,
+        $config,
         $queue
     ;
     
-    public $adapter;
-
     public function __construct(Logger $logger, EntityManager $em)
     {
         $this->logger = $logger;
@@ -39,9 +38,6 @@ class QueueService
     
     public function configure($name)
     {
-        $em = $this->em;
-        $connection = $em->getConnection();
-        
         $this->config = array(
             'name' => $name,
         );
@@ -50,13 +46,9 @@ class QueueService
         $this->queue->createQueue($name);
     }
     
-    public function receive($maxMessages, QueueCommand $command, OutputInterface $output)
+    public function receive($maxMessages = 1)
     {
-        $this->output = $output;
-        $this->application = $command->getApplication();
-        
         $messages = $this->queue->receive($maxMessages);
-        
         if ($messages && $messages->count() > 0) {
             $this->execute($messages);
         }
@@ -65,15 +57,26 @@ class QueueService
     /**
      * @param array $args
      */
-    public function sync($args)
+    public function push(array $args)
     {
         if (!is_null($this->queue)) {
-          $this->queue->send(json_encode($args));
+            $this->queue->send(json_encode($args));
         }
+    }
+    
+    /**
+     * @param array $args
+     * @deprecated
+     */
+    public function sync(array $args)
+    {
+        return $this->push($args);
     }
     
     protected function execute($messages)
     {
+        $this->output = $this->command->getOutput();
+        
         foreach ($messages as $message) {
             $output = date('H:i:s') . ' - ' . ($message->failed ? 'failed' : 'new');
             $output .= '['.$message->id.']';
@@ -85,7 +88,7 @@ class QueueService
             try {
                 $argument = isset($args['argument']) ? (array) $args['argument'] : array();
                 $input = new ArrayInput(array_merge(array(''), $argument));
-                $command = $this->application->find($args['command']);
+                $command = $this->command->getApplication()->find($args['command']);
                 $returnCode = $command->run($input, $this->output);
                 
                 $this->queue->deleteMessage($message);
