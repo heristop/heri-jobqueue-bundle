@@ -11,12 +11,12 @@ Require `heristop/jobqueue-bundle` to your `composer.json` file:
 ```js
 {
     "require": {
-        "heristop/jobqueue-bundle": "dev-master"
+	"heristop/jobqueue-bundle": "dev-master"
     }
 }
 ```
 
-Load the bundle in AppKernel: 
+Load the bundle in AppKernel:
 
 ```php
     $bundles[] = new Heri\Bundle\JobQueueBundle\HeriJobQueueBundle();
@@ -39,19 +39,20 @@ To create a queue, you can use the command-line interface in this way:
 Add the created queue to listen in the configuration:
 
 ```yaml
-    heri_job_queue:  
-        enabled:       true
-        max_messages:  1
-        queues:        [ queue1 ]
+    heri_job_queue:
+	enabled:       true
+	max_messages:  1
+	queues:        [ queue1 ]
 ```
 
-Then, define a message which contains a Symfony command to call. For instance, we choose to add the clear command in the queue: 
+Then, define a message which contains a Symfony command to call. For instance, we choose to add the clear command in the queue:
 
 ```php
     $queue = $this->get('jobqueue');
     $queue->configure('queue1');
+
     $queue->push(array(
-        'command' => 'cache:clear'
+	'command' => 'cache:clear'
     ));
 ```
 
@@ -59,11 +60,11 @@ You can also call commands with arguments:
 
 ``` php
     $queue->push(array(
-        'command'   => 'demo:great',
-        'argument'  => array(
-            'name'   => 'Alexandre',
-            '--yell' => true
-        )
+	'command'   => 'demo:great',
+	'argument'  => array(
+	    'name'   => 'Alexandre',
+	    '--yell' => true
+	)
     ));
 ```
 
@@ -81,7 +82,7 @@ If a message failed, the exception is logged in the table `message_log`, and the
 
 ## Service
 
-To run the command as a service, edit `jobqueue-service` shell.
+To run the command as a service, edit `jobqueue-service` shell in `Resources/bin`.
 Set the correct JOBQUEUE_BUNDLE_PATH value, and copy this file to `/etc/init.d`.
 
 Then use update-rc.d:
