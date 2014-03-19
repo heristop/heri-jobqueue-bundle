@@ -11,7 +11,7 @@ Require `heristop/jobqueue-bundle` to your `composer.json` file:
 ```js
 {
     "require": {
-	"heristop/jobqueue-bundle": "dev-master"
+        "heristop/jobqueue-bundle": "dev-master"
     }
 }
 ```
@@ -40,9 +40,9 @@ Add the created queue to listen in the configuration:
 
 ```yaml
     heri_job_queue:
-	enabled:       true
-	max_messages:  1
-	queues:        [ queue1 ]
+        enabled:       true
+        max_messages:  1
+        queues:        [ queue1 ]
 ```
 
 Then, define a message which contains a Symfony command to call. For instance, we choose to add the clear command in the queue:
@@ -50,9 +50,9 @@ Then, define a message which contains a Symfony command to call. For instance, w
 ```php
     $queue = $this->get('jobqueue');
     $queue->configure('queue1');
-
+    
     $queue->push(array(
-	'command' => 'cache:clear'
+        'command' => 'cache:clear'
     ));
 ```
 
@@ -60,11 +60,11 @@ You can also call commands with arguments:
 
 ``` php
     $queue->push(array(
-	'command'   => 'demo:great',
-	'argument'  => array(
-	    'name'   => 'Alexandre',
-	    '--yell' => true
-	)
+        'command'   => 'demo:great',
+        'argument'  => array(
+            'name'   => 'Alexandre',
+            '--yell' => true
+        )
     ));
 ```
 
