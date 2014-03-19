@@ -17,6 +17,8 @@
     "require": {
         "symfony/framework-bundle": "~2.2",
         "zendframework/zend-queue": "2.0.*",
+    },
+    "suggest": {
         "react/event-loop": "0.4.*"
     },
     "target-dir": "Heri/Bundle/JobQueueBundle",
