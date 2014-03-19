@@ -26,9 +26,10 @@ class QueueService
         $logger,
         $config,
         $output,
-        $queue,
-        $adapter
+        $queue
     ;
+    
+    public $adapter;
 
     public function __construct(Logger $logger, EntityManager $em)
     {
@@ -44,9 +45,6 @@ class QueueService
         $this->config = array(
             'name' => $name,
         );
-        
-        $this->adapter = new DoctrineAdapter(array());
-        $this->adapter->setEm($em);
         
         $this->queue = new \ZendQueue\Queue($this->adapter, $this->config);
         $this->queue->createQueue($name);
@@ -72,16 +70,6 @@ class QueueService
         if (!is_null($this->queue)) {
           $this->queue->send(json_encode($args));
         }
-    }
-    
-    public function getEntityManager()
-    {
-        return $this->em;
-    }
-    
-    public function getLogger()
-    {
-        return $this->logger;
     }
     
     protected function execute($messages)

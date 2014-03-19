@@ -8,7 +8,12 @@
         <service id="jobqueue" class="Heri\Bundle\JobQueueBundle\Service\QueueService">
             <argument type="service" id="logger" />
             <argument type="service" id="doctrine.orm.entity_manager" />
+            <property type="service" id="doctrine.queue.adapter" name="adapter" />
             <tag name="monolog.logger" channel="jobqueue" />
+        </service>
+        <service id="doctrine.queue.adapter" class="Heri\Bundle\JobQueueBundle\Adapter\DoctrineAdapter">
+            <argument type="collection" />
+            <property type="service" id="doctrine.orm.entity_manager" name="em" /> 
         </service>
     </services>
     

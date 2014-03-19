@@ -1,6 +1,6 @@
 # JobQueueBundle
 
-This bundle provides the use of `Zend Queue` from Zend Framework. It allows your Symfony application to store multiple commands in a queue.
+This bundle provides the use of `Zend Queue` from Zend Framework. It allows your Symfony application to schedule multiple Symfony console commands as server-side jobs.
 
 See the [Programmer's Reference Guide](http://framework.zend.com/manual/1.9/en/zend.queue.html) for more information.
 
