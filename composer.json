@@ -1,6 +1,6 @@
 {
     "name": "heristop/jobqueue-bundle",
-    "description": "This bundle provides the use of Zend_Queue from Zend Framework. It allows your application to manage multiple commands from a variety of sources.",
+    "description": "This bundle provides the use of Zend_Queue from Zend Framework. It allows your Symfony application to schedule multiple console commands as server-side jobs.",
     "keywords": [ "sf2", "queue", "job" ],
     "license": "MIT",
     "authors": [
