@@ -36,17 +36,27 @@ class QueueCommand extends ContainerAwareCommand
         $queue  = $this->getContainer()->get('jobqueue');
         $config = $this->getContainer()->getParameter('jobqueue.config');
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        
+
         if ($config['enabled']) {
             $output->writeLn('<info>JobQueue running... press ctrl-c to stop.</info>');
-            $loop = \React\EventLoop\Factory::create();
-            $loop->addPeriodicTimer(1, function() use($config, $queue, $output) {
+
+            $listenQueues = function() use($config, $queue, $output) {
                 foreach ($config['queues'] as $name) {
                     $queue->configure($name);
                     $queue->receive($config['max_messages'], $this, $output);
                 }
-            });
-            $loop->run();
+            };
+
+            if (class_exists('React\EventLoop\Factory')) {
+                $loop = \React\EventLoop\Factory::create();
+                $loop->addPeriodicTimer(1, $listenQueues());
+                $loop->run();
+            } else {
+                do {
+                    $listenQueues();
+                    sleep(1);
+                } while (true);
+            }
         } else {
             $output->writeLn('<comment>JobQueue manager deactivated</comment>');
         }
