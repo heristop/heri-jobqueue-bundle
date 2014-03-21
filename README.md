@@ -49,7 +49,7 @@ Then, define a message which contains a Symfony command to call. For instance, w
 
 ```php
     $queue = $this->get('jobqueue');
-    $queue->configure('queue1');
+    $queue->attach('queue1');
     
     $queue->push(array(
         'command' => 'cache:clear'
@@ -68,17 +68,35 @@ You can also call commands with arguments:
     ));
 ```
 
-## Command
+## Listener Commands
 
-To run the JobQueue execute this command:
+### Run the Listener
+
+To run new jobs pushed into the queue, execute this command: 
 
 ```sh
-    app/console jobqueue:load
+    app/console jobqueue:listen
 ```
 
-If a message failed, the exception is logged in the table `message_log`, and the command is call again after the setted timeout (default 90 seconds):
+### Specify the Sleep Duration
+
+You may specify the number of seconds to wait before polling for new jobs:
+
+```sh
+    app/console jobqueue:listen --sleep=5
+```
+
+## Failed Jobs
+
+If a job failed, the exception is logged in the database, and the command is call again after the setted timeout (default 90 seconds):
 
 ![ScreenShot](https://raw.github.com/heristop/HeriJobQueueBundle/master/Resources/doc/console.png)
+
+To delete all of your failed jobs, you may use the `jobqueue:flush` command:
+
+```sh
+    app/console jobqueue:flush
+```
 
 ## Service
 

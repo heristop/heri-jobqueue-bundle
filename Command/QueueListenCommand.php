@@ -17,31 +17,44 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class QueueLoadCommand extends ContainerAwareCommand
+class QueueListenCommand extends ContainerAwareCommand
 {
-    protected $output;
+    protected
+        $output,
+        $running
+    ;
     
     protected function configure()
     {
         $this
-            ->setName('jobqueue:load')
+            ->setName('jobqueue:listen')
             ->setDescription('Initialize JobQueue manager')
+            ->addOption(
+                'sleep',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Number of seconds to wait before polling for new job',
+                1
+            )
         ;
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $queue  = $this->getContainer()->get('jobqueue');
-        $config = $this->getContainer()->getParameter('jobqueue.config');
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->output = $output;
+        $this->running = true;
+        
+        $queue  = $this->getContainer()->get('jobqueue');
+        $queue->command = $this;
+        $config = $this->getContainer()->getParameter('jobqueue.config');
+        $sleep = $input->getOption('sleep');
         
         if ($config['enabled']) {
             $output->writeLn('<info>JobQueue running... press ctrl-c to stop.</info>');
             
             $listenQueues = function() use($config, $queue) {
                 foreach ($config['queues'] as $name) {
-                    $queue->configure($name);
+                    $queue->attach($name);
                     $queue->receive($config['max_messages']);
                 }
             };
@@ -49,13 +62,13 @@ class QueueLoadCommand extends ContainerAwareCommand
             // event loop
             if (class_exists('React\EventLoop\Factory')) {
                 $loop = \React\EventLoop\Factory::create();
-                $loop->addPeriodicTimer(1, $listenQueues());
+                $loop->addPeriodicTimer($sleep, $listenQueues());
                 $loop->run();
             } else {
                 do {
                     $listenQueues();
-                    sleep(1);
-                } while (true);
+                    sleep($sleep);
+                } while ($this->running);
             }
         } else {
             $output->writeLn('<comment>JobQueue manager deactivated</comment>');

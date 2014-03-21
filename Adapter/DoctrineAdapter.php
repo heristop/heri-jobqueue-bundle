@@ -280,7 +280,19 @@ class DoctrineAdapter extends AbstractAdapter
         
         return true;
     }
-
+    
+    /**
+     * Flush message log
+     *
+     * @return boolean
+     */
+    public function flush()
+    {
+        return $this->em
+            ->createQuery('DELETE Heri\Bundle\JobQueueBundle\Entity\MessageLog ml')
+        ;
+    }
+    
     /********************************************************************
      * Supporting functions
      *********************************************************************/

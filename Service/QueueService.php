@@ -36,14 +36,17 @@ class QueueService
         $this->em = $em;
     }
     
-    public function configure($name)
+    public function attach($name)
     {
         $this->config = array(
             'name' => $name,
         );
         
-        $this->queue = new \ZendQueue\Queue($this->adapter, $this->config);
-        $this->queue->createQueue($name);
+        if (!$this->queue instanceof \ZendQueue\Queue) {
+            $this->queue = new \ZendQueue\Queue($this->adapter, $this->config);
+        } else {
+            $this->queue->createQueue($name);
+        }
     }
     
     public function receive($maxMessages = 1)
@@ -64,6 +67,11 @@ class QueueService
         }
     }
     
+    public function flush()
+    {
+        $this->adapter->flush();
+    }
+    
     /**
      * @param array $args
      * @deprecated
@@ -71,6 +79,15 @@ class QueueService
     public function sync(array $args)
     {
         return $this->push($args);
+    }
+    
+    /**
+     * @param string $name
+     * @deprecated
+     */
+    public function configure($name)
+    {
+        return $this->attach($name);
     }
     
     protected function execute($messages)
@@ -92,7 +109,6 @@ class QueueService
                 $returnCode = $command->run($input, $this->output);
                 
                 $this->queue->deleteMessage($message);
-                
                 $this->output->writeLn('<info>Ended</info>');
             } catch (\Exception $e) {
                 $this->adapter->logException($message, $e);

@@ -27,7 +27,7 @@ class QueueCreateCommand extends ContainerAwareCommand
             ->setName('jobqueue:create')
             ->setDescription('Create a queue')
             ->addArgument(
-                'name',
+                'queue-name',
                 InputArgument::REQUIRED,
                 'Which name do you want for the queue?'
             )
@@ -46,10 +46,12 @@ class QueueCreateCommand extends ContainerAwareCommand
             90
         );
         
-        $name = $input->getArgument('name');
-        $queue = $em->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')->findOneBy(array(
-            'name' => $name
-        ));
+        $name = $input->getArgument('queue-name');
+        $queue = $em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+            ->findOneBy(array(
+                'name' => $name
+            ));
         if (!$queue) {
             $queue = new Queue();
             $queue->setName($name);
