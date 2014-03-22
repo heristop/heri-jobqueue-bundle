@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Heri\Bundle\JobQueueBundle\Entity\MessageLog
  *
- * @ORM\Table(name="message_log")
+ * @ORM\Table(name="queue_log")
  * @ORM\Entity
  */
 class MessageLog

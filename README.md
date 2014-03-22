@@ -94,6 +94,22 @@ You may also specify the number of seconds to wait before polling for new jobs:
     app/console jobqueue:listen --sleep=5
 ```
 
+### Process the first Job on the Queue
+
+To process only the first job on the queue, you may use the `jobqueue:work` command:
+
+```sh
+    app/console jobqueue:work
+```
+
+### Show Jobs
+
+To see the pending jobs, run the command below:
+
+```sh
+    app/console jobqueue:show queue1
+```
+
 ## Failed Jobs
 
 If a job failed, the exception is logged in the database, and the command is call again after the setted timeout (default 90 seconds):

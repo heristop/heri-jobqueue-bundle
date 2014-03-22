@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Heri\Bundle\JobQueueBundle\Entity\Message
  *
- * @ORM\Table(name="message")
+ * @ORM\Table(name="queue_message")
  * @ORM\Entity
  */
 class Message
@@ -22,11 +22,9 @@ class Message
     private $id;
 
     /**
-     * @var integer $queueId
-     *
-     * @ORM\Column(name="queue_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Queue")
      */
-    private $queueId;
+    private $queue;
 
     /**
      * @var string $handle
@@ -252,5 +250,29 @@ class Message
     public function toArray ()
     {
         return get_object_vars($this);
+    }
+
+    /**
+     * Set queue
+     *
+     * @param \Heri\Bundle\JobQueueBundle\Entity\Queue $queue
+     *
+     * @return Message
+     */
+    public function setQueue(\Heri\Bundle\JobQueueBundle\Entity\Queue $queue = null)
+    {
+        $this->queue = $queue;
+
+        return $this;
+    }
+
+    /**
+     * Get queue
+     *
+     * @return \Heri\Bundle\JobQueueBundle\Entity\Queue 
+     */
+    public function getQueue()
+    {
+        return $this->queue;
     }
 }
