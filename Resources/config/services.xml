@@ -3,21 +3,22 @@
 <container xmlns="http://symfony.com/schema/dic/services"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-
+    
+    <parameters>
+        <parameter key="doctrine.queue.adapter.class">Heri\Bundle\JobQueueBundle\Adapter\DoctrineAdapter</parameter>
+        <parameter key="jobqueue.service.class">Heri\Bundle\JobQueueBundle\Service\QueueService</parameter>
+    </parameters>
+    
     <services>
-        <service id="jobqueue" class="Heri\Bundle\JobQueueBundle\Service\QueueService">
+        <service id="jobqueue" class="%jobqueue.service.class%">
             <argument type="service" id="logger" />
             <argument type="service" id="doctrine.orm.entity_manager" />
             <property type="service" id="doctrine.queue.adapter" name="adapter" />
-            <property type="service" id="jobqueue.listen.command" name="command" />
             <tag name="monolog.logger" channel="jobqueue" />
         </service>
-        <service id="doctrine.queue.adapter" class="Heri\Bundle\JobQueueBundle\Adapter\DoctrineAdapter">
+        <service id="doctrine.queue.adapter" class="%doctrine.queue.adapter.class%">
             <argument type="collection" />
             <property type="service" id="doctrine.orm.entity_manager" name="em" /> 
-        </service>
-        <service id="jobqueue.listen.command" class="Heri\Bundle\JobQueueBundle\Command\QueueListenCommand">
-            <tag name="console.command" />
         </service>
     </services>
     

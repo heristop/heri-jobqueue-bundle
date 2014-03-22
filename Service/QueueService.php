@@ -17,14 +17,12 @@ use Symfony\Component\Console\Input\ArrayInput;
 
 class QueueService
 {
-    public
-        $command,
-        $adapter
-    ;
+    public $adapter;
     
     protected
         $em,
         $logger,
+        $command,
         $output,
         $config,
         $queue
@@ -89,11 +87,19 @@ class QueueService
     {
         return $this->attach($name);
     }
+
+    public function setCommand($command)
+    {
+        $this->command = $command;
+    }
+    
+    public function setOutput($output)
+    {
+        $this->output = $output;
+    }
     
     protected function execute($messages)
     {
-        $this->output = $this->command->getOutput();
-        
         foreach ($messages as $message) {
             $output = date('H:i:s') . ' - ' . ($message->failed ? 'failed' : 'new');
             $output .= '['.$message->id.']';
@@ -116,4 +122,5 @@ class QueueService
             }
         }
     }
+    
 }

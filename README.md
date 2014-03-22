@@ -78,9 +78,17 @@ To run new jobs pushed into the queue, execute this command:
     app/console jobqueue:listen
 ```
 
+### Specify a specific Queue
+
+You may specify which queue connection the listener should utilize (skipping configuration):
+
+```sh
+    app/console jobqueue:listen queue1
+```
+
 ### Specify the Sleep Duration
 
-You may specify the number of seconds to wait before polling for new jobs:
+You may also specify the number of seconds to wait before polling for new jobs:
 
 ```sh
     app/console jobqueue:listen --sleep=5
