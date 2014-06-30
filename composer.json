@@ -15,8 +15,10 @@
         }
     ],
     "require": {
-        "symfony/framework-bundle": "~2.2",
-        "zendframework/zend-queue": "2.0.*"
+        "symfony/framework-bundle": "~2.2"
+    },
+    "require-dev": {
+        "zendframework/zend-queue": "dev-master"
     },
     "suggest": {
         "react/event-loop": "0.4.*"
