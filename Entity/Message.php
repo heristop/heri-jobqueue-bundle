@@ -75,12 +75,10 @@ class Message
      */
     private $ended;
 
-
-
     /**
      * Get messageId
      *
-     * @return bigint 
+     * @return bigint
      */
     public function getId()
     {
@@ -100,7 +98,7 @@ class Message
     /**
      * Get queueId
      *
-     * @return integer 
+     * @return integer
      */
     public function getQueueId()
     {
@@ -120,7 +118,7 @@ class Message
     /**
      * Get handle
      *
-     * @return string 
+     * @return string
      */
     public function getHandle()
     {
@@ -140,7 +138,7 @@ class Message
     /**
      * Get body
      *
-     * @return text 
+     * @return text
      */
     public function getBody()
     {
@@ -160,7 +158,7 @@ class Message
     /**
      * Get md5
      *
-     * @return string 
+     * @return string
      */
     public function getMd5()
     {
@@ -180,7 +178,7 @@ class Message
     /**
      * Get timeout
      *
-     * @return decimal 
+     * @return decimal
      */
     public function getTimeout()
     {
@@ -200,7 +198,7 @@ class Message
     /**
      * Get created
      *
-     * @return integer 
+     * @return integer
      */
     public function getCreated()
     {
@@ -220,7 +218,7 @@ class Message
     /**
      * Get failed
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getFailed()
     {
@@ -240,14 +238,14 @@ class Message
     /**
      * Get ended
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getEnded()
     {
         return $this->ended;
     }
-    
-    public function toArray ()
+
+    public function toArray()
     {
         return get_object_vars($this);
     }
@@ -269,7 +267,7 @@ class Message
     /**
      * Get queue
      *
-     * @return \Heri\Bundle\JobQueueBundle\Entity\Queue 
+     * @return \Heri\Bundle\JobQueueBundle\Entity\Queue
      */
     public function getQueue()
     {

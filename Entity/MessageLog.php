@@ -42,12 +42,10 @@ class MessageLog
      */
     private $log;
 
-
-
     /**
      * Get id
      *
-     * @return bigint 
+     * @return bigint
      */
     public function getId()
     {
@@ -67,7 +65,7 @@ class MessageLog
     /**
      * Get messageId
      *
-     * @return bigint 
+     * @return bigint
      */
     public function getMessageId()
     {
@@ -87,7 +85,7 @@ class MessageLog
     /**
      * Get dateLog
      *
-     * @return datetime 
+     * @return datetime
      */
     public function getDateLog()
     {
@@ -107,7 +105,7 @@ class MessageLog
     /**
      * Get log
      *
-     * @return text 
+     * @return text
      */
     public function getLog()
     {

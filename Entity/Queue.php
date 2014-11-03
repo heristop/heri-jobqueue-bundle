@@ -35,12 +35,10 @@ class Queue
      */
     private $timeout;
 
-
-
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -60,7 +58,7 @@ class Queue
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -80,7 +78,7 @@ class Queue
     /**
      * Get timeout
      *
-     * @return smallint 
+     * @return smallint
      */
     public function getTimeout()
     {

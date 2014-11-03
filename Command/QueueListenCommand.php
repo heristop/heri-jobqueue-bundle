@@ -24,7 +24,7 @@ class QueueListenCommand extends ContainerAwareCommand
         $running,
         $work
     ;
-    
+
     protected function configure()
     {
         $this
@@ -44,22 +44,22 @@ class QueueListenCommand extends ContainerAwareCommand
             )
         ;
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->output = $output;
         $this->running = true;
-        
+
         $queue  = $this->getContainer()->get('jobqueue');
         $queue->setCommand($this);
         $queue->setOutput($output);
         $config = $this->getContainer()->getParameter('jobqueue.config');
         $sleep = $input->getOption('sleep');
-        
+
         if ($config['enabled']) {
             $output->writeLn('<info>JobQueue running... press ctrl-c to stop.</info>');
-            
-            $listenQueues = function() use($input, $config, $queue) {
+
+            $listenQueues = function () use ($input, $config, $queue) {
                 $queues = array();
                 $inputName = $input->getArgument('queue-name');
                 if ($inputName) {
@@ -67,13 +67,13 @@ class QueueListenCommand extends ContainerAwareCommand
                 } else {
                     $queues = $config['queues'];
                 }
-                
+
                 foreach ($queues as $name) {
                     $queue->attach($name);
                     $queue->receive($config['max_messages']);
                 }
             };
-            
+
             if ($this->work) {
                 $listenQueues();
             } else {

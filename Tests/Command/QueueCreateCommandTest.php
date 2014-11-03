@@ -12,15 +12,15 @@ class QueueCreateCommandTest extends TestCase
     {
         $application = new Application($this->kernel);
         $application->add(new QueueCreateCommand());
-        
+
         $command = $application->find('jobqueue:create');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
             'queue-name' => 'my:queue1',
         ));
-        
+
         $this->assertRegExp('/Queue "my:queue1" created/', $commandTester->getDisplay());
     }
-    
+
 }

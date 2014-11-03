@@ -43,7 +43,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     {
         // shutdown the kernel.
         $this->kernel->shutdown();
-        
+
         parent::tearDown();
     }
 

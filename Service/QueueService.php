@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 class QueueService
 {
     public $adapter;
-    
+
     protected
         $em,
         $logger,
@@ -27,26 +27,26 @@ class QueueService
         $config,
         $queue
     ;
-    
+
     public function __construct(Logger $logger, EntityManager $em)
     {
         $this->logger = $logger;
         $this->em = $em;
     }
-    
+
     public function attach($name)
     {
         $this->config = array(
             'name' => $name,
         );
-        
+
         if (!$this->queue instanceof \ZendQueue\Queue) {
             $this->queue = new \ZendQueue\Queue($this->adapter, $this->config);
         } else {
             $this->queue->createQueue($name);
         }
     }
-    
+
     public function receive($maxMessages = 1)
     {
         $messages = $this->queue->receive($maxMessages);
@@ -54,7 +54,7 @@ class QueueService
             $this->execute($messages);
         }
     }
-    
+
     /**
      * @param array $args
      */
@@ -64,12 +64,12 @@ class QueueService
             $this->queue->send(json_encode($args));
         }
     }
-    
+
     public function flush()
     {
         $this->adapter->flush();
     }
-    
+
     /**
      * @param array $args
      * @deprecated
@@ -78,7 +78,7 @@ class QueueService
     {
         return $this->push($args);
     }
-    
+
     /**
      * @param string $name
      * @deprecated
@@ -92,28 +92,28 @@ class QueueService
     {
         $this->command = $command;
     }
-    
+
     public function setOutput($output)
     {
         $this->output = $output;
     }
-    
+
     protected function execute($messages)
     {
         foreach ($messages as $message) {
             $output = date('H:i:s') . ' - ' . ($message->failed ? 'failed' : 'new');
             $output .= '['.$message->id.']';
-            
+
             $this->output->writeLn('<comment>' . $output . '</comment>');
-            
+
             $args = (array) json_decode($message->body);
-            
+
             try {
                 $argument = isset($args['argument']) ? (array) $args['argument'] : array();
                 $input = new ArrayInput(array_merge(array(''), $argument));
                 $command = $this->command->getApplication()->find($args['command']);
                 $returnCode = $command->run($input, $this->output);
-                
+
                 $this->queue->deleteMessage($message);
                 $this->output->writeLn('<info>Ended</info>');
             } catch (\Exception $e) {
@@ -122,5 +122,5 @@ class QueueService
             }
         }
     }
-    
+
 }

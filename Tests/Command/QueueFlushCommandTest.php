@@ -11,11 +11,11 @@ class QueueFlushCommandTest extends TestCase
     {
         $application = new Application($this->kernel);
         $application->add(new QueueFlushCommand());
-        
+
         $command = $application->find('jobqueue:flush');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName()));
-        
+
         $this->assertRegExp('/Cleaned exceptions/', $commandTester->getDisplay());
     }
 }

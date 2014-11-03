@@ -14,7 +14,6 @@ namespace Heri\Bundle\JobQueueBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use Heri\Bundle\JobQueueBundle\Entity\Queue;
@@ -33,12 +32,12 @@ class QueueShowCommand extends ContainerAwareCommand
             )
         ;
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $queue  = $this->getContainer()->get('jobqueue');
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        
+
         $qb = $em->createQueryBuilder();
         $qb
             ->select('m.id, m.body, m.created, m.ended, m.failed')
@@ -47,10 +46,10 @@ class QueueShowCommand extends ContainerAwareCommand
             ->where($qb->expr()->eq('Queue.name', ':name'))
             ->setParameter('name', $input->getArgument('queue-name'))
         ;
-        
+
         $query = $qb->getQuery();
         $messages = $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
-        
+
         $table = $this->getApplication()->getHelperSet()->get('table');
         $table
             ->setHeaders(array('id', 'body', 'created', 'ended', 'failed'))
