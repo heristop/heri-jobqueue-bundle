@@ -220,11 +220,7 @@ class DoctrineAdapter extends AbstractAdapter
 
         if ($maxMessages > 0) {
             $microtime = microtime(true); // cache microtime
-
-            $queueEntity = $this->em
-                ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
-                ->find($this->getQueueEntity($queue->getName()));
-
+            
             // Search for all messages inside our timeout
             $query = $this->em->createQuery("
                 SELECT m

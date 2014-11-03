@@ -35,7 +35,6 @@ class QueueShowCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $queue  = $this->getContainer()->get('jobqueue');
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
 
         $qb = $em->createQueryBuilder();
