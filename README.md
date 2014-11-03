@@ -1,5 +1,7 @@
 # JobQueueBundle
 
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd/mini.png)](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd)
+
 This bundle provides the use of `Zend Queue` from Zend Framework. It allows your Symfony application to schedule multiple console commands as server-side jobs.
 
 See the [Programmer's Reference Guide](http://framework.zend.com/manual/1.9/en/zend.queue.html) for more information.
