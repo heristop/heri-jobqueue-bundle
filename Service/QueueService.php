@@ -112,7 +112,7 @@ class QueueService
                 $argument = isset($args['argument']) ? (array) $args['argument'] : array();
                 $input = new ArrayInput(array_merge(array(''), $argument));
                 $command = $this->command->getApplication()->find($args['command']);
-                $returnCode = $command->run($input, $this->output);
+                $command->run($input, $this->output);
 
                 $this->queue->deleteMessage($message);
                 $this->output->writeLn('<info>Ended</info>');

@@ -16,9 +16,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Heri\Bundle\JobQueueBundle\Entity\Queue;
-use Heri\Bundle\JobQueueBundle\Entity\Message;
-
 class QueueShowCommand extends ContainerAwareCommand
 {
     protected function configure()
