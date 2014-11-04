@@ -11,7 +11,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @var Symfony\Component\HttpKernel\AppKernel
      */
-    protected static $kernel;
+    protected $kernel;
 
     /**
      * @var Doctrine\ORM\EntityManager
