@@ -1,6 +1,6 @@
 # JobQueueBundle
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd/mini.png)](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd/mini.png)](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd) [![Build Status](https://travis-ci.org/heristop/HeriJobQueueBundle.svg)](https://travis-ci.org/heristop/HeriJobQueueBundle)
 
 This bundle provides the use of `Zend Queue` from Zend Framework. It allows your Symfony application to schedule multiple console commands as server-side jobs.
 
@@ -124,7 +124,7 @@ To delete all of your failed jobs, you may use the `jobqueue:flush` command:
     app/console jobqueue:flush
 ```
 
-## Service
+## ProTip: Service
 
 To run the command as a service, edit `jobqueue-service` shell in `Resources/bin`.
 Set the correct JOBQUEUE_BUNDLE_PATH value, and copy this file to `/etc/init.d`.
@@ -146,4 +146,3 @@ To remove the service, use this command:
 ## Note
 
 This bundle can be used with [HeriWebServiceBundle](https://github.com/heristop/HeriWebServiceBundle/) to manage multiple webservice connections.
-The Doctrine Adapter is inspired by [SoliantDoctrineQueue] (https://github.com/TomHAnderson/SoliantDoctrineQueue).

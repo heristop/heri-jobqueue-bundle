@@ -15,10 +15,15 @@
         }
     ],
     "require": {
-        "symfony/framework-bundle": "~2.2"
+        "symfony/framework-bundle": "~2.3",
+        "symfony/finder": "~2.3",
+        "symfony/console": "~2.3",
+        "zendframework/zend-queue": "dev-master"
     },
     "require-dev": {
-        "zendframework/zend-queue": "dev-master"
+        "symfony/monolog-bundle": "~2.3",
+        "doctrine/orm": "~2.2,>=2.2.3",
+        "doctrine/doctrine-bundle": "~1.2"
     },
     "suggest": {
         "react/event-loop": "0.4.*"

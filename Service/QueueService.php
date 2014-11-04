@@ -11,16 +11,17 @@
 
 namespace Heri\Bundle\JobQueueBundle\Service;
 
-use Doctrine\ORM\EntityManager;
-use Symfony\Bridge\Monolog\Logger;
+use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 
 class QueueService
 {
+    /**
+     * var ZendQueue\Adapter\AbstractAdapter
+     */
     public $adapter;
 
     protected
-        $em,
         $logger,
         $command,
         $output,
@@ -28,10 +29,9 @@ class QueueService
         $queue
     ;
 
-    public function __construct(Logger $logger, EntityManager $em)
+    public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
-        $this->em = $em;
     }
 
     public function attach($name)
@@ -70,24 +70,6 @@ class QueueService
         $this->adapter->flush();
     }
 
-    /**
-     * @param array $args
-     * @deprecated
-     */
-    public function sync(array $args)
-    {
-        return $this->push($args);
-    }
-
-    /**
-     * @param string $name
-     * @deprecated
-     */
-    public function configure($name)
-    {
-        return $this->attach($name);
-    }
-
     public function setCommand($command)
     {
         $this->command = $command;
@@ -121,6 +103,24 @@ class QueueService
                 $this->output->writeLn('<error>Failed</error> ' . $e->getMessage());
             }
         }
+    }
+
+    /**
+     * @param array $args
+     * @deprecated
+     */
+    public function sync(array $args)
+    {
+        return $this->push($args);
+    }
+
+    /**
+     * @param string $name
+     * @deprecated
+     */
+    public function configure($name)
+    {
+        return $this->attach($name);
     }
 
 }

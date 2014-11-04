@@ -19,14 +19,14 @@ use Heri\Bundle\JobQueueBundle\Entity\MessageLog;
 /**
  * Doctrine adapter
  *
+ * @see ZendQueue\Adapter\AbstractAdapter
  */
-class DoctrineAdapter extends AbstractAdapter
+class DoctrineAdapter extends AbstractAdapter implements InterfaceAdapter
 {
+    /**
+     * var Doctrine\ORM\EntityManager
+     */
     public $em;
-
-    /********************************************************************
-     * Queue management functions
-     *********************************************************************/
 
     /**
      * Does a queue already exist?
@@ -142,10 +142,6 @@ class DoctrineAdapter extends AbstractAdapter
             ->count();
     }
 
-    /********************************************************************
-    * Messsage management functions
-     *********************************************************************/
-
     /**
      * Send a message to the queue
      *
@@ -220,7 +216,7 @@ class DoctrineAdapter extends AbstractAdapter
 
         if ($maxMessages > 0) {
             $microtime = microtime(true); // cache microtime
-            
+
             // Search for all messages inside our timeout
             $query = $this->em->createQuery("
                 SELECT m
@@ -280,22 +276,6 @@ class DoctrineAdapter extends AbstractAdapter
     }
 
     /**
-     * Flush message log
-     *
-     * @return boolean
-     */
-    public function flush()
-    {
-        return $this->em
-            ->createQuery('DELETE Heri\Bundle\JobQueueBundle\Entity\MessageLog ml')
-        ;
-    }
-
-    /********************************************************************
-     * Supporting functions
-     *********************************************************************/
-
-    /**
      * Return a list of queue capabilities functions
      *
      * $array['function name'] = true or false
@@ -318,9 +298,18 @@ class DoctrineAdapter extends AbstractAdapter
         );
     }
 
-    /********************************************************************
-     * Functions that are not part of the Zend_Queue_Adapter_Abstract
-     *********************************************************************/
+    /**
+     * Flush message log
+     *
+     * @return boolean
+     */
+    public function flush()
+    {
+        return $this->em
+            ->createQuery('DELETE Heri\Bundle\JobQueueBundle\Entity\MessageLog ml')
+        ;
+    }
+
     /**
      * Insert exception in message log
      *
@@ -361,7 +350,10 @@ class DoctrineAdapter extends AbstractAdapter
                 'name' => $name
             ));
 
-        if (!$repo) throw new \Exception('Queue does not exist: ' . $name);
+        if (!$repo) {
+            throw new \Exception('Queue does not exist: ' . $name);
+        }
+
         return $repo;
     }
 }

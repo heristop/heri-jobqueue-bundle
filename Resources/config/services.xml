@@ -4,15 +4,9 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <parameters>
-        <parameter key="doctrine.queue.adapter.class">Heri\Bundle\JobQueueBundle\Adapter\DoctrineAdapter</parameter>
-        <parameter key="jobqueue.service.class">Heri\Bundle\JobQueueBundle\Service\QueueService</parameter>
-    </parameters>
-
     <services>
         <service id="jobqueue" class="%jobqueue.service.class%">
             <argument type="service" id="logger" />
-            <argument type="service" id="doctrine.orm.entity_manager" />
             <property type="service" id="doctrine.queue.adapter" name="adapter" />
             <tag name="monolog.logger" channel="jobqueue" />
         </service>

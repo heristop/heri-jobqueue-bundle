@@ -1,6 +1,5 @@
 <?php
 
-use Symfony\Component\Console\Tester\CommandTester;
 use Heri\Bundle\JobQueueBundle\Tests\TestCase;
 
 class QueueServiceTest extends TestCase
@@ -17,6 +16,15 @@ class QueueServiceTest extends TestCase
             )
         ));
 
-        $this->assertRegExp('/Cleaned exceptions/', $commandTester->getDisplay());
+        $message = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
+            ->find(1);
+
+        $this->assertEquals(array(
+            'command' => 'cache:clear',
+            'argument' => array(
+                '--env' => 'test'
+            )
+        ), json_decode($message->getBody(), true));
     }
 }

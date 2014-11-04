@@ -31,15 +31,6 @@ class QueueFlushCommand extends ContainerAwareCommand
         $queue = $this->getContainer()->get('jobqueue');
         $queue->flush();
 
-        $queue->attach('avip:queue');
-
-        $queue->push(array(
-            'command' => 'cache:clear',
-            'argument' => array(
-                '--env' => 'test'
-            )
-        ));
-
         $output->writeLn('<info>Cleaned exceptions</info>');
     }
 

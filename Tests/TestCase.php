@@ -2,7 +2,7 @@
 
 namespace Heri\Bundle\JobQueueBundle\Tests;
 
-require_once dirname(__DIR__).'/../../../../../../app/AppKernel.php';
+use Symfony\Component\HttpKernel\Kernel;
 
 use Doctrine\ORM\Tools\SchemaTool;
 
@@ -11,12 +11,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @var Symfony\Component\HttpKernel\AppKernel
      */
-    protected $kernel;
+    protected static $kernel;
 
     /**
      * @var Doctrine\ORM\EntityManager
      */
-    protected $entityManager;
+    protected $em;
 
     /**
      * @var Symfony\Component\DependencyInjection\Container
@@ -25,8 +25,10 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        require_once __DIR__.'/Fixtures/app/AppKernel.php';
+
         // boot the AppKernel in the test environment and with the debug.
-        $this->kernel = new \AppKernel('test', true);
+        $this->kernel = new \Heri\Bundle\JobQueueBundle\Tests\AppKernel('test', true);
         $this->kernel->boot();
 
         // store the container and the entity manager in test case properties
@@ -41,6 +43,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
+        @unlink(__DIR__ . '/Fixtures/app/sqlite.db');
+
         // shutdown the kernel.
         $this->kernel->shutdown();
 

@@ -2,6 +2,7 @@
 
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+
 use Heri\Bundle\JobQueueBundle\Tests\TestCase;
 use Heri\Bundle\JobQueueBundle\Command\QueueFlushCommand;
 
