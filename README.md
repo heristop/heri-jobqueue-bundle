@@ -124,7 +124,7 @@ To delete all of your failed jobs, you may use the `jobqueue:flush` command:
     app/console jobqueue:flush
 ```
 
-## ProTip: Service
+## Linux ProTip: Service
 
 To run the command as a service, edit `jobqueue-service` shell in `Resources/bin`.
 Set the correct JOBQUEUE_BUNDLE_PATH value, and copy this file to `/etc/init.d`.
