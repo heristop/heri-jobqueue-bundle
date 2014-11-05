@@ -50,6 +50,19 @@ class QueueListenCommand extends ContainerAwareCommand
         $this->output = $output;
         $this->running = true;
 
+        $pid = pcntl_fork();
+
+        if ($pid === -1) {
+            throw new \RuntimeException('Could not fork the process');
+        } elseif ($pid > 0) {
+            // we are the parent process
+            $output->writeln('Daemon created with process ID ' . $pid);
+        } else {
+            file_put_contents(getcwd() . '/daemon.pid', posix_getpid());
+            // do something in the background
+            sleep(100);
+        }
+
         $queue  = $this->getContainer()->get('jobqueue');
         $queue->setCommand($this);
         $queue->setOutput($output);

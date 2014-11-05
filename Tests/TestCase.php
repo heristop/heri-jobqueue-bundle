@@ -6,7 +6,7 @@ use Symfony\Component\HttpKernel\Kernel;
 
 use Doctrine\ORM\Tools\SchemaTool;
 
-abstract class TestCase extends \PHPUnit_Framework_TestCase
+abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase
 {
     /**
      * @var Symfony\Component\HttpKernel\AppKernel
@@ -35,16 +35,40 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $this->container = $this->kernel->getContainer();
         $this->em = $this->container->get('doctrine')->getManager();
 
-        // build the schema for sqlite
-        $this->generateSchema();
-
         parent::setUp();
+    }
+
+    public function getConnection()
+    {
+
+        // Retrieve PDO instance
+        $pdo = $this->em->getConnection()->getWrappedConnection();
+
+        // Clear Doctrine to be safe
+        $this->em->clear();
+
+        // Schema Tool to process our entities
+        $tool = new \Doctrine\ORM\Tools\SchemaTool($this->em);
+        $classes = $this->em->getMetaDataFactory()->getAllMetaData();
+
+        // Drop all classes and re-build them for each test case
+        $tool->dropSchema($classes);
+        $tool->createSchema($classes);
+
+        // Pass to PHPUnit
+        return $this->createDefaultDBConnection($pdo, 'db_name');
+    }
+
+    /**
+     * @return PHPUnit_Extensions_Database_DataSet_IDataSet
+     */
+    public function getDataSet()
+    {
+        return $this->createFlatXMLDataSet(dirname(__FILE__).'/Fixtures/data.xml');
     }
 
     public function tearDown()
     {
-        @unlink(__DIR__ . '/Fixtures/app/sqlite.db');
-
         // shutdown the kernel.
         $this->kernel->shutdown();
 
@@ -61,7 +85,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $tool = new SchemaTool($this->em);
             $tool->createSchema($metadata);
         } else {
-            throw new Doctrine\DBAL\Schema\SchemaException('No Metadata Classes to process.');
+            throw new Doctrine\DBAL\Schema\SchemaException('No Metadata classes to process.');
         }
     }
 

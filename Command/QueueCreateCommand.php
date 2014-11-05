@@ -13,6 +13,7 @@ namespace Heri\Bundle\JobQueueBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -30,6 +31,8 @@ class QueueCreateCommand extends ContainerAwareCommand
                 InputArgument::REQUIRED,
                 'Which name do you want for the queue?'
             )
+            ->addOption('timeout', null, InputOption::VALUE_OPTIONAL, 'Timeout')
+            ->addOption('no-prompt', null, InputOption::VALUE_NONE, 'No prompt')
         ;
     }
 
@@ -38,14 +41,19 @@ class QueueCreateCommand extends ContainerAwareCommand
         $queue  = $this->getContainer()->get('jobqueue');
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
 
-        $dialog = $this->getHelperSet()->get('dialog');
-        $timeout = $dialog->ask(
-            $output,
-            '<question>Please enter the timeout</question> [<comment>90</comment>]: ',
-            90
-        );
-
+        $noprompt = $input->getOption('no-prompt');
+        $timeout = $input->getOption('timeout', 90);
         $name = $input->getArgument('queue-name');
+
+        $dialog = $this->getHelperSet()->get('dialog');
+        if (!$timeout && !$noprompt) {
+            $timeout = $dialog->ask(
+                $output,
+                '<question>Please enter the timeout</question> [<comment>90</comment>]: ',
+                90
+            );
+        }
+
         $queue = $em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
             ->findOneBy(array(

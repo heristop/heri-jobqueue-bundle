@@ -19,6 +19,8 @@ class QueueCreateCommandTest extends TestCase
         $commandTester->execute(array(
             'command' => $command->getName(),
             'queue-name' => 'my:queue1',
+            '--no-prompt' => true,
+            '--timeout' => 90,
         ));
 
         $this->assertRegExp('/Queue "my:queue1" created/', $commandTester->getDisplay());

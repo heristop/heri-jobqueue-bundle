@@ -22,6 +22,7 @@
     },
     "require-dev": {
         "symfony/monolog-bundle": "~2.3",
+        "symfony/process": "~2.3",
         "doctrine/orm": "~2.2,>=2.2.3",
         "doctrine/doctrine-bundle": "~1.2"
     },
