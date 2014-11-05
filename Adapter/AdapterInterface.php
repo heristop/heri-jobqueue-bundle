@@ -9,7 +9,7 @@
 
 namespace Heri\Bundle\JobQueueBundle\Adapter;
 
-interface InterfaceAdapter
+interface AdapterInterface
 {
     public function flush();
 

@@ -18,7 +18,7 @@
         "symfony/framework-bundle": "~2.3",
         "symfony/finder": "~2.3",
         "symfony/console": "~2.3",
-        "zendframework/zend-queue": "dev-master"
+        "zendframework/zend-queue": "2.0.0rc5"
     },
     "require-dev": {
         "symfony/monolog-bundle": "~2.3",

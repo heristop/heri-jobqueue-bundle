@@ -21,7 +21,7 @@ use Heri\Bundle\JobQueueBundle\Entity\MessageLog;
  *
  * @see ZendQueue\Adapter\AbstractAdapter
  */
-class DoctrineAdapter extends AbstractAdapter implements InterfaceAdapter
+class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
 {
     /**
      * var Doctrine\ORM\EntityManager
