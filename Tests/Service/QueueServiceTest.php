@@ -16,6 +16,11 @@ class QueueServiceTest extends TestCase
             )
         ));
 
+        $messages = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
+            ->findAll();
+        $this->assertEquals(1, count($messages));
+
         $message = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
             ->find(1);
@@ -27,4 +32,5 @@ class QueueServiceTest extends TestCase
             )
         ), json_decode($message->getBody(), true));
     }
+
 }

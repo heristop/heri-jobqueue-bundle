@@ -5,15 +5,24 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+
         <service id="jobqueue" class="%jobqueue.service.class%">
             <argument type="service" id="logger" />
-            <property type="service" id="doctrine.queue.adapter" name="adapter" />
+            <property type="service" id="jobqueue.adapter" name="adapter" />
             <tag name="monolog.logger" channel="jobqueue" />
         </service>
-        <service id="doctrine.queue.adapter" class="%doctrine.queue.adapter.class%">
-            <argument type="collection" />
+
+        <service id="jobqueue.factory" class="%jobqueue.factory.class%"/>
+
+        <service
+            id="jobqueue.adapter"
+            class="%jobqueue.adapter.interface.class%"
+            factory-service="jobqueue.factory"
+            factory-method="get">
+            <argument>%jobqueue.adapter.type%</argument>
             <property type="service" id="doctrine.orm.entity_manager" name="em" />
         </service>
+
     </services>
 
 </container>

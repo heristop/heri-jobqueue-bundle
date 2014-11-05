@@ -4,20 +4,20 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
 use Heri\Bundle\JobQueueBundle\Tests\TestCase;
-use Heri\Bundle\JobQueueBundle\Command\QueueFlushCommand;
+use Heri\Bundle\JobQueueBundle\Command\QueueWorkCommand;
 
-class QueueFlushCommandTest extends TestCase
+class QueueListenCommandTest extends TestCase
 {
     public function testExecute()
     {
         $application = new Application($this->kernel);
-        $application->add(new QueueFlushCommand());
+        $application->add(new QueueWorkCommand());
 
-        $command = $application->find('jobqueue:flush');
+        $command = $application->find('jobqueue:work');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array('command' => $command->getName()));
 
-        $this->assertRegExp('/Cleaned exceptions/', $commandTester->getDisplay());
+        $this->assertRegExp('/Processed the first job on the queue/', $commandTester->getDisplay());
     }
 
 }

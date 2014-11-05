@@ -40,7 +40,6 @@ abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase
 
     public function getConnection()
     {
-
         // Retrieve PDO instance
         $pdo = $this->em->getConnection()->getWrappedConnection();
 

@@ -39,10 +39,11 @@ class QueueCreateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $queue  = $this->getContainer()->get('jobqueue');
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $config = $this->getContainer()->getParameter('jobqueue.config');
+        $em = $this->getContainer()->get('doctrine')->getManager();
 
         $noprompt = $input->getOption('no-prompt');
-        $timeout = $input->getOption('timeout', 90);
+        $timeout = $input->getOption('timeout');
         $name = $input->getArgument('queue-name');
 
         $dialog = $this->getHelperSet()->get('dialog');

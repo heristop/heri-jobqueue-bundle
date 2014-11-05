@@ -20,10 +20,18 @@ class QueueCreateCommandTest extends TestCase
             'command' => $command->getName(),
             'queue-name' => 'my:queue1',
             '--no-prompt' => true,
-            '--timeout' => 90,
+            '--timeout' => 10,
         ));
 
         $this->assertRegExp('/Queue "my:queue1" created/', $commandTester->getDisplay());
+
+        $queue = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+            ->findOneByName('my:queue1');
+
+        $this->assertNotNull($queue);
+        $this->assertEquals('my:queue1', $queue->getName());
+        $this->assertEquals(10, $queue->getTimeout());
     }
 
 }

@@ -32,7 +32,7 @@ class QueueShowCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $em = $this->getContainer()->get('doctrine')->getManager();
 
         $qb = $em->createQueryBuilder();
         $qb

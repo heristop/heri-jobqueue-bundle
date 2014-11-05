@@ -165,7 +165,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         if (!$this->isExists($queue->getName())) {
-            throw new \Exception('Queue does not exist:' . $queue->getName());
+            throw new Exception('Queue does not exist:' . $queue->getName());
         }
 
         $msg = new \Heri\Bundle\JobQueueBundle\Entity\Message();
@@ -313,8 +313,8 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * Insert exception in message log
      *
-     * @param
-     * @param \Exception
+     * @param string               $message
+     * @param Zend_Queue_Exception $e
      */
     public function logException($message, $e)
     {
@@ -351,7 +351,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             ));
 
         if (!$repo) {
-            throw new \Exception('Queue does not exist: ' . $name);
+            throw new Exception('Queue does not exist: ' . $name);
         }
 
         return $repo;

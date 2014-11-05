@@ -21,8 +21,12 @@ class QueueService
      */
     public $adapter;
 
+    /**
+     * var LoggerInterface
+     */
+    protected $logger;
+
     protected
-        $logger,
         $command,
         $output,
         $config,
@@ -33,6 +37,7 @@ class QueueService
     {
         $this->logger = $logger;
     }
+
 
     public function attach($name)
     {
@@ -61,13 +66,18 @@ class QueueService
     public function push(array $args)
     {
         if (!is_null($this->queue)) {
-            $this->queue->send(json_encode($args));
+            $this->queue->send(\Zend\Json\Encoder::encode($args));
         }
     }
 
     public function flush()
     {
         $this->adapter->flush();
+    }
+
+    public function setAdapter(ZendQueue\Adapter\AbstractAdapter $adapter)
+    {
+        $this->adapter = $adapter;
     }
 
     public function setCommand($command)
@@ -88,7 +98,7 @@ class QueueService
 
             $this->output->writeLn('<comment>' . $output . '</comment>');
 
-            $args = (array) json_decode($message->body);
+            $args = \Zend\Json\Encoder::decode($message->body);
 
             try {
                 $argument = isset($args['argument']) ? (array) $args['argument'] : array();

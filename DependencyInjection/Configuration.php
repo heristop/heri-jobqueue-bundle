@@ -23,6 +23,13 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
+                ->scalarNode('adapter')
+                    ->defaultValue('doctrine')
+                    ->validate()
+                    ->ifNotInArray(array('doctrine'))
+                        ->thenInvalid('Invalid adapter "%s"')
+                    ->end()
+                ->end()
                 ->booleanNode('enabled')
                     ->defaultTrue()
                 ->end()

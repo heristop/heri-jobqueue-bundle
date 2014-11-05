@@ -29,6 +29,7 @@ class QueueFlushCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $queue = $this->getContainer()->get('jobqueue');
+        $config = $this->getContainer()->getParameter('jobqueue.config');
         $queue->flush();
 
         $output->writeLn('<info>Cleaned exceptions</info>');

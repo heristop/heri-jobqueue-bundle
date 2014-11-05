@@ -28,6 +28,7 @@ class HeriJobQueueExtension extends Extension
 
         if (isset($config)) {
             $container->setParameter('jobqueue.config', $config);
+            $container->setParameter('jobqueue.adapter.type', $config['adapter']);
         }
     }
 }

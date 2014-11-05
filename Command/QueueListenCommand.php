@@ -50,28 +50,13 @@ class QueueListenCommand extends ContainerAwareCommand
         $this->output = $output;
         $this->running = true;
 
-        $pid = pcntl_fork();
-
-        if ($pid === -1) {
-            throw new \RuntimeException('Could not fork the process');
-        } elseif ($pid > 0) {
-            // we are the parent process
-            $output->writeln('Daemon created with process ID ' . $pid);
-        } else {
-            file_put_contents(getcwd() . '/daemon.pid', posix_getpid());
-            // do something in the background
-            sleep(100);
-        }
-
         $queue  = $this->getContainer()->get('jobqueue');
+        $config = $this->getContainer()->getParameter('jobqueue.config');
         $queue->setCommand($this);
         $queue->setOutput($output);
-        $config = $this->getContainer()->getParameter('jobqueue.config');
         $sleep = $input->getOption('sleep');
 
         if ($config['enabled']) {
-            $output->writeLn('<info>JobQueue running... press ctrl-c to stop.</info>');
-
             $listenQueues = function () use ($input, $config, $queue) {
                 $queues = array();
                 $inputName = $input->getArgument('queue-name');
@@ -89,7 +74,10 @@ class QueueListenCommand extends ContainerAwareCommand
 
             if ($this->work) {
                 $listenQueues();
+                $output->writeLn('<info>Processed the first job on the queue</info>');
             } else {
+                $output->writeLn('<info>JobQueue running... press ctrl-c to stop.</info>');
+
                 // event loop
                 if (class_exists('React\EventLoop\Factory')) {
                     $loop = \React\EventLoop\Factory::create();
