@@ -206,6 +206,8 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function receive($maxMessages = null, $timeout = null, Queue $queue = null)
     {
+        $msgs = array();
+
         if ($maxMessages === null) {
             $maxMessages = 1;
         }
@@ -218,12 +220,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             $queue = $this->_queue;
         }
 
-        /*var_dump($this->em
-            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
-            ->findAll()); *///die;
-
         if ($maxMessages > 0) {
-            $msgs = array();
             $microtime = microtime(true); // cache microtime
 
             // Search for all messages inside our timeout

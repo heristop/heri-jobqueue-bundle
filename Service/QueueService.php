@@ -109,15 +109,6 @@ class QueueService
     }
 
     /**
-     * @param string  $name
-     * @param integer $timeout
-     */
-    public function getStatus()
-    {
-        return $this->adapter->getStatus();
-    }
-
-    /**
      * @param \ZendQueue\Queue $queue
      */
     public function showMessages(\ZendQueue\Queue $queue)

@@ -86,26 +86,6 @@ class Message
     }
 
     /**
-     * Set queueId
-     *
-     * @param integer $queueId
-     */
-    public function setQueueId($queueId)
-    {
-        $this->queueId = $queueId;
-    }
-
-    /**
-     * Get queueId
-     *
-     * @return integer
-     */
-    public function getQueueId()
-    {
-        return $this->queueId;
-    }
-
-    /**
      * Set handle
      *
      * @param string $handle
