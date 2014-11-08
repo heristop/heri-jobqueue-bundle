@@ -3,6 +3,7 @@
 namespace Heri\Bundle\JobQueueBundle\Tests;
 
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Filesystem\Filesystem;
 
 use Doctrine\ORM\Tools\SchemaTool;
 
@@ -30,6 +31,8 @@ abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase
         // boot the AppKernel in the test environment and with the debug.
         $this->kernel = new \Heri\Bundle\JobQueueBundle\Tests\AppKernel('test', true);
         $this->kernel->boot();
+
+        //$this->deleteTmpDir();
 
         // store the container and the entity manager in test case properties
         $this->container = $this->kernel->getContainer();
@@ -96,5 +99,14 @@ abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase
     protected function getMetadata()
     {
         return $this->em->getMetadataFactory()->getAllMetadata();
+    }
+
+    protected function deleteTmpDir()
+    {
+        if (!file_exists($dir = sys_get_temp_dir().'/'.Kernel::VERSION)) {
+            return;
+        }
+        $fs = new Filesystem();
+        $fs->remove($dir);
     }
 }

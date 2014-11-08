@@ -7,38 +7,39 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Heri\Bundle\JobQueueBundle\Factory;
+namespace Heri\Bundle\JobQueueBundle\DependencyInjection\Factory;
 
-use Heri\Bundle\JobQueueBundle\Adapter\DoctrineAdapter;
+use Heri\Bundle\JobQueueBundle\Adapter as Adapter;
 use Heri\Bundle\JobQueueBundle\Exception\BadAdapterDefinitionException;
 
 /**
- * This class is just a Adapter factory
+ * Adapter factory
  */
 class AdapterFactory
 {
     public static $em;
-    
+
     /**
      * Create staticly desired Adapter
      *
      * @param string $type Type of Adapter to create
      *
-     * @return LoggerInterface Adapter instance
+     * @return AdapterInterface Adapter instance
      */
-    static public function get($type)
+    public static function get($type)
     {
         $instance = null;
+        $options = array();
 
         switch ($type) {
 
             case 'doctrine':
-                $instance = new DoctrineAdapter(array());
+                $instance = new Adapter\DoctrineAdapter($options);
                 $instance->em = self::$em;
                 break;
 
             default:
-                throw new BadAdapterDefinitionException;
+                throw new BadAdapterDefinitionException();
         }
 
         return $instance;

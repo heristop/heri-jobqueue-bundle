@@ -10,11 +10,10 @@
 namespace Heri\Bundle\JobQueueBundle\Adapter;
 
 use ZendQueue\Adapter\AbstractAdapter;
-use ZendQueue\Exception;
 use ZendQueue\Message;
 use ZendQueue\Queue;
 
-use Heri\Bundle\JobQueueBundle\Entity\MessageLog;
+use Heri\Bundle\JobQueueBundle\Exception\AdapterRuntimeException;
 
 /**
  * Doctrine adapter
@@ -58,8 +57,8 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      * timeout, then the message is deleted.  However, if the timeout expires
      * then the message will be made available to other queue readers.
      *
-     * @param  string               $name    queue name
-     * @param  integer              $timeout default visibility timeout
+     * @param  string               $name    Queue name
+     * @param  integer              $timeout Default visibility timeout
      * @return boolean
      * @throws Zend_Queue_Exception - database error
      */
@@ -85,13 +84,14 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      *
      * Returns false if the queue is not found, true if the queue exists
      *
-     * @param  string               $name queue name
+     * @param  string               $name Queue name
      * @return boolean
-     * @throws Zend_Queue_Exception - database error
+     * @throws Zend_Queue_Exception
      */
     public function delete($name)
     {
-        $id = $this->getQueueEntity($name); // get primary key
+         // Get primary key
+        $id = $this->getQueueEntity($name);
 
         $repo = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
@@ -117,6 +117,8 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getQueues()
     {
+        $list = array();
+
         $queues = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
             ->findAll();
@@ -136,6 +138,10 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function count(Queue $queue = null)
     {
+        if (!$queue instanceof Queue) {
+            return 0;
+        }
+
         return (int) $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
             ->find($this->getQueueEntity($queue->getName()))
@@ -148,7 +154,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      * @param  string               $message Message to send to the active queue
      * @param  Zend_Queue           $queue
      * @return Zend_Queue_Message
-     * @throws Zend_Queue_Exception - database error
+     * @throws Zend_Queue_Exception
      */
     public function send($message, Queue $queue = null)
     {
@@ -165,7 +171,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         if (!$this->isExists($queue->getName())) {
-            throw new Exception('Queue does not exist:' . $queue->getName());
+            throw new AdapterRuntimeException('Queue does not exist:' . $queue->getName());
         }
 
         $msg = new \Heri\Bundle\JobQueueBundle\Entity\Message();
@@ -173,8 +179,8 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         $msg->setCreated(time());
         $msg->setBody($message);
         $msg->setMd5(md5($message));
-        $msg->setFailed(0);
-        $msg->setEnded(0);
+        $msg->setFailed(false);
+        $msg->setEnded(false);
 
         $this->em->persist($msg);
         $this->em->flush();
@@ -212,9 +218,12 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             $queue = $this->_queue;
         }
 
-        $msgs = array();
+        /*var_dump($this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
+            ->findAll()); *///die;
 
         if ($maxMessages > 0) {
+            $msgs = array();
             $microtime = microtime(true); // cache microtime
 
             // Search for all messages inside our timeout
@@ -270,9 +279,8 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             ));
 
         $this->em->remove($repo);
-        $this->em->flush();
 
-        return true;
+        return $this->em->flush();
     }
 
     /**
@@ -299,9 +307,26 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * Flush message log
-     *
-     * @return boolean
+     * {@inheritdoc}
+     */
+    public function showMessages(Queue $queue)
+    {
+        $qb = $this->em->createQueryBuilder();
+        $qb
+            ->select('m.id, m.body, m.created, m.ended, m.failed')
+            ->from('Heri\Bundle\JobQueueBundle\Entity\Message', 'm')
+            ->leftJoin('m.queue', 'Queue')
+            ->where($qb->expr()->eq('Queue.name', ':name'))
+            ->setParameter('name', $queue->getName())
+        ;
+
+        $query = $qb->getQuery();
+
+        return $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function flush()
     {
@@ -311,10 +336,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * Insert exception in message log
-     *
-     * @param string               $message
-     * @param Zend_Queue_Exception $e
+     * {@inheritdoc}
      */
     public function logException($message, $e)
     {
@@ -327,7 +349,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             ->setParameter(1, $message->id)
             ->execute();
 
-        $log = new MessageLog();
+        $log = new \Heri\Bundle\JobQueueBundle\Entity\MessageLog();
         $log->setMessageId($message->id);
         $log->setDateLog(new \DateTime("now"));
         $log->setLog($e->getMessage());
@@ -351,7 +373,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             ));
 
         if (!$repo) {
-            throw new Exception('Queue does not exist: ' . $name);
+            throw new AdapterRuntimeException("Queue does not exist: {$name}");
         }
 
         return $repo;

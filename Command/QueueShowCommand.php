@@ -32,19 +32,8 @@ class QueueShowCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $em = $this->getContainer()->get('doctrine')->getManager();
-
-        $qb = $em->createQueryBuilder();
-        $qb
-            ->select('m.id, m.body, m.created, m.ended, m.failed')
-            ->from('Heri\Bundle\JobQueueBundle\Entity\Message', 'm')
-            ->leftJoin('m.queue', 'Queue')
-            ->where($qb->expr()->eq('Queue.name', ':name'))
-            ->setParameter('name', $input->getArgument('queue-name'))
-        ;
-
-        $query = $qb->getQuery();
-        $messages = $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        $queue = $this->getContainer()->get('jobqueue');
+        $messages = $queue->show();
 
         $table = $this->getApplication()->getHelperSet()->get('table');
         $table

@@ -1,10 +1,18 @@
 # JobQueueBundle
 
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd/mini.png)](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd) [![Build Status](https://travis-ci.org/heristop/HeriJobQueueBundle.svg)](https://travis-ci.org/heristop/HeriJobQueueBundle)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd/mini.png)](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/heristop/HeriJobQueueBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/heristop/HeriJobQueueBundle/?branch=master) [![Build Status](https://travis-ci.org/heristop/HeriJobQueueBundle.svg)](https://travis-ci.org/heristop/HeriJobQueueBundle)
 
 This bundle provides the use of `Zend Queue` from Zend Framework. It allows your Symfony application to schedule multiple console commands as server-side jobs.
 
 See the [Programmer's Reference Guide](http://framework.zend.com/manual/1.9/en/zend.queue.html) for more information.
+
+Features:
+
+ - Manage multiple queues
+ - Schedule your Symfony commands
+ - Log exceptions
+ - Retry logic
+ - RabbitMQ or database support
 
 ## Installation
 
@@ -24,7 +32,7 @@ Load the bundle in AppKernel:
     $bundles[] = new Heri\Bundle\JobQueueBundle\HeriJobQueueBundle();
 ```
 
-Finaly, update your database:
+If you use the default adapter, update your database:
 
 ```sh
     app/console doctrine:schema:update --force
@@ -41,6 +49,7 @@ To create a queue, you can use the command-line interface in this way:
 Add the created queue to listen in the configuration:
 
 ```yaml
+    # app/config/config.yml
     heri_job_queue:
         enabled:       true
         max_messages:  1
@@ -145,4 +154,4 @@ To remove the service, use this command:
 
 ## Note
 
-This bundle can be used with [HeriWebServiceBundle](https://github.com/heristop/HeriWebServiceBundle/) to manage multiple webservice connections.
+This bundle can be used with [HeriWebServiceBundle](https://github.com/heristop/HeriWebServiceBundle/) to manage multiple SOAP connections.

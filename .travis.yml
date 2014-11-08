@@ -8,9 +8,13 @@ php:
 
 env:
     - SYMFONY_VERSION=2.3.*
+    - AMQPLIB_VERSION=2.2.*
+    - EVENTLOOP_VERSION=0.4.*
 
 before_script:
     - composer require symfony/symfony:${SYMFONY_VERSION} --no-interaction --prefer-source --dev
+    - composer require videlalvaro/php-amqplib:${AMQPLIB_VERSION}
+    - composer require react/event-loop:${EVENTLOOP_VERSION}
 
 script:
     - phpunit --coverage-text

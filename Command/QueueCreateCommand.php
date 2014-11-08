@@ -17,8 +17,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Heri\Bundle\JobQueueBundle\Entity\Queue;
-
 class QueueCreateCommand extends ContainerAwareCommand
 {
     protected function configure()
@@ -32,22 +30,18 @@ class QueueCreateCommand extends ContainerAwareCommand
                 'Which name do you want for the queue?'
             )
             ->addOption('timeout', null, InputOption::VALUE_OPTIONAL, 'Timeout')
-            ->addOption('no-prompt', null, InputOption::VALUE_NONE, 'No prompt')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $queue  = $this->getContainer()->get('jobqueue');
-        $config = $this->getContainer()->getParameter('jobqueue.config');
-        $em = $this->getContainer()->get('doctrine')->getManager();
+        $queue = $this->getContainer()->get('jobqueue');
 
-        $noprompt = $input->getOption('no-prompt');
         $timeout = $input->getOption('timeout');
         $name = $input->getArgument('queue-name');
 
         $dialog = $this->getHelperSet()->get('dialog');
-        if (!$timeout && !$noprompt) {
+        if (!$timeout) {
             $timeout = $dialog->ask(
                 $output,
                 '<question>Please enter the timeout</question> [<comment>90</comment>]: ',
@@ -55,22 +49,12 @@ class QueueCreateCommand extends ContainerAwareCommand
             );
         }
 
-        $queue = $em
-            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
-            ->findOneBy(array(
-                'name' => $name
-            ));
-        if (!$queue) {
-            $queue = new Queue();
-            $queue->setName($name);
+        if ($queue->create($name, $timeout)) {
             $action = "created";
         } else {
             $action = "updated";
         }
-        $queue->setTimeout($timeout);
-        $em->persist($queue);
-        $em->flush();
 
-        $output->writeLn('<info>Queue "'.$name.'" '.$action.'</info>');
+        $output->writeLn("<info>Queue \"{$name}\" {$action}</info>");
     }
 }

@@ -13,6 +13,13 @@ namespace Heri\Bundle\JobQueueBundle\Service;
 
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\StreamOutput;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+
+use Heri\Bundle\JobQueueBundle\Exception\CommandFindException;
+
+use ZendQueue\Message\MessageIterator;
 
 class QueueService
 {
@@ -26,19 +33,37 @@ class QueueService
      */
     protected $logger;
 
-    protected
-        $command,
-        $output,
-        $config,
-        $queue
-    ;
+    /**
+     * var ContainerAwareCommand
+     */
+    protected $command;
 
+    /**
+     * var OutputInterface
+     */
+    protected $output;
+
+    /**
+     * var \ZendQueue\Queue
+     */
+    protected $queue;
+
+    /**
+     * var array
+     */
+    protected $config;
+
+    /**
+     * @param LoggerInterface $logger
+     */
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
-
+    /**
+     * @param string $name
+     */
     public function attach($name)
     {
         $this->config = array(
@@ -52,11 +77,15 @@ class QueueService
         }
     }
 
+    /**
+     * @param integer $maxMessages
+     */
     public function receive($maxMessages = 1)
     {
         $messages = $this->queue->receive($maxMessages);
+
         if ($messages && $messages->count() > 0) {
-            $this->execute($messages);
+            $this->handle($messages);
         }
     }
 
@@ -70,67 +99,103 @@ class QueueService
         }
     }
 
+    /**
+     * @param string  $name
+     * @param integer $timeout
+     */
+    public function create($name, $timeout = null)
+    {
+        return $this->adapter->create($name, $timeout);
+    }
+
+    /**
+     * @param string  $name
+     * @param integer $timeout
+     */
+    public function getStatus()
+    {
+        return $this->adapter->getStatus();
+    }
+
+    /**
+     * @param \ZendQueue\Queue $queue
+     */
+    public function showMessages(\ZendQueue\Queue $queue)
+    {
+        return $this->adapter->showMessages($queue);
+    }
+
+    /**
+     * @return boolean
+     */
     public function flush()
     {
-        $this->adapter->flush();
+        return $this->adapter->flush();
     }
 
-    public function setAdapter(ZendQueue\Adapter\AbstractAdapter $adapter)
-    {
-        $this->adapter = $adapter;
-    }
-
-    public function setCommand($command)
+    /**
+     * @param ContainerAwareCommand $command
+     */
+    public function setCommand(ContainerAwareCommand $command)
     {
         $this->command = $command;
     }
 
-    public function setOutput($output)
+    /**
+     * @param OutputInterface $output
+     */
+    public function setOutput(OutputInterface $output)
     {
         $this->output = $output;
     }
 
-    protected function execute($messages)
+    /**
+     * @return OutputInterface
+     */
+    public function getOutput()
     {
+        if (!$this->output instanceof OutputInterface) {
+            $this->output = new StreamOutput(fopen('php://memory', 'w', false));
+        }
+
+        return $this->output;
+    }
+
+    /**
+     * @param MessageIterator $messages
+     */
+    protected function handle(MessageIterator $messages)
+    {
+        $output = $this->getOutput();
+
+        if (!$this->command instanceof ContainerAwareCommand) {
+            throw new CommandFindException('Cannot load command');
+        }
+
         foreach ($messages as $message) {
-            $output = date('H:i:s') . ' - ' . ($message->failed ? 'failed' : 'new');
-            $output .= '['.$message->id.']';
+            $date = new \DateTime("now");
+            $output->writeLn(sprintf(
+                "<fg=yellow>%s - %s [%s]</fg=yellow>",
+                $date->format("H:i:s"),
+                ($message->failed ? 'failed' : 'new'),
+                $message->id
+            ));
 
-            $this->output->writeLn('<comment>' . $output . '</comment>');
-
-            $args = \Zend\Json\Encoder::decode($message->body);
+            $args = \Zend\Json\Json::decode($message->body, true);
 
             try {
-                $argument = isset($args['argument']) ? (array) $args['argument'] : array();
+                $argument = isset($args['argument']) ? $args['argument'] : array();
                 $input = new ArrayInput(array_merge(array(''), $argument));
                 $command = $this->command->getApplication()->find($args['command']);
-                $command->run($input, $this->output);
+                $command->run($input, $output);
 
                 $this->queue->deleteMessage($message);
-                $this->output->writeLn('<info>Ended</info>');
+                $output->writeLn("<fg=green>Ended</fg=green>");
             } catch (\Exception $e) {
                 $this->adapter->logException($message, $e);
-                $this->output->writeLn('<error>Failed</error> ' . $e->getMessage());
+                $output->writeLn("<fg=red>Failed</fg=red> {$e->getMessage()}");
             }
         }
-    }
-
-    /**
-     * @param array $args
-     * @deprecated
-     */
-    public function sync(array $args)
-    {
-        return $this->push($args);
-    }
-
-    /**
-     * @param string $name
-     * @deprecated
-     */
-    public function configure($name)
-    {
-        return $this->attach($name);
     }
 
 }

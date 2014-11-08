@@ -5,9 +5,9 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        
+
         <parameter key="jobqueue.service.class">Heri\Bundle\JobQueueBundle\Service\QueueService</parameter>
-        <parameter key="jobqueue.factory.class">Heri\Bundle\JobQueueBundle\Factory\AdapterFactory</parameter>
+        <parameter key="jobqueue.factory.class">Heri\Bundle\JobQueueBundle\DependencyInjection\Factory\AdapterFactory</parameter>
         <parameter key="jobqueue.adapter.interface.class">Heri\Bundle\JobQueueBundle\Adapter\AdapterInterface</parameter>
 
     </parameters>

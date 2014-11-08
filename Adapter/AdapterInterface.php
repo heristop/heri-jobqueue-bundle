@@ -11,7 +11,26 @@ namespace Heri\Bundle\JobQueueBundle\Adapter;
 
 interface AdapterInterface
 {
+    /**
+     * Show messages
+     *
+     * @param  Zend_Queue $queue
+     * @return array
+     */
+    public function showMessages(\ZendQueue\Queue $queue);
+
+    /**
+     * Flush message log
+     *
+     * @return boolean
+     */
     public function flush();
 
+    /**
+     * Insert exception in message log
+     *
+     * @param string               $message
+     * @param Zend_Queue_Exception $e
+     */
     public function logException($message, $e);
 }

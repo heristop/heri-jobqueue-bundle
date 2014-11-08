@@ -26,7 +26,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('adapter')
                     ->defaultValue('doctrine')
                     ->validate()
-                    ->ifNotInArray(array('doctrine'))
+                    ->ifNotInArray(array('doctrine', 'amqp'))
                         ->thenInvalid('Invalid adapter "%s"')
                     ->end()
                 ->end()
