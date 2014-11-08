@@ -32,7 +32,7 @@ abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase
         $this->kernel = new \Heri\Bundle\JobQueueBundle\Tests\AppKernel('test', true);
         $this->kernel->boot();
 
-        //$this->deleteTmpDir();
+        $this->deleteTmpDir();
 
         // store the container and the entity manager in test case properties
         $this->container = $this->kernel->getContainer();
