@@ -107,6 +107,6 @@ abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase
             return;
         }
         $fs = new Filesystem();
-        $fs->remove($dir);
+        //$fs->remove($dir);
     }
 }
