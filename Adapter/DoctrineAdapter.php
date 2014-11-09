@@ -158,36 +158,29 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function send($message, Queue $queue = null)
     {
+        $body = "";
+
         if ($queue === null) {
             $queue = $this->_queue;
         }
 
         if (is_scalar($message)) {
-            $message = (string) $message;
+            $body = (string) $message;
         }
 
         if (is_string($message)) {
-            $message = trim($message);
+            $body = trim($message);
         }
 
         if (!$this->isExists($queue->getName())) {
-            throw new AdapterRuntimeException('Queue does not exist:' . $queue->getName());
+            throw new AdapterRuntimeException("Queue does not exist: {$queue->getName()}");
         }
 
-        $msg = new \Heri\Bundle\JobQueueBundle\Entity\Message();
-        $msg->setQueue($this->getQueueEntity($queue->getName()));
-        $msg->setCreated(time());
-        $msg->setBody($message);
-        $msg->setMd5(md5($message));
-        $msg->setFailed(false);
-        $msg->setEnded(false);
-
-        $this->em->persist($msg);
-        $this->em->flush();
+        $entity = $this->createMessage($queue, $body);
 
         $options = array(
             'queue' => $queue,
-            'data'  => $msg->toArray(),
+            'data'  => $entity->toArray(),
         );
 
         $classname = $queue->getMessageClass();
@@ -206,49 +199,37 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function receive($maxMessages = null, $timeout = null, Queue $queue = null)
     {
-        $msgs = array();
+        $data = array();
 
-        if ($maxMessages === null) {
-            $maxMessages = 1;
-        }
-
-        if ($timeout === null) {
-            $timeout = self::RECEIVE_TIMEOUT_DEFAULT;
-        }
+        // Cache microtime
+        $microtime = microtime(true);
 
         if ($queue === null) {
             $queue = $this->_queue;
         }
 
         if ($maxMessages > 0) {
-            $microtime = microtime(true); // cache microtime
 
-            // Search for all messages inside our timeout
-            $query = $this->em->createQuery("
-                SELECT m
-                FROM Heri\Bundle\JobQueueBundle\Entity\Message m
-                LEFT JOIN m.queue q
-                WHERE (m.queue = :queue)
-                AND (m.handle is null OR m.handle = '' OR m.timeout + " .
-                (int) $timeout . " < " . (int) $microtime . ")
-            ");
-            $query->setParameter('queue', $this->getQueueEntity($queue->getName()));
-            $query->setMaxResults($maxMessages);
-            $messages = $query->getResult();
+            $messages = $this->getMessages(
+                $maxMessages,
+                $timeout,
+                $queue,
+                $microtime
+            );
 
             // Update working messages
             foreach ($messages as $message) {
                 $message->setHandle(md5(uniqid(rand(), true)));
                 $message->setTimeout($microtime);
 
-                $msgs[] = $message->toArray();
+                $data[] = $message->toArray();
             }
             $this->em->flush();
         }
 
         $options = array(
             'queue'        => $queue,
-            'data'         => $msgs,
+            'data'         => $data,
             'messageClass' => $queue->getMessageClass(),
         );
 
@@ -352,6 +333,53 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         $log->setLog($e->getMessage());
         $this->em->persist($log);
         $this->em->flush();
+    }
+
+    protected function createMessage($queue, $body)
+    {
+        $message = new \Heri\Bundle\JobQueueBundle\Entity\Message();
+        $message->setQueue($this->getQueueEntity($queue->getName()));
+        $message->setCreated(time());
+        $message->setBody($body);
+        $message->setMd5(md5($body));
+        $message->setFailed(false);
+        $message->setEnded(false);
+
+        $this->em->persist($message);
+        $this->em->flush();
+
+        return $message;
+    }
+
+    protected function getMessages($maxMessages, $timeout, $queue = null, $microtime = null)
+    {
+        if ($maxMessages === null) {
+            $maxMessages = 1;
+        }
+
+        if ($timeout === null) {
+            $timeout = self::RECEIVE_TIMEOUT_DEFAULT;
+        }
+
+        // Search for all messages inside the timeout
+        $sql = "
+            SELECT m
+            FROM Heri\Bundle\JobQueueBundle\Entity\Message m
+            LEFT JOIN m.queue q
+            WHERE (m.handle is null OR m.handle = '' OR m.timeout + " .
+            (int) $timeout . " < " . (int) $microtime . ")
+        ";
+
+        if ($queue instanceof Queue) {
+            $sql .= " AND (m.queue = :queue)";
+            $query = $this->em->createQuery($sql);
+            $query->setParameter('queue', $this->getQueueEntity($queue->getName()));
+        } else {
+            $query = $this->em->createQuery($sql);
+        }
+        $query->setMaxResults($maxMessages);
+
+        return $query->getResult();
     }
 
     /**

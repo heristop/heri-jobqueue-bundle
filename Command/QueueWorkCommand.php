@@ -13,6 +13,9 @@ namespace Heri\Bundle\JobQueueBundle\Command;
 
 class QueueWorkCommand extends QueueListenCommand
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         parent::configure();

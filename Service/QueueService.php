@@ -18,6 +18,7 @@ use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 use Heri\Bundle\JobQueueBundle\Exception\CommandFindException;
+use Heri\Bundle\JobQueueBundle\Exception\BadFormattedMessageException;
 
 use ZendQueue\Message\MessageIterator;
 
@@ -157,36 +158,62 @@ class QueueService
      */
     protected function handle(MessageIterator $messages)
     {
-        $output = $this->getOutput();
-
         if (!$this->command instanceof ContainerAwareCommand) {
             throw new CommandFindException('Cannot load command');
         }
 
         foreach ($messages as $message) {
-            $date = new \DateTime("now");
-            $output->writeLn(sprintf(
-                "<fg=yellow>%s - %s [%s]</fg=yellow>",
-                $date->format("H:i:s"),
-                ($message->failed ? 'failed' : 'new'),
-                $message->id
-            ));
-
-            $args = \Zend\Json\Json::decode($message->body, true);
-
-            try {
-                $argument = isset($args['argument']) ? $args['argument'] : array();
-                $input = new ArrayInput(array_merge(array(''), $argument));
-                $command = $this->command->getApplication()->find($args['command']);
-                $command->run($input, $output);
-
-                $this->queue->deleteMessage($message);
-                $output->writeLn("<fg=green>Ended</fg=green>");
-            } catch (\Exception $e) {
-                $this->adapter->logException($message, $e);
-                $output->writeLn("<fg=red>Failed</fg=red> {$e->getMessage()}");
-            }
+            $this->run($message);
         }
+    }
+
+    protected function run($message)
+    {
+        $output = $this->getOutput();
+
+        $date = new \DateTime("now");
+        $output->writeLn(sprintf(
+            "<fg=yellow>%s - %s [%s]</fg=yellow>",
+            $date->format("H:i:s"),
+            ($message->failed ? 'failed' : 'new'),
+            $message->id
+        ));
+
+        try {
+
+            list($commandName, $arguments) = $this->getFormattedBody($message->body);
+            $input = new ArrayInput($arguments);
+            $command = $this->command->getApplication()->find($commandName);
+            $command->run($input, $output);
+
+            $this->queue->deleteMessage($message);
+            $output->writeLn("<fg=green>Ended</fg=green>");
+
+        } catch (\Exception $e) {
+
+            $this->adapter->logException($message, $e);
+            $output->writeLn("<fg=red>Failed</fg=red> {$e->getMessage()}");
+
+        }
+    }
+
+    protected function getFormattedBody($encodedBody)
+    {
+        $body = \Zend\Json\Json::decode($encodedBody, true);
+
+        $arguments = array();
+        if (isset($body['argument'])) {
+            $argument = $body['argument'];
+        }
+
+        if (!isset($body['command'])) {
+            throw new BadFormattedMessageException('Command name not found');
+        }
+
+        return array(
+            $body['command'],
+            array_merge(array(''), $arguments)
+        );
     }
 
 }

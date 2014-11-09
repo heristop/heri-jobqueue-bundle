@@ -17,7 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class QueueFlushCommand extends ContainerAwareCommand
 {
-
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -26,6 +28,9 @@ class QueueFlushCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $queue = $this->getContainer()->get('jobqueue');

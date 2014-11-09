@@ -19,6 +19,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class QueueCreateCommand extends ContainerAwareCommand
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -33,6 +36,9 @@ class QueueCreateCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $queue = $this->getContainer()->get('jobqueue');
