@@ -99,14 +99,12 @@ class QueueListenCommand extends ContainerAwareCommand
             $this->output->writeLn('<info>Processed the first job on the queue</info>');
         } else {
             $this->output->writeLn('<info>JobQueue running... press ctrl-c to stop.</info>');
-            $this->loop($listenQueues);
+            $this->loop($listenQueues, $input->getOption('sleep'));
         }
     }
 
-    protected function loop($listenQueues)
+    protected function loop($listenQueues, $sleep)
     {
-        $sleep = $input->getOption('sleep');
-
         // event loop
         if (class_exists('React\EventLoop\Factory')) {
             $loop = \React\EventLoop\Factory::create();
