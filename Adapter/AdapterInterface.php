@@ -14,10 +14,10 @@ interface AdapterInterface
     /**
      * Show messages
      *
-     * @param  Zend_Queue $queue
+     * @param  string $queueName
      * @return array
      */
-    public function showMessages(\ZendQueue\Queue $queue);
+    public function showMessages($queueName);
 
     /**
      * Flush message log

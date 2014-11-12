@@ -39,7 +39,7 @@ class QueueShowCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $queue = $this->getContainer()->get('jobqueue');
-        $messages = $queue->show();
+        $messages = $queue->showMessages($input->getArgument('queue-name'));
 
         $table = $this->getApplication()->getHelperSet()->get('table');
         $table

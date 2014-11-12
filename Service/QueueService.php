@@ -86,6 +86,7 @@ class QueueService
         $messages = $this->queue->receive($maxMessages);
 
         if ($messages && $messages->count() > 0) {
+            
             $this->handle($messages);
         }
     }
@@ -110,11 +111,11 @@ class QueueService
     }
 
     /**
-     * @param \ZendQueue\Queue $queue
+     * @param string $queue
      */
-    public function showMessages(\ZendQueue\Queue $queue)
+    public function showMessages($queueName)
     {
-        return $this->adapter->showMessages($queue);
+        return $this->adapter->showMessages($queueName);
     }
 
     /**

@@ -89,8 +89,8 @@ class QueueListenCommand extends ContainerAwareCommand
             }
 
             foreach ($queues as $name) {
-                $this->queue->attach($name);
-                $this->queue->receive($config['max_messages']);
+                $queue->attach($name);
+                $queue->receive($config['max_messages']);
             }
         };
 
@@ -108,7 +108,7 @@ class QueueListenCommand extends ContainerAwareCommand
         // event loop
         if (class_exists('React\EventLoop\Factory')) {
             $loop = \React\EventLoop\Factory::create();
-            $loop->addPeriodicTimer($sleep, $listenQueues());
+            $loop->addPeriodicTimer($sleep, $listenQueues);
             $loop->run();
         } else {
             do {

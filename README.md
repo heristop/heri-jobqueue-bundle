@@ -38,25 +38,9 @@ If you use the default adapter, update your database:
     app/console doctrine:schema:update --force
 ```
 
-## Configuration
+## Usage
 
-To create a queue, you can use the command-line interface in this way:
-
-```sh
-    app/console jobqueue:create queue1
-```
-
-Add the created queue to listen in the configuration:
-
-```yaml
-    # app/config/config.yml
-    heri_job_queue:
-        enabled:       true
-        max_messages:  1
-        queues:        [ queue1 ]
-```
-
-Then, define a message which contains a Symfony command to call. For instance, we choose to add the clear command in the queue:
+First, define a message which contains the Symfony command to call. For instance, we choose to add the clear command in a queue named "queue1":
 
 ```php
     $queue = $this->get('jobqueue');
@@ -79,11 +63,27 @@ You can also call commands with arguments:
     ));
 ```
 
+Then, add the queue to listen in the configuration:
+
+```yaml
+    # app/config/config.yml
+    heri_job_queue:
+        enabled:       true
+        max_messages:  1
+        queues:        [ queue1 ]
+```
+
+Note: The queue is automatically created, but you can create it using the command-line interface in this way:
+
+```sh
+    app/console jobqueue:create queue1
+```
+
 ## Listener Commands
 
 ### Run the Listener
 
-To run new jobs pushed into the queue, execute this command: 
+To run new messages pushed into the queue, execute this command: 
 
 ```sh
     app/console jobqueue:listen

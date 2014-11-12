@@ -213,7 +213,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             $messages = $this->getMessages(
                 $maxMessages,
                 $timeout,
-                $queue,
+                null,
                 $microtime
             );
 
@@ -225,6 +225,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
                 $data[] = $message->toArray();
             }
             $this->em->flush();
+
         }
 
         $options = array(
@@ -287,7 +288,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function showMessages(Queue $queue)
+    public function showMessages($queueName)
     {
         $qb = $this->em->createQueryBuilder();
         $qb
@@ -295,7 +296,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             ->from('Heri\Bundle\JobQueueBundle\Entity\Message', 'm')
             ->leftJoin('m.queue', 'Queue')
             ->where($qb->expr()->eq('Queue.name', ':name'))
-            ->setParameter('name', $queue->getName())
+            ->setParameter('name', $queueName)
         ;
 
         $query = $qb->getQuery();
@@ -367,13 +368,13 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             FROM Heri\Bundle\JobQueueBundle\Entity\Message m
             LEFT JOIN m.queue q
             WHERE (m.handle is null OR m.handle = '' OR m.timeout + " .
-            (int) $timeout . " < " . (int) $microtime . ")
+            (int) $timeout . " < " . (int) $microtime . ") 
         ";
 
         if ($queue instanceof Queue) {
             $sql .= " AND (m.queue = :queue)";
             $query = $this->em->createQuery($sql);
-            $query->setParameter('queue', $this->getQueueEntity($queue->getName()));
+            $query->setParameter('queue', $queue->getName());
         } else {
             $query = $this->em->createQuery($sql);
         }
