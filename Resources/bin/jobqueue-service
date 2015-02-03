@@ -13,7 +13,7 @@
 #
 # Usage:
 #
-# Set the correct JOBQUEUE_BUNDLE_PATH value, and copy this file to /etc/init.d
+# Set the correct PROJECT_ROOT_DIR value, and copy this file to /etc/init.d
 # Then use update-rc.d:
 #
 # Example:
@@ -30,15 +30,14 @@
 NAME=jobqueue-service
 
 
-# Replace with the jobqueue-service installation path
-JOBQUEUE_BUNDLE_PATH=%jobqueue_bundle_path%
+# Replace with your project dir
+PROJECT_ROOT_DIR=%project_root_dir%
 
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
 DAEMON="/usr/bin/php"
-DAEMON_OPT=$JOBQUEUE_BUNDLE_PATH/app/console jobqueue:load
-
+DAEMON_OPT="$PROJECT_ROOT_DIR/app/console jobqueue:listen"
 
 #
 #  Function that starts the daemon/service.
