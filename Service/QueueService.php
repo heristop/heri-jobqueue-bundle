@@ -204,7 +204,7 @@ class QueueService
 
         $arguments = array();
         if (isset($body['argument'])) {
-            $argument = $body['argument'];
+            $arguments = $body['argument'];
         }
 
         if (!isset($body['command'])) {
