@@ -148,7 +148,7 @@ class DoctrineAdapterTest extends TestCase
         $this->assertRegExp('/There are no commands defined in the "demo" namespace/', $exception->getLog(), 'Logged exception in database');
     }
 
-    public function testcountMessages()
+    public function testCountMessages()
     {
         $count1 = $this->queue->countMessages();
 
