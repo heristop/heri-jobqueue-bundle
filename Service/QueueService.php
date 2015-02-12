@@ -217,4 +217,9 @@ class QueueService
         );
     }
 
+    public function countMessages()
+    {
+        return $this->adapter->countMessages();
+    }
+
 }
