@@ -148,6 +148,21 @@ class DoctrineAdapterTest extends TestCase
         $this->assertRegExp('/There are no commands defined in the "demo" namespace/', $exception->getLog(), 'Logged exception in database');
     }
 
+    public function testcountMessages()
+    {
+        $count1 = $this->queue->countMessages();
+
+        // Queue list command
+        $command1 = array(
+            'command' => 'list'
+        );
+        $this->queue->push($command1);
+
+        $count2 = $this->queue->countMessages();
+
+        $this->assertEquals($count1 + 1 , $count2, 'countMessage retrieve added message');
+    }
+
     protected function getMessages()
     {
         // Search for all messages inside our timeout
