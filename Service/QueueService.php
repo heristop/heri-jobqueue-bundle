@@ -258,7 +258,9 @@ class QueueService
 
         $arguments = array();
         if (isset($body['argument'])) {
-            $argument = $body['argument'];
+            $arguments = $body['argument'];
+        } elseif (isset($body['arguments'])) {
+            $arguments = $body['arguments'];
         }
 
         if (!isset($body['command'])) {
@@ -269,6 +271,11 @@ class QueueService
             $body['command'],
             array_merge(array(''), $arguments)
         );
+    }
+
+    public function countMessages()
+    {
+        return $this->adapter->countMessages();
     }
 
 }

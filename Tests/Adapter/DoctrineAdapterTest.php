@@ -148,7 +148,22 @@ class DoctrineAdapterTest extends TestCase
 
     }
 
-    protected function getMessages($queue)
+    public function testCountMessages()
+    {
+        $count1 = $this->queue->countMessages();
+
+        // Queue list command
+        $command1 = array(
+            'command' => 'list'
+        );
+        $this->queue->push($command1);
+
+        $count2 = $this->queue->countMessages();
+
+        $this->assertEquals($count1 + 1 , $count2, 'countMessages retrieve added message');
+    }
+
+    protected function getMessages()
     {
         // Search for all messages inside our timeout
         $query = $this->em->createQuery("
@@ -157,7 +172,7 @@ class DoctrineAdapterTest extends TestCase
             LEFT JOIN m.queue q
             WHERE (q.name = :queue_name)
         ");
-        $query->setParameter('queue_name', $queue->getName());
+        $query->setParameter('queue_name', $this->queueName . "1");
 
         return $query->getResult();
     }

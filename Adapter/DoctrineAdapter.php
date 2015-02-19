@@ -427,4 +427,18 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
 
         return $repo;
     }
+
+    public function countMessages()
+    {
+        $qb = $this->em->createQueryBuilder();
+        $qb
+            ->select('count(m)')
+            ->from('Heri\Bundle\JobQueueBundle\Entity\Message', 'm')
+            ->leftJoin('m.queue', 'Queue')
+        ;
+
+        $query = $qb->getQuery();
+
+        return $query->getSingleScalarResult();
+    }
 }
