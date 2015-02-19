@@ -12,7 +12,6 @@ namespace Heri\Bundle\JobQueueBundle\Adapter;
 use ZendQueue\Adapter\AbstractAdapter;
 use ZendQueue\Exception;
 use ZendQueue\Message;
-use ZendQueue\Message\MessageIterator;
 use ZendQueue\Queue;
 
 use PhpAmqpLib\Connection\AMQPConnection;
@@ -48,26 +47,6 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      * @var AMQP_Queue_Exchange
      */
     protected $exchangeName = null;
-
-    /**
-     * @var AMQPConnection
-     */
-    //private $_cnn = array();
-
-    /**
-     * @var AMQP_Queue_Exchange
-     */
-    //private $_exchange = null;
-
-    /**
-     * @var AMQPQueue
-     */
-    //private $_amqpQueue = null;
-
-    /**
-     * @var int AMQP queue flags
-     */
-    //private $_amqpQueueFlag = "AMQP_DURABLE";
 
     /**
      * @var int count of messages we got last time
@@ -129,51 +108,6 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * Set exchange for sending message to queue
-     * @param  string|AMQP_Queue_Exchange $exchange
-     * @param  string                     $routingKey
-     * @param  int                        $type       (AMQP_EX_TYPE_DIRECT, AMQP_EX_TYPE_FANOUT, AMQP_EX_TYPE_TOPIC or AMQP_EX_TYPE_HEADER)
-     * @param  int                        $flags      (AMQP_PASSIVE, AMQP_DURABLE, AMQP_AUTODELETE)
-     * @return AMQP_Queue_Exchange
-     */
-    /*public function setExchange($exchange, $routingKey = "*", $type = AMQP_EX_TYPE_DIRECT, $flags = AMQP_DURABLE)
-    {
-        if (! $exchange instanceof AMQP_Queue_Exchange) {
-            $exchange = new AMQP_Queue_Exchange($this->_cnn, $exchange, $type, $flags);
-        }
-        $this->_exchange = $exchange;
-        $this->setRoutingKey($routingKey);
-
-        return $exchange;
-    }*/
-
-    /**
-     * Set routing key for queu
-     * @param  string     $routingKey
-     * @param  AMQP_Queue $queue
-     * @return bool
-     */
-    /*public function setRoutingKey($routingKey, AMQP_Queue $queue = null)
-    {
-        if ($queue) {
-            $queueName = $queue->getName();
-        } else {
-            $queueName = $this->_queue->getName();
-        }
-
-        return $this->_exchange->bind($queueName, $routingKey);
-    }*/
-
-    /**
-     * set AMQPQueue flag(s)
-     * @param int $flag
-     */
-    /*public function setQueueFlag($flag)
-    {
-        $this->_amqpQueueFlag = $flag;
-    }*/
-
-    /**
      * create queue
      * @param  string $name
      * @param  int    $timeout
@@ -182,10 +116,6 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
     public function create($name, $timeout = null)
     {
         try {
-            //$this->_count = $this->_amqpQueue->declare($name, $this->_amqpQueueFlag);
-
-            //$this->channel->queue_delete($name);
-
             /*
                 name: $queue
                 passive: false
@@ -194,8 +124,6 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
                 auto_delete: false //the queue won't be deleted once the channel is closed.
             */
             $this->channel->queue_declare($name, false, true, false, false);
-
-            //die("count: ".var_dump($this->_count));
 
         } catch (\Exception $e) {
             return false;
@@ -289,71 +217,20 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         $maxMessages = (int) $maxMessages ? (int) $maxMessages : 1;
-        if (isset($this->_options['method']) && 'consume' == $this->_options['method']) {
-            // use new AmqpAdapter(array('method' => 'consume')) to use CONSUME approach
-            /*$consumeOptions = array(
-                'min' => 1,
-                'max' => $maxMessages,
-                'ack' => false,
-            );
-            $result = $this->_amqpQueue->consume($consumeOptions);
-            $this->_count -= sizeof($result);*/
-        } else {
-            // default approach is GET
-            
-            for ($i = $maxMessages; $i > 0; $i--) {
 
-
+        // default approach is GET
         
-/*$callback = function($amqpMessage) {
+        for ($i = $maxMessages; $i > 0; $i--) {
+            $amqpMessage = $this->channel->basic_get($queue->getName());
 
-  echo " [x] Received ", $amqpMessage->body, "\n";
+            //var_dump($amqpMessage);
 
-sleep(60);
-
-  echo " [x] Done", "\n";
-  $amqpMessage->delivery_info['channel']->basic_ack($amqpMessage->delivery_info['delivery_tag']);
-
-};
-
-$this->channel->basic_qos(null, 1, null);
-$this->channel->basic_consume($queue->getName(), '', false, false, false, false, $callback);*/
-
-
-     /* $this->channel->basic_consume(
-            $queue->getName(),
-            'jobqueue_'.uniqid(),
-            false,
-            false,
-            false,
-            false,
-            array($this, 'receiveMessage'
-        ));*/
-
-
-
-                $amqpMessage = $this->channel->basic_get($queue->getName());
-
-                //var_dump($amqpMessage);
-
-                if (isset($amqpMessage->delivery_info['delivery_tag'])) {
-                    $result[] = array(
-                        'body' => $amqpMessage->body,
-                        'amqpMessage' => $amqpMessage
-                    );   
-                    $this->_count = $amqpMessage->delivery_info['message_count'];
-                }
-
-
-                //$amqpMessage->delivery_info['channel']->basic_ack($amqpMessage->delivery_info['delivery_tag']);
-                /*$message = $this->_amqpQueue->get();
-                if (isset($message['delivery_tag'])) {
-                    $result[] = $message;
-                    $this->_count = $message['count'];
-                }
-                if ($message['count'] <= 0) {
-                    break;
-                }*/
+            if (isset($amqpMessage->delivery_info['delivery_tag'])) {
+                $result[] = array(
+                    'body' => $amqpMessage->body,
+                    'amqpMessage' => $amqpMessage
+                );   
+                $this->_count = $amqpMessage->delivery_info['message_count'];
             }
         }
 
@@ -366,8 +243,6 @@ $this->channel->basic_consume($queue->getName(), '', false, false, false, false,
         $classname = $queue->getMessageSetClass();
 
         return new $classname($options);
-
-        //return new MessageIterator(array('data' => $result));
     }
 
     public function getCapabilities()
@@ -454,7 +329,8 @@ $this->channel->basic_consume($queue->getName(), '', false, false, false, false,
      */
     public function logException($message, $e)
     {
-        error_log($message->body.' '.$e->getMessage(), 3, 'debug.txt');
+        $this->logger->err($message->body);
+        $this->logger->err($e->getMessage());
     }
 
 }

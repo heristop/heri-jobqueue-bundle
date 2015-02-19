@@ -103,19 +103,33 @@ class AmqpAdapterTest extends TestCase
 
         // Run demo:great command using listen method
         try {
-            //$this->queue->listen($this->queueName . "1");
-            $this->queue->receive($this->maxMessages);
+            $this->queue->listen($this->queueName . "1");
+            // $this->queue->receive($this->maxMessages);
         } catch (\Exception $e) {
-            $this->assertRegExp('/There are no commands defined in the "demo" namespace/', $e->getMessage(), 'Command not found');
+            $this->assertRegExp(
+                '/There are no commands defined in the "demo" namespace/', 
+                $e->getMessage(), 
+                'Command not found'
+            );
+        }
+    }
+
+    public function testPerf()
+    {
+        for ($i = 0; $i < 100; $i++){
+            // Queue list command
+            $command = array(
+                'command' => 'list'
+            );
+            $this->queue->push($command);
+            $this->queue->receive(10);    
         }
     }
 
     public function tearDown()
     {
         if ($this->channel) {
-            //$this->channel->exchange_delete($this->exchangeName);
-
-            //$this->channel->queue_delete($this->queueName);
+            $this->channel->queue_delete($this->queueName . "1");
             $this->channel->close();
         }
         if ($this->connection) {

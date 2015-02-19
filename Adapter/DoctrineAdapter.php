@@ -143,14 +143,23 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function count(Queue $queue = null)
     {
-        if (!$queue instanceof Queue) {
-            return 0;
+        $qb = $this->em->createQueryBuilder();
+        $qb
+            ->select('count(m)')
+            ->from('Heri\Bundle\JobQueueBundle\Entity\Message', 'm')
+            ->leftJoin('m.queue', 'Queue')
+        ;
+
+        if ($queue instanceof Queue) {
+            $qb
+                ->where($qb->expr()->eq('Queue.name', ':name'))
+                ->setParameter('name', $queue->getName())
+            ;
         }
 
-        return (int) $this->em
-            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
-            ->find($this->getQueueEntity($queue->getName()))
-            ->count();
+        $query = $qb->getQuery();
+
+        return $query->getSingleScalarResult();
     }
 
     /**
@@ -426,19 +435,5 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         return $repo;
-    }
-
-    public function countMessages()
-    {
-        $qb = $this->em->createQueryBuilder();
-        $qb
-            ->select('count(m)')
-            ->from('Heri\Bundle\JobQueueBundle\Entity\Message', 'm')
-            ->leftJoin('m.queue', 'Queue')
-        ;
-
-        $query = $qb->getQuery();
-
-        return $query->getSingleScalarResult();
     }
 }

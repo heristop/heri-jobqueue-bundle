@@ -142,6 +142,22 @@ class QueueService
     }
 
     /**
+     * @return integer
+     */
+    public function countMessages()
+    {
+        return $this->adapter->count();
+    }
+
+    /**
+     * @return integer
+     */
+    public function count()
+    {
+        return $this->adapter->count();
+    }
+
+    /**
      * @param ContainerAwareCommand $command
      */
     public function setCommand(ContainerAwareCommand $command)
@@ -225,6 +241,10 @@ class QueueService
 
     protected function run($message)
     {
+        if (property_exists($this->adapter, "logger")) {
+            $this->adapter->logger = $this->logger;
+        }
+
         try {
 
             list(
@@ -271,11 +291,6 @@ class QueueService
             $body['command'],
             array_merge(array(''), $arguments)
         );
-    }
-
-    public function countMessages()
-    {
-        return $this->adapter->countMessages();
     }
 
 }

@@ -150,7 +150,7 @@ class DoctrineAdapterTest extends TestCase
 
     public function testCountMessages()
     {
-        $count1 = $this->queue->countMessages();
+        $count1 = $this->queue->count();
 
         // Queue list command
         $command1 = array(
@@ -158,7 +158,7 @@ class DoctrineAdapterTest extends TestCase
         );
         $this->queue->push($command1);
 
-        $count2 = $this->queue->countMessages();
+        $count2 = $this->queue->count();
 
         $this->assertEquals($count1 + 1 , $count2, 'countMessages retrieve added message');
     }
