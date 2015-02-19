@@ -37,7 +37,7 @@ PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
 DAEMON="/usr/bin/php"
-DAEMON_OPT="$PROJECT_ROOT_DIR/app/console jobqueue:listen"
+DAEMON_OPT="$PROJECT_ROOT_DIR/app/console jobqueue:listen --env=prod --quiet"
 
 #
 #  Function that starts the daemon/service.
