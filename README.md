@@ -10,7 +10,7 @@ Features:
 
  - Manage multiple queues
  - Schedule your Symfony commands
- - Log exceptions
+ - Monitor messages and log exceptions
  - Retry logic
  - RabbitMQ or database support
 
@@ -136,7 +136,7 @@ To delete all of your failed jobs, you may use the `jobqueue:flush` command:
 ## Linux ProTip: Service
 
 To run the command as a service, edit `jobqueue-service` shell in `Resources/bin`.
-Set the correct JOBQUEUE_BUNDLE_PATH value, and copy this file to `/etc/init.d`.
+Set the correct PROJECT_ROOT_DIR value, and copy this file to `/etc/init.d`.
 
 Then use update-rc.d:
 
