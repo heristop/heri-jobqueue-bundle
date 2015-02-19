@@ -176,7 +176,7 @@ class QueueService
         $output->writeLn(sprintf(
             "<fg=yellow>%s - %s [%s]</fg=yellow>",
             $date->format("H:i:s"),
-            ($message->failed ? 'failed' : 'new'),
+            ($message->failed ? 'retry' : 'new'),
             $message->id
         ));
 
@@ -205,6 +205,8 @@ class QueueService
         $arguments = array();
         if (isset($body['argument'])) {
             $arguments = $body['argument'];
+        } elseif (isset($body['arguments'])) {
+            $arguments = $body['arguments'];
         }
 
         if (!isset($body['command'])) {
