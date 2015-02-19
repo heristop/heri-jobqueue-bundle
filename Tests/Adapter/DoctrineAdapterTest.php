@@ -1,3 +1,4 @@
+
 <?php
 
 use Heri\Bundle\JobQueueBundle\Tests\TestCase;
@@ -18,7 +19,7 @@ class DoctrineAdapterTest extends TestCase
     /**
      * @var string
      */
-    protected $queueName = 'my:queue1';
+    protected $queueName = 'my:queue';
 
     /**
      * @var integer
@@ -44,9 +45,12 @@ class DoctrineAdapterTest extends TestCase
         $adapter = new Adapter\DoctrineAdapter(array());
         $adapter->em = $this->em;
 
-        $this->queue = new QueueService($this->container->get('monolog.logger.doctrine'));
+        $this->queue = new QueueService(
+            $this->container->get('logger'), 
+            $this->container->getParameter('jobqueue.config')
+        );
         $this->queue->adapter = $adapter;
-        $this->queue->attach($this->queueName);
+        $this->queue->attach($this->queueName . "1");
 
         $application = new Application($this->kernel);
         $application->add(new QueueListenCommand());
@@ -61,28 +65,34 @@ class DoctrineAdapterTest extends TestCase
 
     public function testPushAndReceive()
     {
-        $queue = $this->em
+        $queue1 = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
-            ->findOneByName($this->queueName);
-        $this->assertNotNull($queue, 'Queue created');
+            ->findOneByName($this->queueName . "1");
+        $this->assertNotNull($queue1, 'Queue created');
 
-        // Queue list command
+        // Queue 1 list command
         $command1 = array(
             'command' => 'list'
         );
         $this->queue->push($command1);
 
-        $messages = $this->getMessages();
+        $messages = $this->getMessages($queue1);
         $this->assertEquals(1, count($messages), 'Count number of messages');
 
         $message1 = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
             ->find(1);
+        $this->assertEquals($this->queueName . "1", $message1->getQueue()->getName(), 'Message1 queue relation check');
         $this->assertEquals($command1, json_decode($message1->getBody(), true), 'Verify encoded message in table');
         $this->assertEquals(false, $message1->getEnded(), 'Message1 no ended');
         $this->assertEquals(false, $message1->getFailed(), 'Message1 no failed');
 
-        // Queue demo:great command
+        $queue1 = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+            ->findOneByName($this->queueName . "1");
+        $this->assertNotNull($queue1, 'Queue created');
+
+        // Queue 1 demo:great command
         $command2 = array(
             'command'   => 'demo:great',
             'argument'  => array(
@@ -95,42 +105,31 @@ class DoctrineAdapterTest extends TestCase
         $message2 = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
             ->find(2);
+        $this->assertEquals($this->queueName . "1", $message1->getQueue()->getName(), 'Message2 queue relation check');
         $this->assertEquals($command2, json_decode($message2->getBody(), true), 'Verify encoded message in table');
         $this->assertEquals(false, $message2->getEnded(), 'Message2 no ended');
         $this->assertEquals(false, $message2->getFailed(), 'Message2 no failed');
 
-        $messages = $this->getMessages();
+        $messages = $this->getMessages($queue1);
         $this->assertEquals(2, count($messages), '2 pending messages to handle');
 
-        // Run list command
+        // Run list command using directly receive method
+        $this->queue->receive($this->maxMessages);
+
+        $exceptions = $this->getMessageLogs();
+        $this->assertEquals(0, count($exceptions), 'No exception logged');
+
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(1, count($messages), '1 pending message not yet handled');
+
+        // Run demo:great command using listen method
         try {
-
-            $this->queue->receive($this->maxMessages);
-
-            $exceptions = $this->getMessageLogs();
-            $this->assertEquals(0, count($exceptions), 'No exception logged');
-
-            $messages = $this->getMessages();
-            $this->assertEquals(1, count($messages), '1 pending message not yet handled');
-
+            $this->queue->listen($this->queueName . "1");
         } catch (\Exception $e) {
-
-            $this->fail($e->getMessage());
-
-        }
-
-        // Run demo:great command
-        try {
-
-            $this->queue->receive($this->maxMessages);
-
-        } catch (\Exception $e) {
-
             $this->assertRegExp('/There are no commands defined in the "demo" namespace/', $e->getMessage(), 'Command not found');
-
         }
 
-        $messages = $this->getMessages();
+        $messages = $this->getMessages($queue1);
         $this->assertEquals(1, count($messages), '1 pending message locked');
 
         $message2 = $this->em
@@ -146,9 +145,10 @@ class DoctrineAdapterTest extends TestCase
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\MessageLog')
             ->find(1);
         $this->assertRegExp('/There are no commands defined in the "demo" namespace/', $exception->getLog(), 'Logged exception in database');
+
     }
 
-    protected function getMessages()
+    protected function getMessages($queue)
     {
         // Search for all messages inside our timeout
         $query = $this->em->createQuery("
@@ -157,7 +157,7 @@ class DoctrineAdapterTest extends TestCase
             LEFT JOIN m.queue q
             WHERE (q.name = :queue_name)
         ");
-        $query->setParameter('queue_name', $this->queueName);
+        $query->setParameter('queue_name', $queue->getName());
 
         return $query->getResult();
     }

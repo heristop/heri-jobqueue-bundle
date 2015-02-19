@@ -17,7 +17,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class QueueCreateCommand extends ContainerAwareCommand
+class QueueDeleteCommand extends ContainerAwareCommand
 {
     /**
      * {@inheritdoc}
@@ -25,10 +25,9 @@ class QueueCreateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('jobqueue:create')
-            ->setDescription('Create a queue')
+            ->setName('jobqueue:delete')
+            ->setDescription('Delete a queue')
             ->addArgument('queue-name', InputArgument::REQUIRED, 'Which name do you want for the queue?')
-            ->addOption('timeout', null, InputOption::VALUE_OPTIONAL, 'Timeout')
         ;
     }
 
@@ -38,25 +37,11 @@ class QueueCreateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $queue = $this->getContainer()->get('jobqueue');
-
-        $timeout = $input->getOption('timeout');
         $name = $input->getArgument('queue-name');
 
-        $dialog = $this->getHelperSet()->get('dialog');
-        if (!$timeout) {
-            $timeout = $dialog->ask(
-                $output,
-                '<question>Please enter the timeout</question> [<comment>90</comment>]: ',
-                90
-            );
+        if ($queue->delete($name)) {
+            $output->writeLn("<info>Queue \"{$name}\" deleted</info>");
         }
-
-        if ($queue->create($name, $timeout)) {
-            $action = "created";
-        } else {
-            $action = "updated";
-        }
-
-        $output->writeLn("<info>Queue \"{$name}\" {$action}</info>");
+        
     }
 }

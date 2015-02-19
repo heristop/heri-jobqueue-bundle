@@ -14,7 +14,7 @@ interface AdapterInterface
     /**
      * Show messages
      *
-     * @param  string $queueName
+     * @param string $queue
      * @return array
      */
     public function showMessages($queueName);

@@ -20,16 +20,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class QueueListenCommand extends ContainerAwareCommand
 {
     /**
-     * @param OutputInterface
-     */
-    protected $output;
-
-    /**
-     * @param boolean
-     */
-    protected $running;
-
-    /**
      * @param boolean
      */
     protected $work;
@@ -42,11 +32,7 @@ class QueueListenCommand extends ContainerAwareCommand
         $this
             ->setName('jobqueue:listen')
             ->setDescription('Initialize JobQueue manager')
-            ->addArgument(
-                'queue-name',
-                InputArgument::OPTIONAL,
-                'Listen a specific queue'
-            )
+            ->addArgument('queue-name', InputArgument::OPTIONAL, 'Listen a specific queue')
             ->addOption(
                 'sleep',
                 null,
@@ -62,60 +48,27 @@ class QueueListenCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->output = $output;
-        $this->running = true;
-
-        $queue  = $this->getContainer()->get('jobqueue');
-        $config = $this->getContainer()->getParameter('jobqueue.config');
+        $queue = $this->getContainer()->get('jobqueue');
+        $queue->setUp($this->getContainer()->getParameter('jobqueue.config'));
         $queue->setCommand($this);
         $queue->setOutput($output);
 
-        if ($config['enabled']) {
-            $this->listen($input, $config, $queue);
-        } else {
+        if (!$queue->isEnabled()) {
             $output->writeLn('<comment>JobQueue manager deactivated</comment>');
-        }
-    }
-
-    protected function listen($input, $config, $queue)
-    {
-        $listenQueues = function () use ($input, $config, $queue) {
-            $queues = array();
-            $inputName = $input->getArgument('queue-name');
-            if ($inputName) {
-                $queues[] = $inputName;
+        } else {
+            if ($this->work) {
+                $output->writeLn('<comment>Handling the first job on the queue...</comment>');
             } else {
-                $queues = $config['queues'];
+                $output->writeLn('<comment>JobQueue running... press ctrl-c to stop.</comment>');
             }
 
-            foreach ($queues as $name) {
-                $queue->attach($name);
-                $queue->receive($config['max_messages']);
-            }
-        };
-
-        if ($this->work) {
-            $listenQueues();
-            $this->output->writeLn('<info>Processed the first job on the queue</info>');
-        } else {
-            $this->output->writeLn('<info>JobQueue running... press ctrl-c to stop.</info>');
-            $this->loop($listenQueues, $input->getOption('sleep'));
+            $queue->listen(
+                $input->getArgument('queue-name'), 
+                $input->getOption('sleep'),
+                $this->work
+            );
         }
-    }
 
-    protected function loop($listenQueues, $sleep)
-    {
-        // event loop
-        if (class_exists('React\EventLoop\Factory')) {
-            $loop = \React\EventLoop\Factory::create();
-            $loop->addPeriodicTimer($sleep, $listenQueues);
-            $loop->run();
-        } else {
-            do {
-                $listenQueues();
-                sleep($sleep);
-            } while ($this->running);
-        }
     }
 
 }

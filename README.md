@@ -32,7 +32,7 @@ Load the bundle in AppKernel:
     $bundles[] = new Heri\Bundle\JobQueueBundle\HeriJobQueueBundle();
 ```
 
-If you use the default adapter, update your database:
+If you use the Doctrine adapter, update your database:
 
 ```sh
     app/console doctrine:schema:update --force
@@ -73,7 +73,7 @@ Then, add the queue to listen in the configuration:
         queues:        [ queue1 ]
 ```
 
-Note: The queue is automatically created, but you can create it using the command-line interface in this way:
+Note: The queue is automatically created, but you can also use the command-line interface in this way:
 
 ```sh
     app/console jobqueue:create queue1

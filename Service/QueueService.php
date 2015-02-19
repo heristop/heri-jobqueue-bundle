@@ -14,6 +14,7 @@ namespace Heri\Bundle\JobQueueBundle\Service;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
@@ -56,10 +57,19 @@ class QueueService
 
     /**
      * @param LoggerInterface $logger
+     * @param array $config
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, array $config = array())
     {
         $this->logger = $logger;
+        $this->config = $config;
+
+        $this->output = new ConsoleOutput();
+    }
+
+    public function setUp($config)
+    {
+        $this->config = $config;
     }
 
     /**
@@ -67,26 +77,20 @@ class QueueService
      */
     public function attach($name)
     {
-        $this->config = array(
+        $this->queue = new \ZendQueue\Queue($this->adapter, array(
             'name' => $name,
-        );
-
-        if (!$this->queue instanceof \ZendQueue\Queue) {
-            $this->queue = new \ZendQueue\Queue($this->adapter, $this->config);
-        } else {
-            $this->queue->createQueue($name);
-        }
+        ));
     }
 
     /**
      * @param integer $maxMessages
+     * @param integer $timeout
      */
-    public function receive($maxMessages = 1)
+    public function receive($maxMessages = 1, $timeout = null)
     {
-        $messages = $this->queue->receive($maxMessages);
+        $messages = $this->queue->receive($maxMessages, $timeout, $this->queue);
 
         if ($messages && $messages->count() > 0) {
-            
             $this->handle($messages);
         }
     }
@@ -98,6 +102,8 @@ class QueueService
     {
         if (!is_null($this->queue)) {
             $this->queue->send(\Zend\Json\Encoder::encode($args));
+
+            $this->output->writeLn("<fg=green> [x] [{$this->queue->getName()}] {$args['command']} sent</>");
         }
     }
 
@@ -111,7 +117,16 @@ class QueueService
     }
 
     /**
-     * @param string $queue
+     * @param string  $name
+     * @return boolean
+     */
+    public function delete($name)
+    {
+        return $this->adapter->delete($name);
+    }
+
+    /**
+     * @param string $queueName
      */
     public function showMessages($queueName)
     {
@@ -147,11 +162,47 @@ class QueueService
      */
     public function getOutput()
     {
-        if (!$this->output instanceof OutputInterface) {
-            $this->output = new StreamOutput(fopen('php://memory', 'w', false));
+        return $this->output;
+    }
+
+    public function isEnabled()
+    {
+        return $this->config['enabled'];
+    }
+
+    public function listen($name = null, $sleep = null, $work = true)
+    {
+        if ($work) {
+            $this->loop($name);
+        } else {
+            // event loop
+            if (class_exists('React\EventLoop\Factory')) {
+                $loop = \React\EventLoop\Factory::create();
+                $loop->addPeriodicTimer($sleep, function($this) use ($name) {  $this->loop($name); });
+                $loop->run();
+            } else {
+                do {
+                    $this->loop($name);
+                    sleep($sleep);
+                } while (true);
+            }
+        }
+    }
+
+    protected function loop($name = null) 
+    {
+        $listQueues = array();
+
+        if ($name) {
+            $listQueues[] = $name;
+        } else {
+            $listQueues = $this->config['queues'];
         }
 
-        return $this->output;
+        foreach ($listQueues as $name) {
+            $this->attach($name);
+            $this->receive($this->config['max_messages']);
+        }
     }
 
     /**
@@ -159,6 +210,10 @@ class QueueService
      */
     protected function handle(MessageIterator $messages)
     {
+        if (!$this->output instanceof OutputInterface) {
+            $this->output = new StreamOutput(fopen('php://memory', 'w', false));
+        }
+
         if (!$this->command instanceof ContainerAwareCommand) {
             throw new CommandFindException('Cannot load command');
         }
@@ -170,37 +225,36 @@ class QueueService
 
     protected function run($message)
     {
-        $output = $this->getOutput();
-
-        $date = new \DateTime("now");
-        $output->writeLn(sprintf(
-            "<fg=yellow>%s - %s [%s]</fg=yellow>",
-            $date->format("H:i:s"),
-            ($message->failed ? 'failed' : 'new'),
-            $message->id
-        ));
-
         try {
 
-            list($commandName, $arguments) = $this->getFormattedBody($message->body);
+            list(
+                $commandName, 
+                $arguments
+            ) = $this->getMessageFormattedBody($message);
+
+            $this->output->writeLn("<fg=yellow> [x] [{$this->queue->getName()}] {$commandName} received</> ");
+
             $input = new ArrayInput($arguments);
             $command = $this->command->getApplication()->find($commandName);
-            $command->run($input, $output);
+            $command->run($input, $this->output);
 
             $this->queue->deleteMessage($message);
-            $output->writeLn("<fg=green>Ended</fg=green>");
+            $this->output->writeLn("<fg=green> [x] [{$this->queue->getName()}] {$commandName} done</>");
 
         } catch (\Exception $e) {
 
+            $this->output->writeLn("<fg=white;bg=red> [!] [{$this->queue->getName()}] FAILURE: {$e->getMessage()}</>");
             $this->adapter->logException($message, $e);
-            $output->writeLn("<fg=red>Failed</fg=red> {$e->getMessage()}");
 
         }
     }
 
-    protected function getFormattedBody($encodedBody)
+    /**
+     * @param Zend_Message $message
+     */
+    protected function getMessageFormattedBody($message)
     {
-        $body = \Zend\Json\Json::decode($encodedBody, true);
+        $body = \Zend\Json\Json::decode($message->body, true);
 
         $arguments = array();
         if (isset($body['argument'])) {

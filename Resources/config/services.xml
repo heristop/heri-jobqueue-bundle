@@ -8,6 +8,7 @@
 
         <service id="jobqueue" class="%jobqueue.service.class%">
             <argument type="service" id="logger" />
+            <argument type="collection" />
             <property type="service" id="jobqueue.adapter" name="adapter" />
             <tag name="monolog.logger" channel="jobqueue" />
         </service>

@@ -93,15 +93,20 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
          // Get primary key
         $id = $this->getQueueEntity($name);
 
-        $repo = $this->em
+        $queue = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
             ->find($id);
 
-        foreach ($repo->messages as $message) {
+        $messages = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
+            ->findBy(array(
+                'queue' => $queue
+            ));
+        foreach ($messages as $message) {
             $this->em->remove($message);
         }
 
-        $this->em->remove($repo);
+        $this->em->remove($queue);
         $this->em->flush();
 
         return true;
@@ -195,11 +200,11 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      * @param  integer                     $timeout     Visibility timeout for these messages
      * @param  Zend_Queue                  $queue
      * @return Zend_Queue_Message_Iterator
-     * @throws Zend_Queue_Exception        - database error
+     * @throws Zend_Queue_Exception        Database error
      */
     public function receive($maxMessages = null, $timeout = null, Queue $queue = null)
     {
-        $data = array();
+        $result = array();
 
         // Cache microtime
         $microtime = microtime(true);
@@ -213,7 +218,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             $messages = $this->getMessages(
                 $maxMessages,
                 $timeout,
-                null,
+                $queue,
                 $microtime
             );
 
@@ -222,15 +227,14 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
                 $message->setHandle(md5(uniqid(rand(), true)));
                 $message->setTimeout($microtime);
 
-                $data[] = $message->toArray();
+                $result[] = $message->toArray();
             }
             $this->em->flush();
-
         }
 
         $options = array(
             'queue'        => $queue,
-            'data'         => $data,
+            'data'         => $result,
             'messageClass' => $queue->getMessageClass(),
         );
 
@@ -290,18 +294,22 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function showMessages($queueName)
     {
-        $qb = $this->em->createQueryBuilder();
-        $qb
-            ->select('m.id, m.body, m.created, m.ended, m.failed')
-            ->from('Heri\Bundle\JobQueueBundle\Entity\Message', 'm')
-            ->leftJoin('m.queue', 'Queue')
-            ->where($qb->expr()->eq('Queue.name', ':name'))
-            ->setParameter('name', $queueName)
-        ;
+        $results = array();
+        if ($this->isExists($queueName)) {
+            $qb = $this->em->createQueryBuilder();
+            $qb
+                ->select('m.id, m.body, m.created_at, m.ended, m.failed')
+                ->from('Heri\Bundle\JobQueueBundle\Entity\Message', 'm')
+                ->leftJoin('m.queue', 'Queue')
+                ->where($qb->expr()->eq('Queue.name', ':name'))
+                ->setParameter('name', $queueName)
+            ;
 
-        $query = $qb->getQuery();
+            $query = $qb->getQuery();
+            $results = $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        }
 
-        return $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        return $results;
     }
 
     /**
@@ -332,11 +340,18 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         $log->setMessageId($message->id);
         $log->setDateLog(new \DateTime("now"));
         $log->setLog($e->getMessage());
+
         $this->em->persist($log);
         $this->em->flush();
     }
 
-    protected function createMessage($queue, $body)
+    /**
+     * Create a new queue 
+     * 
+     * @param Zend_Queue $queue
+     * @param string $body
+     */
+    protected function createMessage(Queue $queue, $body)
     {
         $message = new \Heri\Bundle\JobQueueBundle\Entity\Message();
         $message->setQueue($this->getQueueEntity($queue->getName()));
@@ -352,6 +367,14 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         return $message;
     }
 
+    /**
+     * Get messages of the queue
+     *
+     * @param integer $maxMessages
+     * @param integer $timeout
+     * @param Zend_Queue $queue
+     * @param integer $microtime
+     */
     protected function getMessages($maxMessages, $timeout, $queue = null, $microtime = null)
     {
         if ($maxMessages === null) {
@@ -368,13 +391,13 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             FROM Heri\Bundle\JobQueueBundle\Entity\Message m
             LEFT JOIN m.queue q
             WHERE (m.handle is null OR m.handle = '' OR m.timeout + " .
-            (int) $timeout . " < " . (int) $microtime . ") 
+            (int) $timeout . " < " . (int) $microtime . ")
         ";
 
         if ($queue instanceof Queue) {
             $sql .= " AND (m.queue = :queue)";
             $query = $this->em->createQuery($sql);
-            $query->setParameter('queue', $queue->getName());
+            $query->setParameter('queue', $this->getQueueEntity($queue->getName()));
         } else {
             $query = $this->em->createQuery($sql);
         }
@@ -387,7 +410,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      * Get the queue entity
      *
      * @param  string               $name
-     * @return integer|null
+     * @return Queue Entity
      * @throws Zend_Queue_Exception
      */
     protected function getQueueEntity($name)

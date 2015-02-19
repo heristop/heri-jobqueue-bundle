@@ -38,6 +38,17 @@ class AdapterFactory
                 $instance->em = self::$em;
                 break;
 
+            case 'amqp':
+                $options = array(
+                    'host' => 'localhost',
+                    'port' => '5672',
+                    'user' => 'guest',
+                    'password' => 'guest'
+                );
+
+                $instance = new Adapter\AmqpAdapter($options);
+                break;
+
             default:
                 throw new BadAdapterDefinitionException();
         }
