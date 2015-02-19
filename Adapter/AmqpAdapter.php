@@ -139,7 +139,6 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function delete($name)
     {
-        //$this->channel->exchange_delete($this->exchangeName);
         $this->channel->queue_delete($name);
 
         return true;
@@ -161,19 +160,6 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
             $message = \Zend\Json\Encoder::encode($message);
         }
 
-        /*if ($queue) {
-            $routingKey = $queue->getOption('routingKey');
-        } else {
-            $routingKey = $this->_queue->getOption('routingKey');
-        }*/
-
-        // todo
-        /*if ($this->_exchange) {
-            return $this->_exchange->publish($message, $routingKey, AMQP_MANDATORY, array('delivery_mode' => 2));
-        } else {
-            throw new AdapterRuntimeException("Rabbitmq exchange not found");
-        }*/
-
         $this->exchangeName = 'router';
 
         /*
@@ -184,10 +170,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
             auto_delete: false //the exchange won't be deleted once the channel is closed.
         */
         $this->channel->exchange_declare($this->exchangeName, 'direct', false, true, false);
-
         $this->channel->queue_bind($queue->getName(), $this->exchangeName);
-
-        //$this->getChannel()->basic_publish($amq, $this->exchange, $this->key);
 
         $amqpMessage = new AMQPMessage($message, array(
             'content_type' => 'text/plain',
@@ -195,9 +178,6 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
         ));
 
         $this->channel->basic_publish($amqpMessage, $this->exchangeName);
-
-        //$this->channel->close();
-        //$this->connection->close();
     }
 
     /**
@@ -218,12 +198,9 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
 
         $maxMessages = (int) $maxMessages ? (int) $maxMessages : 1;
 
-        // default approach is GET
-        
+        // default approach: GET
         for ($i = $maxMessages; $i > 0; $i--) {
             $amqpMessage = $this->channel->basic_get($queue->getName());
-
-            //var_dump($amqpMessage);
 
             if (isset($amqpMessage->delivery_info['delivery_tag'])) {
                 $result[] = array(
