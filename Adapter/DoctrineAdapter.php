@@ -372,6 +372,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
 
         $this->em->persist($message);
         $this->em->flush();
+        $this->em->clear();
 
         return $message;
     }
