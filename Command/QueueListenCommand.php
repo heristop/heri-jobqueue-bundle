@@ -37,7 +37,7 @@ class QueueListenCommand extends ContainerAwareCommand
                 'sleep',
                 '0.2',
                 InputOption::VALUE_OPTIONAL,
-                'Number of milliseconds to wait before polling for new job',
+                'Number of seconds to wait before polling for new job',
                 1
             )
         ;
