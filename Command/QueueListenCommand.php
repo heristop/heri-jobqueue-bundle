@@ -35,9 +35,9 @@ class QueueListenCommand extends ContainerAwareCommand
             ->addArgument('queue-name', InputArgument::OPTIONAL, 'Listen a specific queue')
             ->addOption(
                 'sleep',
-                null,
+                '0.2',
                 InputOption::VALUE_OPTIONAL,
-                'Number of seconds to wait before polling for new job',
+                'Number of milliseconds to wait before polling for new job',
                 1
             )
         ;

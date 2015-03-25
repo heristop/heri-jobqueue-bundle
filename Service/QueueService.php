@@ -21,10 +21,10 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Heri\Bundle\JobQueueBundle\Exception\CommandFindException;
 use Heri\Bundle\JobQueueBundle\Exception\BadFormattedMessageException;
 
-use ZendQueue\Message\MessageIterator;
-
 class QueueService
 {
+    const MICROSECONDS_PER_SECOND = 1000000;
+
     /**
      * var ZendQueue\Adapter\AbstractAdapter
      */
@@ -56,6 +56,11 @@ class QueueService
     protected $config;
 
     /**
+     * var boolean
+     */
+    protected $running;
+
+    /**
      * @param LoggerInterface $logger
      * @param array $config
      */
@@ -64,7 +69,16 @@ class QueueService
         $this->logger = $logger;
         $this->config = $config;
 
+        $this->running = true;
         $this->output = new ConsoleOutput();
+
+        pcntl_signal(SIGTERM, function() {
+            $this->stop();
+        });
+
+        pcntl_signal(SIGINT, function() {
+            $this->stop();
+        });
     }
 
     public function setUp($config)
@@ -77,9 +91,9 @@ class QueueService
      */
     public function attach($name)
     {
-        $this->queue = new \ZendQueue\Queue($this->adapter, array(
+        $this->queue = new \ZendQueue\Queue($this->adapter, [
             'name' => $name,
-        ));
+        ]);
     }
 
     /**
@@ -101,8 +115,13 @@ class QueueService
     public function push(array $args)
     {
         if (!is_null($this->queue)) {
-            $this->queue->send(\Zend\Json\Encoder::encode($args));
+            if (class_exists('Zend\Json\Encoder')) {
+                $body = \Zend\Json\Encoder::encode($args);
+            } else {
+                $body = json_encode($args);
+            }
 
+            $this->queue->send($body);
             $this->output->writeLn("<fg=green> [x] [{$this->queue->getName()}] {$args['command']} sent</>");
         }
     }
@@ -186,7 +205,12 @@ class QueueService
         return $this->config['enabled'];
     }
 
-    public function listen($name = null, $sleep = null, $work = true)
+    public function isRunning()
+    {
+        return $this->running;
+    }
+
+    public function listen($name = null, $sleep = 0, $work = true)
     {
         if ($work) {
             $this->loop($name);
@@ -194,20 +218,36 @@ class QueueService
             // event loop
             if (class_exists('React\EventLoop\Factory')) {
                 $loop = \React\EventLoop\Factory::create();
-                $loop->addPeriodicTimer($sleep, function($this) use ($name) {  $this->loop($name); });
+                $loop->addPeriodicTimer($sleep, function(\React\EventLoop\Timer\Timer $timer) use ($name) {  
+                    $this->loop($name);
+                    // stop closure loop on SIGINT
+                    if (!$this->isRunning()) {
+                        $timer->getLoop()->stop();
+                    }
+                });
                 $loop->run();
             } else {
                 do {
                     $this->loop($name);
-                    sleep($sleep);
-                } while (true);
+                    usleep($sleep*self::MICROSECONDS_PER_SECOND);
+                } while ($this->running);
             }
         }
     }
 
+    protected function stop()
+    {
+        $this->running = false;
+    }
+
     protected function loop($name = null) 
     {
-        $listQueues = array();
+        $listQueues = [];
+
+        pcntl_signal_dispatch();
+        if (!$this->isRunning()) {
+            return;
+        }
 
         if ($name) {
             $listQueues[] = $name;
@@ -218,13 +258,18 @@ class QueueService
         foreach ($listQueues as $name) {
             $this->attach($name);
             $this->receive($this->config['max_messages']);
+
+            pcntl_signal_dispatch();
+            if (!$this->isRunning()) {
+                return;
+            }
         }
     }
 
     /**
      * @param MessageIterator $messages
      */
-    protected function handle(MessageIterator $messages)
+    protected function handle(\ZendQueue\Message\MessageIterator $messages)
     {
         if (!$this->output instanceof OutputInterface) {
             $this->output = new StreamOutput(fopen('php://memory', 'w', false));
@@ -274,7 +319,11 @@ class QueueService
      */
     protected function getMessageFormattedBody($message)
     {
-        $body = \Zend\Json\Json::decode($message->body, true);
+        if (class_exists('Zend\Json\Json')) {
+            $body = \Zend\Json\Json::decode($message->body, true);
+        } else {
+            $body = json_decode($message->body, true);
+        }
 
         $arguments = array();
         if (isset($body['argument'])) {
@@ -287,10 +336,10 @@ class QueueService
             throw new BadFormattedMessageException('Command name not found');
         }
 
-        return array(
+        return [
             $body['command'],
-            array_merge(array(''), $arguments)
-        );
+            array_merge([''], $arguments)
+        ];
     }
 
 }

@@ -46,21 +46,22 @@ First, define a message which contains the Symfony command to call. For instance
     $queue = $this->get('jobqueue');
     $queue->attach('queue1');
     
-    $queue->push(array(
+    $queue->push([
         'command' => 'cache:clear'
-    ));
+    )
+    ]);
 ```
 
 You can also call commands with arguments:
 
 ``` php
-    $queue->push(array(
+    $queue->push([
         'command'   => 'demo:great',
         'argument'  => array(
             'name'   => 'Alexandre',
             '--yell' => true
         )
-    ));
+    ]);
 ```
 
 Then, add the queue to listen in the configuration:
@@ -133,7 +134,28 @@ To delete all of your failed jobs, you may use the `jobqueue:flush` command:
     app/console jobqueue:flush
 ```
 
-## Linux ProTip: Service
+## Configure a daemon
+
+The `jobqueue:listen` command should be runned with the prod environnement and the quiet option to hide output messages:
+
+```sh
+    app/console jobqueue:listen --env=prod --quiet
+```
+
+To avoid overriding the memory taken by the monolog fingers crossed handler, you may configure the limit buffer size on `config_prod.yml`:
+
+```yaml
+    # app/config/config_prod.yml
+    monolog:
+        handlers:
+            main:
+                type:         fingers_crossed
+                action_level: error
+                handler:      nested
+                buffer_size:  50
+```
+
+Linux ProTip:
 
 To run the command as a service, edit `jobqueue-service` shell in `Resources/bin`.
 Set the correct PROJECT_ROOT_DIR value, and copy this file to `/etc/init.d`.
@@ -152,6 +174,5 @@ To remove the service, use this command:
     update-rc.d -f jobqueue-service remove
 ```
 
-## Note
+If the service stopped suddenly, you may use `supervisord` to restart it automatically.
 
-This bundle can be used with [HeriWebServiceBundle](https://github.com/heristop/HeriWebServiceBundle/) to manage multiple SOAP connections.

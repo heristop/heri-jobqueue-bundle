@@ -15,22 +15,22 @@
         }
     ],
     "require": {
+        "php": ">=5.4.0",
         "symfony/framework-bundle": "~2.3",
         "symfony/finder": "~2.3",
-        "symfony/console": "~2.3",
-        "zendframework/zend-json": "2.0.*"
+        "symfony/console": "~2.3"
     },
     "require-dev": {
         "zendframework/zend-queue": "2.0.*@dev",
         "symfony/monolog-bundle": "~2.3",
         "symfony/process": "~2.3",
         "doctrine/orm": "~2.2,>=2.2.3",
-        "doctrine/doctrine-bundle": "~1.2",
-        "videlalvaro/php-amqplib": "2.2.*"
+        "doctrine/doctrine-bundle": "~1.2"
     },
     "suggest": {
         "videlalvaro/php-amqplib": "AMQP library",
-        "react/event-loop": "Event Loop Component"
+        "react/event-loop": "Event Loop Component",
+        "zendframework/zend-json": "2.0.*"
     },
     "target-dir": "Heri/Bundle/JobQueueBundle",
     "autoload": {
