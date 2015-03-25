@@ -42,9 +42,9 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
     {
         $repo = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
-            ->findOneBy(array(
+            ->findOneBy([
                 'name' => $name
-            ));
+            ]);
 
         return ($repo) ? true : false;
     }
@@ -122,7 +122,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getQueues()
     {
-        $list = array();
+        $list = [];
 
         $queues = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
@@ -192,10 +192,10 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
 
         $entity = $this->createMessage($queue, $body);
 
-        $options = array(
+        $options = [
             'queue' => $queue,
             'data'  => $entity->toArray(),
-        );
+        ];
 
         $classname = $queue->getMessageClass();
 
@@ -213,7 +213,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function receive($maxMessages = null, $timeout = null, Queue $queue = null)
     {
-        $result = array();
+        $result = [];
 
         // Cache microtime
         $microtime = microtime(true);
@@ -286,7 +286,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getCapabilities()
     {
-        return array(
+        return [
             'create'        => true,
             'delete'        => true,
             'send'          => true,
@@ -295,7 +295,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             'getQueues'     => true,
             'count'         => true,
             'isExists'      => true,
-        );
+        ];
     }
 
     /**
@@ -303,7 +303,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function showMessages($queueName)
     {
-        $results = array();
+        $results = [];
         if ($this->isExists($queueName)) {
             $qb = $this->em->createQueryBuilder();
             $qb
@@ -355,7 +355,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
-     * Create a new queue 
+     * Create a new message 
      * 
      * @param Zend_Queue $queue
      * @param string $body
@@ -373,6 +373,9 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         $this->em->persist($message);
         $this->em->flush();
         $this->em->clear();
+
+        echo (PHP_EOL.PHP_EOL."SEND ".$message->getId().PHP_EOL.PHP_EOL);
+
 
         return $message;
     }
@@ -427,9 +430,9 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
     {
         $repo = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
-            ->findOneBy(array(
+            ->findOneBy([
                 'name' => $name
-            ));
+            ]);
 
         if (!$repo) {
             throw new AdapterRuntimeException("Queue does not exist: {$name}");

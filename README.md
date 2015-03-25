@@ -74,6 +74,18 @@ Then, add the queue to listen in the configuration:
         queues:        [ queue1 ]
 ```
 
+If you use the Amqp adapter, you may configure the connection in this way:
+
+```yaml
+    # app/config/config.yml
+    heri_job_queue:
+        amqp_connection:
+            host: localhost
+            port: 5672
+            user: guest
+            password: guest
+```
+
 Note: The queue is automatically created, but you can also use the command-line interface in this way:
 
 ```sh

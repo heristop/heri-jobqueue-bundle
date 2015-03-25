@@ -23,10 +23,11 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->addDefaultsIfNotSet()
             ->children()
+
                 ->scalarNode('adapter')
                     ->defaultValue('doctrine')
                     ->validate()
-                    ->ifNotInArray(array('doctrine', 'amqp'))
+                    ->ifNotInArray(['doctrine', 'amqp'])
                         ->thenInvalid('Invalid adapter "%s"')
                     ->end()
                 ->end()
@@ -41,6 +42,17 @@ class Configuration implements ConfigurationInterface
                     ->prototype('scalar')
                     ->end()
                 ->end()
+
+                ->arrayNode('amqp_connection')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('host')->defaultValue('localhost')->end()
+                        ->scalarNode('port')->defaultValue('5672')->end()
+                        ->scalarNode('user')->defaultValue('guest')->end()
+                        ->scalarNode('password')->defaultValue('guest')->end()
+                    ->end()
+                ->end()
+
             ->end()
         ;
 

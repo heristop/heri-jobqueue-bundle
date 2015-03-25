@@ -23,13 +23,14 @@ class AdapterFactory
      * Create staticly desired Adapter
      *
      * @param string $type Type of Adapter to create
+     * @param array $config Configuration container
      *
      * @return AdapterInterface Adapter instance
      */
-    public static function get($type)
+    public static function get($type, $config)
     {
         $instance = null;
-        $options = array();
+        $options = [];
 
         switch ($type) {
 
@@ -39,14 +40,7 @@ class AdapterFactory
                 break;
 
             case 'amqp':
-                $options = array(
-                    'host' => 'localhost',
-                    'port' => '5672',
-                    'user' => 'guest',
-                    'password' => 'guest'
-                );
-
-                $instance = new Adapter\AmqpAdapter($options);
+                $instance = new Adapter\AmqpAdapter($config['amqp_connection']);
                 break;
 
             default:
