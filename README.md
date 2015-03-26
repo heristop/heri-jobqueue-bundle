@@ -38,6 +38,18 @@ If you use the Doctrine adapter, update your database:
     app/console doctrine:schema:update --force
 ```
 
+If you use the Amqp adapter, you may configure the connection in this way:
+
+```yaml
+    # app/config/config.yml
+    heri_job_queue:
+        amqp_connection:
+            host: localhost
+            port: 5672
+            user: guest
+            password: guest
+```
+
 ## Usage
 
 First, define a message which contains the Symfony command to call. For instance, we choose to add the clear command in a queue named "queue1":
@@ -72,18 +84,6 @@ Then, add the queue to listen in the configuration:
         enabled:       true
         max_messages:  1
         queues:        [ queue1 ]
-```
-
-If you use the Amqp adapter, you may configure the connection in this way:
-
-```yaml
-    # app/config/config.yml
-    heri_job_queue:
-        amqp_connection:
-            host: localhost
-            port: 5672
-            user: guest
-            password: guest
 ```
 
 Note: The queue is automatically created, but you can also use the command-line interface in this way:
@@ -154,7 +154,7 @@ The `jobqueue:listen` command should be runned with the prod environnement and t
     app/console jobqueue:listen --env=prod --quiet
 ```
 
-To avoid overriding the memory taken by the monolog fingers crossed handler, you may configure the limit buffer size on `config_prod.yml`:
+To avoid a memory leak caused by the monolog fingers crossed handler, you may configure the limit buffer size on `config_prod.yml`:
 
 ```yaml
     # app/config/config_prod.yml
