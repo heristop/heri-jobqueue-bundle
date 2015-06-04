@@ -26,5 +26,4 @@ class QueueWorkCommand extends QueueListenCommand
             ->setDescription('Process only the first job on the queue')
         ;
     }
-
 }

@@ -9,4 +9,6 @@
 
 namespace Heri\Bundle\JobQueueBundle\Exception;
 
-class BadAdapterDefinitionException extends \RuntimeException {}
+class BadAdapterDefinitionException extends \RuntimeException
+{
+}

@@ -2,7 +2,6 @@
 
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-
 use Heri\Bundle\JobQueueBundle\Tests\TestCase;
 use Heri\Bundle\JobQueueBundle\Command\QueueWorkCommand;
 
@@ -19,5 +18,4 @@ class QueueListenCommandTest extends TestCase
 
         $this->assertRegExp('/Handling the first job on the queue.../', $commandTester->getDisplay());
     }
-
 }

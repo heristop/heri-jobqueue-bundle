@@ -52,9 +52,9 @@ class QueueCreateCommand extends ContainerAwareCommand
         }
 
         if ($queue->create($name, $timeout)) {
-            $action = "created";
+            $action = 'created';
         } else {
-            $action = "updated";
+            $action = 'updated';
         }
 
         $output->writeLn("<info>Queue \"{$name}\" {$action}</info>");

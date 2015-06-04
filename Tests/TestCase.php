@@ -4,7 +4,6 @@ namespace Heri\Bundle\JobQueueBundle\Tests;
 
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Filesystem\Filesystem;
-
 use Doctrine\ORM\Tools\SchemaTool;
 
 abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase

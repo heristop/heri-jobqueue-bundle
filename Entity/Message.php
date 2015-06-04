@@ -5,7 +5,7 @@ namespace Heri\Bundle\JobQueueBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Heri\Bundle\JobQueueBundle\Entity\Message
+ * Heri\Bundle\JobQueueBundle\Entity\Message.
  *
  * @ORM\Table(name="queue_message")
  * @ORM\Entity
@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Message
 {
     /**
-     * @var bigint $id
+     * @var bigint
      *
      * @ORM\Column(name="id", type="bigint", nullable=false)
      * @ORM\Id
@@ -27,56 +27,56 @@ class Message
     private $queue;
 
     /**
-     * @var string $handle
+     * @var string
      *
      * @ORM\Column(name="handle", type="string", length=32, nullable=true)
      */
     private $handle;
 
     /**
-     * @var text $body
+     * @var text
      *
      * @ORM\Column(name="body", type="text", nullable=false)
      */
     private $body;
 
     /**
-     * @var string $md5
+     * @var string
      *
      * @ORM\Column(name="md5", type="string", length=32, nullable=false)
      */
     private $md5;
 
     /**
-     * @var decimal $timeout
+     * @var decimal
      *
      * @ORM\Column(name="timeout", type="decimal", nullable=true)
      */
     private $timeout;
 
     /**
-     * @var integer $created
+     * @var int
      *
      * @ORM\Column(name="created", type="integer", nullable=false)
      */
     private $created;
 
     /**
-     * @var boolean $failed
+     * @var bool
      *
      * @ORM\Column(name="failed", type="boolean", nullable=false)
      */
     private $failed;
 
     /**
-     * @var boolean $ended
+     * @var bool
      *
      * @ORM\Column(name="ended", type="boolean", nullable=false)
      */
     private $ended;
 
     /**
-     * Get messageId
+     * Get messageId.
      *
      * @return bigint
      */
@@ -86,7 +86,7 @@ class Message
     }
 
     /**
-     * Set handle
+     * Set handle.
      *
      * @param string $handle
      */
@@ -96,7 +96,7 @@ class Message
     }
 
     /**
-     * Get handle
+     * Get handle.
      *
      * @return string
      */
@@ -106,7 +106,7 @@ class Message
     }
 
     /**
-     * Set body
+     * Set body.
      *
      * @param text $body
      */
@@ -116,7 +116,7 @@ class Message
     }
 
     /**
-     * Get body
+     * Get body.
      *
      * @return text
      */
@@ -126,7 +126,7 @@ class Message
     }
 
     /**
-     * Set md5
+     * Set md5.
      *
      * @param string $md5
      */
@@ -136,7 +136,7 @@ class Message
     }
 
     /**
-     * Get md5
+     * Get md5.
      *
      * @return string
      */
@@ -146,7 +146,7 @@ class Message
     }
 
     /**
-     * Set timeout
+     * Set timeout.
      *
      * @param decimal $timeout
      */
@@ -156,7 +156,7 @@ class Message
     }
 
     /**
-     * Get timeout
+     * Get timeout.
      *
      * @return decimal
      */
@@ -166,9 +166,9 @@ class Message
     }
 
     /**
-     * Set created
+     * Set created.
      *
-     * @param integer $created
+     * @param int $created
      */
     public function setCreated($created)
     {
@@ -176,9 +176,9 @@ class Message
     }
 
     /**
-     * Get created
+     * Get created.
      *
-     * @return integer
+     * @return int
      */
     public function getCreated()
     {
@@ -186,9 +186,9 @@ class Message
     }
 
     /**
-     * Set failed
+     * Set failed.
      *
-     * @param boolean $failed
+     * @param bool $failed
      */
     public function setFailed($failed)
     {
@@ -196,9 +196,9 @@ class Message
     }
 
     /**
-     * Get failed
+     * Get failed.
      *
-     * @return boolean
+     * @return bool
      */
     public function getFailed()
     {
@@ -206,9 +206,9 @@ class Message
     }
 
     /**
-     * Set ended
+     * Set ended.
      *
-     * @param boolean $ended
+     * @param bool $ended
      */
     public function setEnded($ended)
     {
@@ -216,9 +216,9 @@ class Message
     }
 
     /**
-     * Get ended
+     * Get ended.
      *
-     * @return boolean
+     * @return bool
      */
     public function getEnded()
     {
@@ -231,7 +231,7 @@ class Message
     }
 
     /**
-     * Set queue
+     * Set queue.
      *
      * @param \Heri\Bundle\JobQueueBundle\Entity\Queue $queue
      *
@@ -245,7 +245,7 @@ class Message
     }
 
     /**
-     * Get queue
+     * Get queue.
      *
      * @return \Heri\Bundle\JobQueueBundle\Entity\Queue
      */

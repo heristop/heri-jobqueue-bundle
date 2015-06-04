@@ -5,7 +5,7 @@ namespace Heri\Bundle\JobQueueBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Heri\Bundle\JobQueueBundle\Entity\MessageLog
+ * Heri\Bundle\JobQueueBundle\Entity\MessageLog.
  *
  * @ORM\Table(name="queue_log")
  * @ORM\Entity
@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class MessageLog
 {
     /**
-     * @var bigint $id
+     * @var bigint
      *
      * @ORM\Column(name="id", type="bigint", nullable=false)
      * @ORM\Id
@@ -22,28 +22,28 @@ class MessageLog
     private $id;
 
     /**
-     * @var bigint $messageId
+     * @var bigint
      *
      * @ORM\Column(name="message_id", type="bigint", nullable=false)
      */
     private $messageId;
 
     /**
-     * @var datetime $dateLog
+     * @var datetime
      *
      * @ORM\Column(name="date_log", type="datetime", nullable=false)
      */
     private $dateLog;
 
     /**
-     * @var text $log
+     * @var text
      *
      * @ORM\Column(name="log", type="text", nullable=false)
      */
     private $log;
 
     /**
-     * Get id
+     * Get id.
      *
      * @return bigint
      */
@@ -53,7 +53,7 @@ class MessageLog
     }
 
     /**
-     * Set messageId
+     * Set messageId.
      *
      * @param bigint $messageId
      */
@@ -63,7 +63,7 @@ class MessageLog
     }
 
     /**
-     * Get messageId
+     * Get messageId.
      *
      * @return bigint
      */
@@ -73,7 +73,7 @@ class MessageLog
     }
 
     /**
-     * Set dateLog
+     * Set dateLog.
      *
      * @param datetime $dateLog
      */
@@ -83,7 +83,7 @@ class MessageLog
     }
 
     /**
-     * Get dateLog
+     * Get dateLog.
      *
      * @return datetime
      */
@@ -93,7 +93,7 @@ class MessageLog
     }
 
     /**
-     * Set log
+     * Set log.
      *
      * @param text $log
      */
@@ -103,7 +103,7 @@ class MessageLog
     }
 
     /**
-     * Get log
+     * Get log.
      *
      * @return text
      */

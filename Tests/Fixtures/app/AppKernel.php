@@ -23,14 +23,13 @@ while ($dir !== $lastDir) {
     $dir = dirname($dir);
 }
 
-AnnotationRegistry::registerFile(__DIR__ . '/../../../vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+AnnotationRegistry::registerFile(__DIR__.'/../../../vendor/doctrine/orm/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
 
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
 /**
- * App Test Kernel for functional tests
- *
+ * App Test Kernel for functional tests.
  */
 class AppKernel extends Kernel
 {

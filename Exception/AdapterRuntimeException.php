@@ -9,4 +9,6 @@
 
 namespace Heri\Bundle\JobQueueBundle\Exception;
 
-class AdapterRuntimeException extends \RuntimeException {}
+class AdapterRuntimeException extends \RuntimeException
+{
+}

@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class QueueListenCommand extends ContainerAwareCommand
 {
     /**
-     * @param boolean
+     * @param bool
      */
     protected $work;
 
@@ -63,12 +63,10 @@ class QueueListenCommand extends ContainerAwareCommand
             }
 
             $queue->listen(
-                $input->getArgument('queue-name'), 
+                $input->getArgument('queue-name'),
                 $input->getOption('sleep'),
                 $this->work
             );
         }
-
     }
-
 }

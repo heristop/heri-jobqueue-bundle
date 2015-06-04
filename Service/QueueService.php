@@ -11,13 +11,12 @@
 
 namespace Heri\Bundle\JobQueueBundle\Service;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\StreamOutput;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-
+use Symfony\Component\Process\Process;
 use Heri\Bundle\JobQueueBundle\Exception\CommandFindException;
 use Heri\Bundle\JobQueueBundle\Exception\BadFormattedMessageException;
 
@@ -26,43 +25,43 @@ class QueueService
     const MICROSECONDS_PER_SECOND = 1000000;
 
     /**
-     * var ZendQueue\Adapter\AbstractAdapter
+     * var ZendQueue\Adapter\AbstractAdapter.
      */
     public $adapter;
 
     /**
-     * var LoggerInterface
+     * var LoggerInterface.
      */
     protected $logger;
 
     /**
-     * var ContainerAwareCommand
+     * var ContainerAwareCommand.
      */
     protected $command;
 
     /**
-     * var OutputInterface
+     * var OutputInterface.
      */
     protected $output;
 
     /**
-     * var \ZendQueue\Queue
+     * var \ZendQueue\Queue.
      */
     protected $queue;
 
     /**
-     * var array
+     * var array.
      */
     protected $config;
 
     /**
-     * var boolean
+     * var bool.
      */
     protected $running;
 
     /**
      * @param LoggerInterface $logger
-     * @param array $config
+     * @param array           $config
      */
     public function __construct(LoggerInterface $logger, array $config = array())
     {
@@ -72,13 +71,15 @@ class QueueService
         $this->running = true;
         $this->output = new ConsoleOutput();
 
-        pcntl_signal(SIGTERM, function() {
-            $this->stop();
-        });
+        if (php_sapi_name() == 'cli') {
+            pcntl_signal(SIGTERM, function () {
+                $this->stop();
+            });
 
-        pcntl_signal(SIGINT, function() {
-            $this->stop();
-        });
+            pcntl_signal(SIGINT, function () {
+                $this->stop();
+            });
+        }
     }
 
     public function setUp($config)
@@ -97,8 +98,8 @@ class QueueService
     }
 
     /**
-     * @param integer $maxMessages
-     * @param integer $timeout
+     * @param int $maxMessages
+     * @param int $timeout
      */
     public function receive($maxMessages = 1, $timeout = null)
     {
@@ -127,8 +128,8 @@ class QueueService
     }
 
     /**
-     * @param string  $name
-     * @param integer $timeout
+     * @param string $name
+     * @param int    $timeout
      */
     public function create($name, $timeout = null)
     {
@@ -136,8 +137,9 @@ class QueueService
     }
 
     /**
-     * @param string  $name
-     * @return boolean
+     * @param string $name
+     *
+     * @return bool
      */
     public function delete($name)
     {
@@ -153,7 +155,7 @@ class QueueService
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function flush()
     {
@@ -161,7 +163,7 @@ class QueueService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function countMessages()
     {
@@ -169,7 +171,7 @@ class QueueService
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function count()
     {
@@ -218,7 +220,7 @@ class QueueService
             // event loop
             if (class_exists('React\EventLoop\Factory')) {
                 $loop = \React\EventLoop\Factory::create();
-                $loop->addPeriodicTimer($sleep, function(\React\EventLoop\Timer\Timer $timer) use ($name) {  
+                $loop->addPeriodicTimer($sleep, function (\React\EventLoop\Timer\Timer $timer) use ($name) {
                     $this->loop($name);
                     // stop closure loop on SIGINT
                     if (!$this->isRunning()) {
@@ -229,7 +231,7 @@ class QueueService
             } else {
                 do {
                     $this->loop($name);
-                    usleep($sleep*self::MICROSECONDS_PER_SECOND);
+                    usleep($sleep * self::MICROSECONDS_PER_SECOND);
                 } while ($this->running);
             }
         }
@@ -240,11 +242,13 @@ class QueueService
         $this->running = false;
     }
 
-    protected function loop($name = null) 
+    protected function loop($name = null)
     {
         $listQueues = [];
 
-        pcntl_signal_dispatch();
+        if (php_sapi_name() == 'cli') {
+            pcntl_signal_dispatch();
+        }
         if (!$this->isRunning()) {
             return;
         }
@@ -259,7 +263,9 @@ class QueueService
             $this->attach($name);
             $this->receive($this->config['max_messages']);
 
-            pcntl_signal_dispatch();
+            if (php_sapi_name() == 'cli') {
+                pcntl_signal_dispatch();
+            }
             if (!$this->isRunning()) {
                 return;
             }
@@ -286,31 +292,35 @@ class QueueService
 
     protected function run($message)
     {
-        if (property_exists($this->adapter, "logger")) {
+        if (property_exists($this->adapter, 'logger')) {
             $this->adapter->logger = $this->logger;
         }
 
         try {
-
             list(
-                $commandName, 
+                $commandName,
                 $arguments
             ) = $this->getMessageFormattedBody($message);
 
             $this->output->writeLn("<fg=yellow> [x] [{$this->queue->getName()}] {$commandName} received</> ");
 
-            $input = new ArrayInput($arguments);
-            $command = $this->command->getApplication()->find($commandName);
-            $command->run($input, $this->output);
+            $process = new Process(sprintf('%s %s %s %s',
+                '/usr/bin/php', 'app/console', $commandName,
+                implode(' ', $arguments)
+            ));
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                throw new \RuntimeException($process->getErrorOutput());
+            }
+
+            print $process->getOutput();
 
             $this->queue->deleteMessage($message);
             $this->output->writeLn("<fg=green> [x] [{$this->queue->getName()}] {$commandName} done</>");
-
-        } catch (\Exception $e) {
-
+        } catch (\RuntimeException $e) {
             $this->output->writeLn("<fg=white;bg=red> [!] [{$this->queue->getName()}] FAILURE: {$e->getMessage()}</>");
             $this->adapter->logException($message, $e);
-
         }
     }
 
@@ -327,19 +337,31 @@ class QueueService
 
         $arguments = array();
         if (isset($body['argument'])) {
-            $arguments = $body['argument'];
+            $args = $body['argument'];
         } elseif (isset($body['arguments'])) {
-            $arguments = $body['arguments'];
+            $args = $body['arguments'];
         }
 
         if (!isset($body['command'])) {
             throw new BadFormattedMessageException('Command name not found');
         }
 
-        return [
-            $body['command'],
-            array_merge([''], $arguments)
-        ];
-    }
+        $commandName = $body['command'];
+        foreach ($args as $key => $value) {
+            if (is_string($key) && preg_match('/^--/', $key)) {
+                if (is_bool($value)) {
+                    $arguments[] = "{$key}";
+                } else {
+                    $arguments[] = "{$key}={$value}";
+                }
+            } else {
+                $arguments[] = $value;
+            }
+        }
 
+        return array(
+            $commandName,
+            $arguments,
+        );
+    }
 }

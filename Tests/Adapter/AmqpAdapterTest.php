@@ -4,7 +4,6 @@ use Heri\Bundle\JobQueueBundle\Tests\TestCase;
 use Heri\Bundle\JobQueueBundle\Adapter as Adapter;
 use Heri\Bundle\JobQueueBundle\Service\QueueService;
 use Heri\Bundle\JobQueueBundle\Command\QueueListenCommand;
-
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -21,7 +20,7 @@ class AmqpAdapterTest extends TestCase
     protected $queueName = 'my:queue';
 
     /**
-     * @var integer
+     * @var int
      */
     protected $maxMessages = 1;
 
@@ -36,7 +35,7 @@ class AmqpAdapterTest extends TestCase
     protected $channel;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $verbose = true;
 
@@ -56,15 +55,15 @@ class AmqpAdapterTest extends TestCase
             'host' => 'localhost',
             'port' => '5672',
             'user' => 'guest',
-            'password' => 'guest'
+            'password' => 'guest',
         ));
 
         $this->queue = new QueueService(
-            $this->container->get('logger'), 
+            $this->container->get('logger'),
             $this->container->getParameter('jobqueue.config')
         );
         $this->queue->adapter = $adapter;
-        $this->queue->attach($this->queueName . "1");
+        $this->queue->attach($this->queueName.'1');
 
         $application = new Application($this->kernel);
         $application->add(new QueueListenCommand());
@@ -84,17 +83,17 @@ class AmqpAdapterTest extends TestCase
     {
         // Queue list command
         $command1 = array(
-            'command' => 'list'
+            'command' => 'list',
         );
         $this->queue->push($command1);
 
         // Queue demo:great command
         $command2 = array(
-            'command'   => 'demo:great',
-            'argument'  => array(
-                'name'   => 'Alexandre',
-                '--yell' => true
-            )
+            'command' => 'demo:great',
+            'argument' => array(
+                'name' => 'Alexandre',
+                '--yell' => true,
+            ),
         );
         $this->queue->push($command2);
 
@@ -103,12 +102,12 @@ class AmqpAdapterTest extends TestCase
 
         // Run demo:great command using listen method
         try {
-            $this->queue->listen($this->queueName . "1");
+            $this->queue->listen($this->queueName.'1');
             // $this->queue->receive($this->maxMessages);
         } catch (\Exception $e) {
             $this->assertRegExp(
-                '/There are no commands defined in the "demo" namespace/', 
-                $e->getMessage(), 
+                '/There are no commands defined in the "demo" namespace/',
+                $e->getMessage(),
                 'Command not found'
             );
         }
@@ -116,25 +115,24 @@ class AmqpAdapterTest extends TestCase
 
     public function testPerf()
     {
-        for ($i = 0; $i < 100; $i++){
+        for ($i = 0; $i < 100; $i++) {
             // Queue list command
             $command = array(
-                'command' => 'list'
+                'command' => 'list',
             );
             $this->queue->push($command);
-            $this->queue->receive(10);    
+            $this->queue->receive(10);
         }
     }
 
     public function tearDown()
     {
         if ($this->channel) {
-            $this->channel->queue_delete($this->queueName . "1");
+            $this->channel->queue_delete($this->queueName.'1');
             $this->channel->close();
         }
         if ($this->connection) {
             $this->connection->close();
         }
     }
-
 }

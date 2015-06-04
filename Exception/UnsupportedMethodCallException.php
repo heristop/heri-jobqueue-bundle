@@ -9,4 +9,6 @@
 
 namespace Heri\Bundle\JobQueueBundle\Exception;
 
-class UnsupportedMethodCallException extends \RuntimeException {}
+class UnsupportedMethodCallException extends \RuntimeException
+{
+}

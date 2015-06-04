@@ -13,17 +13,17 @@ use Heri\Bundle\JobQueueBundle\Adapter as Adapter;
 use Heri\Bundle\JobQueueBundle\Exception\BadAdapterDefinitionException;
 
 /**
- * Adapter factory
+ * Adapter factory.
  */
 class AdapterFactory
 {
     public static $em;
 
     /**
-     * Create staticly desired Adapter
+     * Create staticly desired Adapter.
      *
-     * @param string $type Type of Adapter to create
-     * @param array $config Configuration container
+     * @param string $type   Type of Adapter to create
+     * @param array  $config Configuration container
      *
      * @return AdapterInterface Adapter instance
      */

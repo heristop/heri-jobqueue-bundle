@@ -5,7 +5,7 @@ namespace Heri\Bundle\JobQueueBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Heri\Bundle\JobQueueBundle\Entity\Queue
+ * Heri\Bundle\JobQueueBundle\Entity\Queue.
  *
  * @ORM\Table(name="queue")
  * @ORM\Entity
@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Queue
 {
     /**
-     * @var integer $id
+     * @var int
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
@@ -22,23 +22,23 @@ class Queue
     private $id;
 
     /**
-     * @var string $name
+     * @var string
      *
      * @ORM\Column(name="name", type="string", length=100, nullable=false)
      */
     private $name;
 
     /**
-     * @var smallint $timeout
+     * @var smallint
      *
      * @ORM\Column(name="timeout", type="smallint", nullable=false)
      */
     private $timeout;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -46,7 +46,7 @@ class Queue
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      */
@@ -56,7 +56,7 @@ class Queue
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -66,7 +66,7 @@ class Queue
     }
 
     /**
-     * Set timeout
+     * Set timeout.
      *
      * @param smallint $timeout
      */
@@ -76,7 +76,7 @@ class Queue
     }
 
     /**
-     * Get timeout
+     * Get timeout.
      *
      * @return smallint
      */

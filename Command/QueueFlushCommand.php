@@ -41,5 +41,4 @@ class QueueFlushCommand extends ContainerAwareCommand
             $output->writeLn('<info>Flush failed</info>');
         }
     }
-
 }

@@ -41,6 +41,5 @@ class QueueDeleteCommand extends ContainerAwareCommand
         if ($queue->delete($name)) {
             $output->writeLn("<info>Queue \"{$name}\" deleted</info>");
         }
-        
     }
 }

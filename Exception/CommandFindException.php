@@ -9,4 +9,6 @@
 
 namespace Heri\Bundle\JobQueueBundle\Exception;
 
-class CommandFindException extends \Exception {}
+class CommandFindException extends \Exception
+{
+}

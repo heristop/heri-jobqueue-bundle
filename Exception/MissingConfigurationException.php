@@ -9,4 +9,6 @@
 
 namespace Heri\Bundle\JobQueueBundle\Exception;
 
-class MissingConfigurationException extends \RuntimeException {}
+class MissingConfigurationException extends \RuntimeException
+{
+}
