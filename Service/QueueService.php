@@ -335,7 +335,7 @@ class QueueService
             $body = json_decode($message->body, true);
         }
 
-        $arguments = array();
+        $arguments = $args = array();
         if (isset($body['argument'])) {
             $args = $body['argument'];
         } elseif (isset($body['arguments'])) {
@@ -365,3 +365,4 @@ class QueueService
         );
     }
 }
+
