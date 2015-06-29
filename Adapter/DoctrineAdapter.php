@@ -384,18 +384,26 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     protected function createMessage(Queue $queue, $body)
     {
-        $message = new \Heri\Bundle\JobQueueBundle\Entity\Message();
-        $message->setQueue($this->getQueueEntity($queue->getName()));
-        $message->setCreated(time());
-        $message->setBody($body);
-        $message->setMd5(md5($body));
-        $message->setFailed(false);
-        $message->setEnded(false);
+        // check if message exist
+        $message = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
+            ->findOneBy([
+            'md5' => md5($body),
+        ]);
 
-        $this->em->persist($message);
-        $this->em->flush();
-        $this->em->clear();
+        if (!$message) {
+            $message = new \Heri\Bundle\JobQueueBundle\Entity\Message();
+            $message->setQueue($this->getQueueEntity($queue->getName()));
+            $message->setCreated(time());
+            $message->setBody($body);
+            $message->setMd5(md5($body));
+            $message->setFailed(false);
+            $message->setEnded(false);
 
+            $this->em->persist($message);
+            $this->em->flush();
+            $this->em->clear();
+        }
         return $message;
     }
 
