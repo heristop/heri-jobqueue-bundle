@@ -148,6 +148,37 @@ class DoctrineAdapterTest extends TestCase
         $this->assertRegExp('/There are no commands defined in the "demo" namespace/', $exception->getLog(), 'Logged exception in database');
     }
 
+    public function testDuplicatedMessages()
+    {
+        $queue1 = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+            ->findOneByName($this->queueName . '1');
+        $this->assertNotNull($queue1, 'Queue created');
+
+        // Queue 1 list command
+        $command1 = array(
+            'command' => 'list',
+        );
+
+        // Push $command1
+        $this->queue->push($command1);
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(1, count($messages), 'Count number of messages');
+
+        // Re Push same command $command1
+        $this->queue->push($command1);
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(1, count($messages), 'Count number of messages');
+
+        // Push $command2
+        $command2 = array(
+            'command' => 'list2',
+        );
+        $this->queue->push($command2);
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(2, count($messages), 'Count number of messages');
+    }
+
     public function testCountMessages()
     {
         $count1 = $this->queue->countMessages();
