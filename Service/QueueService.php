@@ -60,6 +60,11 @@ class QueueService
     protected $running;
 
     /**
+     * var integer.
+     */
+    protected $timeout = 60;
+
+    /**
      * @param LoggerInterface $logger
      * @param array           $config
      */
@@ -212,6 +217,11 @@ class QueueService
         return $this->running;
     }
 
+    public function setProcessTimeout($timeout)
+    {
+        $this->timeout = $timeout;
+    }
+
     public function listen($name = null, $sleep = 0, $work = true)
     {
         if ($work) {
@@ -308,6 +318,7 @@ class QueueService
                 '/usr/bin/php', 'app/console', $commandName,
                 implode(' ', $arguments)
             ));
+            $process->setTimeout($this->timeout);
             $process->run();
 
             if (!$process->isSuccessful()) {
