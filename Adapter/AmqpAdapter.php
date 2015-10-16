@@ -21,7 +21,7 @@ use Heri\Bundle\JobQueueBundle\Exception\UnsupportedMethodCallException;
 /**
  * Amqp adapter.
  *
- * @see Zend_Queue_Adapter_AdapterAbstract
+ * @see ZendQueue\Queue_Adapter_AdapterAbstract
  */
 class AmqpAdapter extends AbstractAdapter implements AdapterInterface
 {
@@ -147,7 +147,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * Publish message to queue.
      *
-     * @param mixed      $message (array or string)
+     * @param mixed $message (array or string)
      * @param Queue $queue
      *
      * @return boolean|null
@@ -174,10 +174,10 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
         $this->channel->exchange_declare($this->exchangeName, 'direct', false, true, false);
         $this->channel->queue_bind($queue->getName(), $this->exchangeName);
 
-        $amqpMessage = new AMQPMessage($message, array(
+        $amqpMessage = new AMQPMessage($message, [
             'content_type' => 'text/plain',
             'delivery_mode' => 2,
-        ));
+        ]);
 
         $this->channel->basic_publish($amqpMessage, $this->exchangeName);
     }
@@ -187,13 +187,13 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @param int|null        $maxMessages Maximum number of messages to return
      * @param int|null        $timeout     Visibility timeout for these messages
-     * @param null|Queue $queue
+     * @param null|ZendQueue\Queue $queue
      *
-     * @return Zend_Queue_Message_Iterator
+     * @return ZendQueue\MessageIterator
      */
     public function receive($maxMessages = null, $timeout = null, Queue $queue = null)
     {
-        $result = array();
+        $result = [];
 
         if ($queue === null) {
             $queue = $this->_queue;
@@ -206,7 +206,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
             $amqpMessage = $this->channel->basic_get($queue->getName());
 
             if (isset($amqpMessage->delivery_info['delivery_tag'])) {
-                $result[] = array(
+                $result[] = [
                     'body' => $amqpMessage->body,
                     'amqpMessage' => $amqpMessage,
                 );
@@ -214,11 +214,11 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
             }
         }
 
-        $options = array(
+        $options = [
             'queue' => $queue,
             'data' => $result,
             'messageClass' => $queue->getMessageClass(),
-        );
+        ];
 
         $classname = $queue->getMessageSetClass();
 
@@ -227,13 +227,13 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
 
     public function getCapabilities()
     {
-        return array(
+        return [
             'create' => true,
             'delete' => true,
             'send' => true,
             'count' => true,
             'deleteMessage' => true,
-        );
+        ];
     }
 
     /**
@@ -261,7 +261,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getQueues()
     {
-        return array($this->_queue);
+        return [ $this->_queue ];
     }
 
     /**
@@ -289,6 +289,14 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
     public function deleteMessage(Message $message)
     {
         return $this->channel->basic_ack($message->amqpMessage->delivery_info['delivery_tag']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPriority()
+    {
+        throw new UnsupportedMethodCallException('Not implemented');
     }
 
     /**

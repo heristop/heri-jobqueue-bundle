@@ -10,7 +10,7 @@
 namespace Heri\Bundle\JobQueueBundle\DependencyInjection\Factory;
 
 use Heri\Bundle\JobQueueBundle\Adapter as Adapter;
-use Heri\Bundle\JobQueueBundle\Exception\BadAdapterDefinitionException;
+use Heri\Bundle\JobQueueBundle\Exception\InvalidAdapterDefinitionException;
 
 /**
  * Adapter factory.
@@ -44,7 +44,7 @@ class AdapterFactory
                 break;
 
             default:
-                throw new BadAdapterDefinitionException();
+                throw new InvalidAdapterDefinitionException();
         }
 
         return $instance;

@@ -13,9 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 class Message
 {
     /**
-     * @var bigint
+     * @var int
      *
-     * @ORM\Column(name="id", type="bigint", nullable=false)
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -62,6 +62,13 @@ class Message
     private $created;
 
     /**
+     * @var smallint
+     *
+     * @ORM\Column(type = "smallint")
+     */
+    private $priority = 0;
+
+    /**
      * @var bool
      *
      * @ORM\Column(name="failed", type="boolean", nullable=false)
@@ -78,7 +85,7 @@ class Message
     /**
      * Get messageId.
      *
-     * @return bigint
+     * @return int
      */
     public function getId()
     {
@@ -183,6 +190,26 @@ class Message
     public function getCreated()
     {
         return $this->created;
+    }
+
+    /**
+     * Set priority.
+     *
+     * @param smallint $priority
+     */
+    public function setPriority($priority)
+    {
+        $this->priority = $priority;
+    }
+
+    /**
+     * Get pririty.
+     *
+     * @return pririty
+     */
+    public function getPriority()
+    {
+        return $this->priority;
     }
 
     /**

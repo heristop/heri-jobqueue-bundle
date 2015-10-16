@@ -60,7 +60,6 @@ First, define a message which contains the Symfony command to call. For instance
     
     $queue->push([
         'command' => 'cache:clear'
-    )
     ]);
 ```
 
@@ -69,10 +68,10 @@ You can also call commands with arguments:
 ``` php
     $queue->push([
         'command'   => 'demo:great',
-        'argument'  => array(
+        'argument'  => [
             'name'   => 'Alexandre',
             '--yell' => true
-        )
+        ]
     ]);
 ```
 
@@ -146,6 +145,18 @@ To delete all of your failed jobs, you may use the `jobqueue:flush` command:
     app/console jobqueue:flush
 ```
 
+## Prioritizing Jobs
+
+Jobs are executed in the order in which they are scheduled (assuming they are in the same queue). You may also prioritize a call:
+
+```php
+    $queue
+        ->highlight()
+        ->push([
+            'command' => 'cache:clear',
+        ]);
+```
+
 ## Configure a daemon
 
 The `jobqueue:listen` command should be runned with the prod environnement and the quiet option to hide output messages:
@@ -188,3 +199,17 @@ To remove the service, use this command:
 
 If the service stopped suddenly, you may use `supervisord` to restart it automatically.
 
+A sample config might look like this:
+
+```sh
+  [program:jobqueue-service]
+  command=/usr/bin/php %kernel.root_dir%/console jobqueue:listen --env=prod
+  directory=/tmp
+  autostart=true
+  autorestart=true
+  startretries=3
+  stderr_logfile=/var/log/jobqueue-service/jobqueue.err.log
+  stdout_logfile=/var/log/jobqueue-service/jobqueue.out.log
+  user=www-data
+~
+```
