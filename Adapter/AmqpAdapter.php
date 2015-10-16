@@ -54,7 +54,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      * Constructor.
      *
      * @param array|Zend_Config $options options (host, port, login, password)
-     * @param null|Zend_Queue   $queue
+     * @param null|Queue   $queue
      */
     public function __construct($options, Queue $queue = null)
     {
@@ -110,7 +110,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      * @param string $name
      * @param int    $timeout
      *
-     * @return int
+     * @return boolean
      */
     public function create($name, $timeout = null)
     {
@@ -148,9 +148,9 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      * Publish message to queue.
      *
      * @param mixed      $message (array or string)
-     * @param Zend_Queue $queue
+     * @param Queue $queue
      *
-     * @return bool
+     * @return boolean|null
      */
     public function send($message, Queue $queue = null)
     {
@@ -187,7 +187,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      *
      * @param int|null        $maxMessages Maximum number of messages to return
      * @param int|null        $timeout     Visibility timeout for these messages
-     * @param Zend_Queue|null $queue
+     * @param null|Queue $queue
      *
      * @return Zend_Queue_Message_Iterator
      */
@@ -257,7 +257,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      * Not all adapters support getQueues(); use isSupported('getQueues')
      * to determine if the adapter supports this feature.
      *
-     * @return array
+     * @return Queue[]
      */
     public function getQueues()
     {
@@ -267,7 +267,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * Return the approximate number of messages in the queue.
      *
-     * @param Zend_Queue|null $queue
+     * @param null|Queue $queue
      *
      * @return int
      */
@@ -282,7 +282,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      * Return true if the message is deleted, false if the deletion is
      * unsuccessful.
      *
-     * @param Zend_Queue_Message $message
+     * @param Message $message
      *
      * @return bool
      */
