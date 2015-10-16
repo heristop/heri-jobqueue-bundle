@@ -209,7 +209,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
                 $result[] = [
                     'body' => $amqpMessage->body,
                     'amqpMessage' => $amqpMessage,
-                );
+                ];
                 $this->_count = $amqpMessage->delivery_info['message_count'];
             }
         }
