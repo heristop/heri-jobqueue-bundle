@@ -14,7 +14,7 @@ interface AdapterInterface
     /**
      * Show messages.
      *
-     * @param string $queue
+     * @param string $queueName
      *
      * @return array
      */
@@ -32,6 +32,7 @@ interface AdapterInterface
      *
      * @param string               $message
      * @param Zend_Queue_Exception $e
+     * @return void
      */
     public function logException($message, $e);
 }
