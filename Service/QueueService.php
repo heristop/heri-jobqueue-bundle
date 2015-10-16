@@ -343,9 +343,9 @@ class QueueService
     }
 
     /**
-     * @param Zend_Message $message
+     * @param ZendQueue\Message $message
      */
-    protected function getUnseralizedBody($message)
+    protected function getUnseralizedBody(\ZendQueue\Message $message)
     {
         if (class_exists('Zend\Json\Json')) {
             $body = \Zend\Json\Json::decode($message->body, true);
