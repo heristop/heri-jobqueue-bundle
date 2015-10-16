@@ -104,9 +104,9 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
 
         $messages = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
-            ->findBy(array(
+            ->findBy([
                 'queue' => $queue,
-            ));
+            ]);
         foreach ($messages as $message) {
             $this->em->remove($message);
         }
@@ -253,11 +253,11 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             $this->em->flush();
         }
 
-        $options = array(
+        $options = [
             'queue' => $queue,
             'data' => $result,
             'messageClass' => $queue->getMessageClass(),
-        );
+        ];
 
         $classname = $queue->getMessageSetClass();
 
@@ -280,9 +280,9 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
     {
         $repo = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
-            ->findOneBy(array(
+            ->findOneBy([
                 'handle' => $message->handle,
-            ));
+            ]);
 
         $this->em->remove($repo);
         $this->em->flush();
@@ -362,8 +362,10 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             ->execute();
 
         $query = $this->em->createQuery(
-            'SELECT COUNT(ml.id) FROM Heri\Bundle\JobQueueBundle\Entity\MessageLog ml'
-        );
+            'SELECT COUNT(ml.id) FROM Heri\Bundle\JobQueueBundle\Entity\MessageLog ml '.
+            'WHERE ml.id = ?1'
+        )
+        ->setParameter(1, $message->id);
         $count = $query->getSingleScalarResult();
 
         if ($count == 0) {
@@ -388,8 +390,8 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         $message = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
             ->findOneBy([
-            'md5' => md5($body),
-        ]);
+                'md5' => md5($body),
+            ]);
 
         if (!$message) {
             $message = new \Heri\Bundle\JobQueueBundle\Entity\Message();

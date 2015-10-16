@@ -70,9 +70,9 @@ class DoctrineAdapterTest extends TestCase
         $this->assertNotNull($queue1, 'Queue created');
 
         // Queue 1 list command
-        $command1 = array(
+        $command1 = [
             'command' => 'list',
-        );
+        ];
         $this->queue->push($command1);
 
         $messages = $this->getMessages($queue1);
@@ -92,15 +92,17 @@ class DoctrineAdapterTest extends TestCase
         $this->assertNotNull($queue1, 'Queue created');
 
         // Queue 1 demo:great command
-        $command2 = array(
+        $command2 = [
             'command' => 'demo:great',
-            'argument' => array(
+            'argument' => [
                 'name' => 'Alexandre',
                 '--yell' => true,
-            ),
-        );
+            ],
+        ];
         $this->queue->push($command2);
 
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(2, count($messages), 'Count number of messages');
         $message2 = $this->em
             ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
             ->find(2);
@@ -154,9 +156,9 @@ class DoctrineAdapterTest extends TestCase
         $this->assertNotNull($queue1, 'Queue created');
 
         // Queue 1 list command
-        $command1 = array(
+        $command1 = [
             'command' => 'list',
-        );
+        ];
 
         // Push $command1
         $this->queue->push($command1);
@@ -169,9 +171,9 @@ class DoctrineAdapterTest extends TestCase
         $this->assertEquals(1, count($messages), 'Count number of messages');
 
         // Push $command2
-        $command2 = array(
+        $command2 = [
             'command' => 'list2',
-        );
+        ];
         $this->queue->push($command2);
         $messages = $this->getMessages($queue1);
         $this->assertEquals(2, count($messages), 'Count number of messages');
@@ -182,9 +184,9 @@ class DoctrineAdapterTest extends TestCase
         $count1 = $this->queue->count();
 
         // Queue list command
-        $command1 = array(
+        $command1 = [
             'command' => 'list',
-        );
+        ];
         $this->queue->push($command1);
 
         $count2 = $this->queue->count();

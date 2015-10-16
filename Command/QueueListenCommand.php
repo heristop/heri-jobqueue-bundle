@@ -50,7 +50,6 @@ class QueueListenCommand extends ContainerAwareCommand
     {
         $queue = $this->getContainer()->get('jobqueue');
         $queue->setUp($this->getContainer()->getParameter('jobqueue.config'));
-        $queue->setCommand($this);
         $queue->setOutput($output);
 
         if (!$queue->isEnabled()) {

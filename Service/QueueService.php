@@ -13,6 +13,7 @@ namespace Heri\Bundle\JobQueueBundle\Service;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\StreamOutput;
@@ -310,26 +311,32 @@ class QueueService
             list(
                 $commandName,
                 $arguments
-            ) = $this->getMessageFormattedBody($message);
+            ) = $this->getUnseralizedBody($message);
 
             $this->output->writeLn("<fg=yellow> [x] [{$this->queue->getName()}] {$commandName} received</> ");
 
-            $process = new Process(sprintf('%s %s %s %s',
-                '/usr/bin/php', 'app/console', $commandName,
-                implode(' ', $arguments)
-            ));
-            $process->setTimeout($this->timeout);
-            $process->run();
+            if (!isset($this->command)) {
+                $process = new Process(sprintf('%s %s %s %s',
+                    '/usr/bin/php', 'app/console', $commandName,
+                    implode(' ', $arguments)
+                ));
+                $process->setTimeout($this->timeout);
+                $process->run();
 
-            if (!$process->isSuccessful()) {
-                throw new \RuntimeException($process->getErrorOutput());
+                if (!$process->isSuccessful()) {
+                    throw new \Exception($process->getErrorOutput());
+                }
+
+                print $process->getOutput();
+            } else {
+                $input = new ArrayInput(array_merge([''], $arguments));
+                $command = $this->command->getApplication()->find($commandName);
+                $command->run($input, $this->output);
             }
-
-            print $process->getOutput();
 
             $this->queue->deleteMessage($message);
             $this->output->writeLn("<fg=green> [x] [{$this->queue->getName()}] {$commandName} done</>");
-        } catch (\RuntimeException $e) {
+        } catch (\Exception $e) {
             $this->output->writeLn("<fg=white;bg=red> [!] [{$this->queue->getName()}] FAILURE: {$e->getMessage()}</>");
             $this->adapter->logException($message, $e);
         }
@@ -338,7 +345,7 @@ class QueueService
     /**
      * @param Zend_Message $message
      */
-    protected function getMessageFormattedBody($message)
+    protected function getUnseralizedBody($message)
     {
         if (class_exists('Zend\Json\Json')) {
             $body = \Zend\Json\Json::decode($message->body, true);
@@ -346,7 +353,8 @@ class QueueService
             $body = json_decode($message->body, true);
         }
 
-        $arguments = $args = array();
+        $arguments = [];
+        $args = [];
         if (isset($body['argument'])) {
             $args = $body['argument'];
         } elseif (isset($body['arguments'])) {
