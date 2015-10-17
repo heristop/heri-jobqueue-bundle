@@ -145,17 +145,40 @@ To delete all of your failed jobs, you may use the `jobqueue:flush` command:
     app/console jobqueue:flush
 ```
 
-## Prioritizing Jobs
+## Jobs Priority
 
 Jobs are executed in the order in which they are scheduled (assuming they are in the same queue). You may also prioritize a call:
 
 ```php
     $queue
-        ->highlight()
+        ->highPriority()
         ->push([
             'command' => 'cache:clear',
         ]);
 ```
+
+## Jobs Monitoring
+
+If you use the Doctrine Adapter, you may use Sonata Admin to monitor your jobs:
+
+```yaml
+    #
+    # more information can be found here http://sonata-project.org/bundles/admin
+    #
+    sonata_admin:
+        # ...
+        dashboard:
+            # ...
+            groups:
+                # ...
+                System:
+                    label:           System
+                    icon:            '<i class="fa fa-wrench"></i>'
+                    items:
+                        - admin.queue
+```
+
+![ScreenShot](https://raw.github.com/heristop/HeriJobQueueBundle/master/Resources/doc/sonataadmin.png)
 
 ## Configure a daemon
 

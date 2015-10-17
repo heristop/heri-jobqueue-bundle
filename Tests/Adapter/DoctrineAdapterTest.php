@@ -101,7 +101,7 @@ class DoctrineAdapterTest extends TestCase
             ],
         ];
         $this->queue
-            ->highlight()
+            ->highPriority()
             ->push($command2);
 
         $messages = $this->getMessages($queue1);

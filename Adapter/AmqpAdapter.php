@@ -54,7 +54,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      * Constructor.
      *
      * @param array|Zend_Config $options options (host, port, login, password)
-     * @param null|Queue   $queue
+     * @param null|Queue        $queue
      */
     public function __construct($options, Queue $queue = null)
     {
@@ -110,7 +110,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      * @param string $name
      * @param int    $timeout
      *
-     * @return boolean
+     * @return bool
      */
     public function create($name, $timeout = null)
     {
@@ -150,7 +150,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      * @param mixed $message (array or string)
      * @param Queue $queue
      *
-     * @return boolean|null
+     * @return bool|null
      */
     public function send($message, Queue $queue = null)
     {
@@ -185,8 +185,8 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
     /**
      * Get messages in the queue.
      *
-     * @param int|null        $maxMessages Maximum number of messages to return
-     * @param int|null        $timeout     Visibility timeout for these messages
+     * @param int|null             $maxMessages Maximum number of messages to return
+     * @param int|null             $timeout     Visibility timeout for these messages
      * @param null|ZendQueue\Queue $queue
      *
      * @return ZendQueue\MessageIterator
@@ -261,7 +261,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function getQueues()
     {
-        return [ $this->_queue ];
+        return [$this->_queue];
     }
 
     /**

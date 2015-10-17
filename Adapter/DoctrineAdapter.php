@@ -409,7 +409,6 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         if (!$message) {
             $message = new \Heri\Bundle\JobQueueBundle\Entity\Message();
             $message->setQueue($this->getQueueEntity($queue->getName()));
-            $message->setCreated(time());
             $message->setBody($body);
             $message->setMd5(md5($body));
             $message->setPriority($this->priority);

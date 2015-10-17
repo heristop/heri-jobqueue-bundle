@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="queue_message")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Message
 {
@@ -81,6 +82,13 @@ class Message
      * @ORM\Column(name="ended", type="boolean", nullable=false)
      */
     private $ended;
+
+    /** @ORM\PrePersist */
+    public function prePersist()
+    {
+        $this->md5 = md5($this->body);
+        $this->created = time();
+    }
 
     /**
      * Get messageId.

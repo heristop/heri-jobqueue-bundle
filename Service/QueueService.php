@@ -145,7 +145,7 @@ class QueueService
      *
      * @return $this
      */
-    public function highlight()
+    public function highPriority()
     {
         $this->adapter->setPriority(self::PRIORITY_HIGH);
 
@@ -309,10 +309,6 @@ class QueueService
     {
         if (!$this->output instanceof OutputInterface) {
             $this->output = new StreamOutput(fopen('php://memory', 'w', false));
-        }
-
-        if (!$this->command instanceof ContainerAwareCommand) {
-            throw new CommandFindException('Cannot load command');
         }
 
         foreach ($messages as $message) {
