@@ -25,6 +25,27 @@
             <property type="service" id="doctrine.orm.entity_manager" name="em" />
         </service>
 
+        <service id="admin.queue" class="Heri\Bundle\JobQueueBundle\Admin\QueueAdmin">
+            <tag name="sonata.admin" manager_type="orm" group="System" label="Queue" />
+            <argument />
+            <argument>Heri\Bundle\JobQueueBundle\Entity\Queue</argument>
+            <argument>SonataAdminBundle:CRUD</argument>
+        </service>
+
+        <service id="admin.queue_message" class="Heri\Bundle\JobQueueBundle\Admin\QueueMessageAdmin">
+            <tag name="sonata.admin" manager_type="orm" group="System" label="Queue Message" />
+            <argument />
+            <argument>Heri\Bundle\JobQueueBundle\Entity\Message</argument>
+            <argument>SonataAdminBundle:CRUD</argument>
+        </service>
+
+        <service id="admin.queue_log" class="Heri\Bundle\JobQueueBundle\Admin\QueueLogAdmin">
+            <tag name="sonata.admin" manager_type="orm" group="System" label="Queue Log" />
+            <argument />
+            <argument>Heri\Bundle\JobQueueBundle\Entity\MessageLog</argument>
+            <argument>SonataAdminBundle:CRUD</argument>
+        </service>
+
     </services>
 
 </container>

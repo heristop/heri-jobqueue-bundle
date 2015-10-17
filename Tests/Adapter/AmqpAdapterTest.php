@@ -88,13 +88,13 @@ class AmqpAdapterTest extends TestCase
         $this->queue->push($command1);
 
         // Queue demo:great command
-        $command2 = array(
+        $command2 = [
             'command' => 'demo:great',
-            'argument' => array(
+            'argument' => [
                 'name' => 'Alexandre',
                 '--yell' => true,
-            ),
-        );
+            ],
+        ];
         $this->queue->push($command2);
 
         // Run list command using directly receive method
@@ -117,9 +117,9 @@ class AmqpAdapterTest extends TestCase
     {
         for ($i = 0; $i < 100; $i++) {
             // Queue list command
-            $command = array(
+            $command = [
                 'command' => 'list',
-            );
+            ];
             $this->queue->push($command);
             $this->queue->receive(10);
         }

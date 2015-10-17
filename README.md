@@ -60,7 +60,6 @@ First, define a message which contains the Symfony command to call. For instance
     
     $queue->push([
         'command' => 'cache:clear'
-    )
     ]);
 ```
 
@@ -69,10 +68,10 @@ You can also call commands with arguments:
 ``` php
     $queue->push([
         'command'   => 'demo:great',
-        'argument'  => array(
+        'argument'  => [
             'name'   => 'Alexandre',
             '--yell' => true
-        )
+        ]
     ]);
 ```
 
@@ -146,6 +145,41 @@ To delete all of your failed jobs, you may use the `jobqueue:flush` command:
     app/console jobqueue:flush
 ```
 
+## Jobs Priority
+
+Jobs are executed in the order in which they are scheduled (assuming they are in the same queue). You may also prioritize a call:
+
+```php
+    $queue
+        ->highPriority()
+        ->push([
+            'command' => 'cache:clear',
+        ]);
+```
+
+## Jobs Monitoring
+
+If you use the Doctrine Adapter, you may use Sonata Admin to monitor your jobs:
+
+```yaml
+    #
+    # more information can be found here http://sonata-project.org/bundles/admin
+    #
+    sonata_admin:
+        # ...
+        dashboard:
+            # ...
+            groups:
+                # ...
+                System:
+                    label:           System
+                    icon:            '<i class="fa fa-wrench"></i>'
+                    items:
+                        - admin.queue
+```
+
+![ScreenShot](https://raw.github.com/heristop/HeriJobQueueBundle/master/Resources/doc/sonataadmin.png)
+
 ## Configure a daemon
 
 The `jobqueue:listen` command should be runned with the prod environnement and the quiet option to hide output messages:
@@ -188,3 +222,17 @@ To remove the service, use this command:
 
 If the service stopped suddenly, you may use `supervisord` to restart it automatically.
 
+A sample config might look like this:
+
+```sh
+  [program:jobqueue-service]
+  command=/usr/bin/php %kernel.root_dir%/console jobqueue:listen --env=prod
+  directory=/tmp
+  autostart=true
+  autorestart=true
+  startretries=3
+  stderr_logfile=/var/log/jobqueue-service/jobqueue.err.log
+  stdout_logfile=/var/log/jobqueue-service/jobqueue.out.log
+  user=www-data
+~
+```

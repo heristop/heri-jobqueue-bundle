@@ -13,18 +13,18 @@ use Doctrine\ORM\Mapping as ORM;
 class MessageLog
 {
     /**
-     * @var bigint
+     * @var int
      *
-     * @ORM\Column(name="id", type="bigint", nullable=false)
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @var bigint
+     * @var int
      *
-     * @ORM\Column(name="message_id", type="bigint", nullable=false)
+     * @ORM\Column(name="message_id", type="integer", nullable=false)
      */
     private $messageId;
 
@@ -45,7 +45,7 @@ class MessageLog
     /**
      * Get id.
      *
-     * @return bigint
+     * @return int
      */
     public function getId()
     {
@@ -55,7 +55,7 @@ class MessageLog
     /**
      * Set messageId.
      *
-     * @param bigint $messageId
+     * @param int $messageId
      */
     public function setMessageId($messageId)
     {
@@ -65,7 +65,7 @@ class MessageLog
     /**
      * Get messageId.
      *
-     * @return bigint
+     * @return int
      */
     public function getMessageId()
     {

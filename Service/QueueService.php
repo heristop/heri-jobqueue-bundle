@@ -19,11 +19,13 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
 use Heri\Bundle\JobQueueBundle\Exception\CommandFindException;
-use Heri\Bundle\JobQueueBundle\Exception\BadFormattedMessageException;
+use Heri\Bundle\JobQueueBundle\Exception\InvalidUnserializedMessageException;
 
 class QueueService
 {
     const MICROSECONDS_PER_SECOND = 1000000;
+
+    const PRIORITY_HIGH = 1;
 
     /**
      * var ZendQueue\Adapter\AbstractAdapter.
@@ -95,12 +97,16 @@ class QueueService
 
     /**
      * @param string $name
+     *
+     * @return $this
      */
     public function attach($name)
     {
         $this->queue = new \ZendQueue\Queue($this->adapter, [
             'name' => $name,
         ]);
+
+        return $this;
     }
 
     /**
@@ -118,6 +124,7 @@ class QueueService
 
     /**
      * @param array $args
+     * @param int   $priority
      */
     public function push(array $args)
     {
@@ -131,6 +138,18 @@ class QueueService
             $this->queue->send($body);
             $this->output->writeLn("<fg=green> [x] [{$this->queue->getName()}] {$args['command']} sent</>");
         }
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function highPriority()
+    {
+        $this->adapter->setPriority(self::PRIORITY_HIGH);
+
+        return $this;
     }
 
     /**
@@ -292,10 +311,6 @@ class QueueService
             $this->output = new StreamOutput(fopen('php://memory', 'w', false));
         }
 
-        if (!$this->command instanceof ContainerAwareCommand) {
-            throw new CommandFindException('Cannot load command');
-        }
-
         foreach ($messages as $message) {
             $this->run($message);
         }
@@ -361,8 +376,8 @@ class QueueService
             $args = $body['arguments'];
         }
 
-        if (!isset($body['command'])) {
-            throw new BadFormattedMessageException('Command name not found');
+        if (!isset($body['command']) || $body['command'] == '') {
+            throw new InvalidUnserializedMessageException('Command name not found');
         }
 
         $commandName = $body['command'];
@@ -378,10 +393,9 @@ class QueueService
             }
         }
 
-        return array(
+        return [
             $commandName,
             $arguments,
-        );
+        ];
     }
 }
-

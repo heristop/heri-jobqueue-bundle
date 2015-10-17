@@ -9,6 +9,6 @@
 
 namespace Heri\Bundle\JobQueueBundle\Exception;
 
-class BadFormattedMessageException extends \RuntimeException
+class InvalidUnserializedMessageException extends \RuntimeException
 {
 }

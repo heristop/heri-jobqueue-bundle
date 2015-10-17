@@ -30,9 +30,8 @@ interface AdapterInterface
     /**
      * Insert exception in message log.
      *
-     * @param string               $message
-     * @param Zend_Queue_Exception $e
-     * @return void
+     * @param string              $message
+     * @param ZendQueue\Exception $e
      */
     public function logException($message, $e);
 }
