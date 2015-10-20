@@ -450,12 +450,14 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         $sql = 'SELECT m '.
             'FROM Heri\Bundle\JobQueueBundle\Entity\Message m '.
             'LEFT JOIN m.queue q '.
-            'WHERE (m.handle IS NULL OR m.handle = \'\' OR m.timeout + '.
-            (int) $timeout.' < '.(int) $microtime.') '.$andWhere.' '.
+            'WHERE (m.handle IS NULL OR m.handle = \'\' OR m.timeout + :timeout < :microtime) '.$andWhere.' '.
             'ORDER BY m.priority DESC';
 
         $query = $this->em->createQuery($sql);
-
+        
+        $query->setParameter('timeout', (int)$timeout);
+        $query->setParameter('microtime', (int)$microtime);
+        
         if ($queue instanceof Queue) {
             $query->setParameter('queue', $this->getQueueEntity($queue->getName()));
         }
