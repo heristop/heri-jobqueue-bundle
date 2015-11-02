@@ -367,7 +367,8 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
     {
         $query = $this->em->createQuery(
             'SELECT COUNT(ml.id) FROM Heri\Bundle\JobQueueBundle\Entity\MessageLog ml '.
-            'WHERE ml.id = ?1'
+            'INNER JOIN Heri\Bundle\JobQueueBundle\Entity\Message m '.
+            'WHERE m.id = ?1'
         )
         ->setParameter(1, $message->id);
         $count = $query->getSingleScalarResult();
