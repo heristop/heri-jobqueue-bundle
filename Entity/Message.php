@@ -90,6 +90,11 @@ class Message
         $this->created = time();
     }
 
+    public function __toString()
+    {
+        return (string)$this->getId();
+    }
+
     /**
      * Get messageId.
      *
