@@ -22,9 +22,10 @@ class MessageLog
     private $id;
 
     /**
-     * @var int
+     * @var Message
      *
-     * @ORM\Column(name="message_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Message", cascade="remove")
+     * @ORM\JoinColumn(name="message_id", referencedColumnName="id", nullable=true)
      */
     private $messageId;
 

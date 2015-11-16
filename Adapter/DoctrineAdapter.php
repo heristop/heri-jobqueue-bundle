@@ -336,7 +336,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         if ($this->isExists($queueName)) {
             $qb = $this->em->createQueryBuilder();
             $qb
-                ->select('m.id, m.body, m.created_at, m.ended, m.failed')
+                ->select('m.id, m.body, m.created, m.ended, m.failed')
                 ->from('Heri\Bundle\JobQueueBundle\Entity\Message', 'm')
                 ->leftJoin('m.queue', 'Queue')
                 ->where($qb->expr()->eq('Queue.name', ':name'))
@@ -365,13 +365,15 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function logException($message, $e)
     {
-        $query = $this->em->createQuery(
-            'SELECT COUNT(ml.id) FROM Heri\Bundle\JobQueueBundle\Entity\MessageLog ml '.
-            'INNER JOIN Heri\Bundle\JobQueueBundle\Entity\Message m '.
-            'WHERE m.id = ?1'
-        )
-        ->setParameter(1, $message->id);
-        $count = $query->getSingleScalarResult();
+        $qb = $this->em->createQueryBuilder();
+        $qb
+            ->select('COUNT(ml.id)')
+            ->from('Heri\Bundle\JobQueueBundle\Entity\MessageLog', 'ml')
+            ->innerjoin('ml.messageId', 'm')
+            ->where($qb->expr()->eq('m.id', ':id'))
+            ->setParameter('id', $message->id);
+
+        $count = $qb->getQuery()->getSingleScalarResult();
 
         if ($count == 0) {
             $this->em
@@ -383,8 +385,12 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
                 ->setParameter(1, $message->id)
                 ->execute();
 
+            $messageObject = $this->em
+                ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
+                ->find($message->id);
+                
             $log = new \Heri\Bundle\JobQueueBundle\Entity\MessageLog();
-            $log->setMessageId($message->id);
+            $log->setMessageId($messageObject);
             $log->setDateLog(new \DateTime('now'));
             $log->setLog($e->getMessage());
             $this->em->persist($log);
