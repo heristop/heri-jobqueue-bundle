@@ -66,7 +66,7 @@ class MessageLog
     /**
      * Get messageId.
      *
-     * @return int
+     * @return Message
      */
     public function getMessageId()
     {
@@ -76,7 +76,7 @@ class MessageLog
     /**
      * Set dateLog.
      *
-     * @param datetime $dateLog
+     * @param \DateTime $dateLog
      */
     public function setDateLog($dateLog)
     {
