@@ -1,0 +1,6 @@
+{% if admin.isGranted('VIEW', object) and admin.hasRoute('showMessages') %}
+    <a href="{{ path('sonata_queue_message_list', {'filter[queue][value]': object.id}) }}" class="btn btn-sm btn-default view_link" title="{% trans %}Show Messages{% endtrans %}">
+        <i class="glyphicon glyphicon-zoom-in"></i>
+        {% trans %}Show Messages{% endtrans %}
+    </a>
+{% endif %}

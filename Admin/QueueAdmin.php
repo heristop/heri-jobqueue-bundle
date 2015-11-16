@@ -89,7 +89,7 @@ class QueueAdmin extends Admin
             ->add('_action', 'actions', [
                 'actions' => [
                     'showMessages' => [
-                        'template' => 'TaladJobSystemBundle:QueueAdmin:showMessages.html.twig',
+                        'template' => 'HeriJobQueueBundle:QueueAdmin:showMessages.html.twig',
                     ],
                     'edit' => [],
                     'delete' => [],

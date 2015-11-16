@@ -56,7 +56,7 @@ class MessageLog
     /**
      * Set messageId.
      *
-     * @param int $messageId
+     * @param Message $messageId
      */
     public function setMessageId($messageId)
     {

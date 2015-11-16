@@ -1,0 +1,6 @@
+{% if admin.isGranted('VIEW', object) and admin.hasRoute('showLogs') %}
+    <a href="{{ path('sonata_queue_log_list', {'filter[messageId][value]': object.id}) }}" class="btn btn-sm btn-default view_link" title="{% trans %}Show Logs{% endtrans %}">
+        <i class="glyphicon glyphicon-zoom-in"></i>
+        {% trans %}Show Logs{% endtrans %}
+    </a>
+{% endif %}
