@@ -365,37 +365,32 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function logException($message, $e)
     {
-        $qb = $this->em->createQueryBuilder();
-        $qb
-            ->select('COUNT(ml.id)')
-            ->from('Heri\Bundle\JobQueueBundle\Entity\MessageLog', 'ml')
-            ->innerjoin('ml.messageId', 'm')
-            ->where($qb->expr()->eq('m.id', ':id'))
-            ->setParameter('id', $message->id);
+        $sql = <<<SQL
+            UPDATE Heri\Bundle\JobQueueBundle\Entity\Message m
+            SET
+              m.ended = 0,
+              m.failed = 1,
+              m.numRetries = m.numRetries + ?1,
+              m.priority = 0
+            WHERE m.id = ?2
+SQL;
 
-        $count = $qb->getQuery()->getSingleScalarResult();
+        $result = $this->em->createQuery($sql)
+            ->setParameter(1, $message->failed ? 1 : 0)
+            ->setParameter(2, $message->id)
+            ->execute()
+        ;
 
-        if ($count == 0) {
-            $this->em
-                ->createQuery(
-                    'UPDATE Heri\Bundle\JobQueueBundle\Entity\Message m '.
-                    'SET m.ended = 0, m.failed = 1, m.priority = 0 '.
-                    'WHERE m.id = ?1'
-                )
-                ->setParameter(1, $message->id)
-                ->execute();
+        $messageObject = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
+            ->find($message->id);
 
-            $messageObject = $this->em
-                ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Message')
-                ->find($message->id);
-                
-            $log = new \Heri\Bundle\JobQueueBundle\Entity\MessageLog();
-            $log->setMessageId($messageObject);
-            $log->setDateLog(new \DateTime('now'));
-            $log->setLog($e->getMessage());
-            $this->em->persist($log);
-            $this->em->flush();
-        }
+        $log = new \Heri\Bundle\JobQueueBundle\Entity\MessageLog();
+        $log->setMessageId($messageObject);
+        $log->setDateLog(new \DateTime('now'));
+        $log->setLog($e->getMessage());
+        $this->em->persist($log);
+        $this->em->flush();
     }
 
     /**

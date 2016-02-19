@@ -77,6 +77,13 @@ class Message
     private $failed;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="num_retries", type="integer", nullable=false)
+     */
+    private $numRetries = 0;
+
+    /**
      * @var bool
      *
      * @ORM\Column(name="ended", type="boolean", nullable=false)
@@ -292,5 +299,21 @@ class Message
     public function getQueue()
     {
         return $this->queue;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumRetries()
+    {
+        return $this->numRetries;
+    }
+
+    /**
+     * @param int $numRetries
+     */
+    public function setNumRetries($numRetries)
+    {
+        $this->numRetries = $numRetries;
     }
 }
