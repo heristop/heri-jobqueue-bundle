@@ -80,9 +80,12 @@ Then, add the queue to listen in the configuration:
 ```yaml
     # app/config/config.yml
     heri_job_queue:
-        enabled:       true
-        max_messages:  1
-        queues:        [ queue1 ]
+        enabled:            true
+        max_messages:       1
+        # set a process_timeout (in seconds) if you want your commands to be killed
+        # when their execution time is too long (default: null)
+        process_timeout:    60
+        queues:             [ queue1 ]
 ```
 
 Note: The queue is automatically created, but you can also use the command-line interface in this way:
