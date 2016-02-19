@@ -445,7 +445,7 @@ SQL;
 
         $andWhere = '';
         if ($queue instanceof Queue) {
-            $andWhere = 'AND (m.queue = :queue)';
+            $andWhere = 'AND (m.queue = :queue) AND (q.maxRetries IS NULL OR m.numRetries < q.maxRetries)';
         }
 
         // Search for all messages inside the timeout

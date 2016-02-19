@@ -35,6 +35,13 @@ class Queue
      */
     private $timeout;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="max_retries", type="integer", nullable=true)
+     */
+    private $maxRetries = null;
+
     public function __toString()
     {
         return $this->name;
@@ -88,5 +95,21 @@ class Queue
     public function getTimeout()
     {
         return $this->timeout;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxRetries()
+    {
+        return $this->maxRetries;
+    }
+
+    /**
+     * @param int $maxRetries
+     */
+    public function setMaxRetries($maxRetries)
+    {
+        $this->maxRetries = $maxRetries;
     }
 }
