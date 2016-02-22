@@ -76,7 +76,7 @@ class QueueService
         $this->logger = $logger;
         $this->config = $config;
 
-        $this->processTimeout = $this->config['process_timeout'];
+        $this->processTimeout = isset($this->config['process_timeout']) ? $this->config['process_timeout'] : null;
 
         $this->running = true;
         $this->output = new ConsoleOutput();
