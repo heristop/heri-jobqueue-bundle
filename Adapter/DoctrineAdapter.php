@@ -375,7 +375,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
             WHERE m.id = ?2
 SQL;
 
-        $result = $this->em->createQuery($sql)
+        $this->em->createQuery($sql)
             ->setParameter(1, $message->failed ? 1 : 0)
             ->setParameter(2, $message->id)
             ->execute()
