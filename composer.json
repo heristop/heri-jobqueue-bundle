@@ -1,7 +1,7 @@
 {
     "name": "heristop/jobqueue-bundle",
     "description": "This bundle provides the use of Zend_Queue from Zend Framework. It allows your Symfony application to schedule multiple console commands as server-side jobs.",
-    "keywords": [ "sf2", "queue", "job", "rabbitmq", "doctrine" ],
+    "keywords": [ "symfony", "queue", "job", "rabbitmq", "doctrine" ],
     "license": "MIT",
     "type": "symfony-bundle",
     "authors": [
@@ -17,15 +17,15 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "symfony/framework-bundle": "~2.3|~3.0",
-        "symfony/finder": "~2.3|~3.0",
-        "symfony/console": "~2.3|~3.0",
+        "symfony/framework-bundle": ">=2.3,<3.0-dev",
+        "symfony/finder": ">=2.3,<3.0-dev",
+        "symfony/console": ">=2.3,<3.0-dev",
         "zendframework/zend-queue": "2.0.*@dev"
     },
     "require-dev": {
-        "symfony/monolog-bundle": "~2.3",
-        "symfony/process": "~2.3",
-        "doctrine/orm": "~2.2,>=2.2.3",
+        "symfony/monolog-bundle": ">=2.3,<3.0-dev",
+        "symfony/process": ">=2.3,<3.0-dev",
+        "doctrine/orm": ">=2.3,<3.0",
         "doctrine/doctrine-bundle": "~1.2"
     },
     "suggest": {
