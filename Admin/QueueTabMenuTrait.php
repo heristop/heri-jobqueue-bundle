@@ -20,8 +20,6 @@ trait QueueTabMenuTrait
 
         $admin = $this->isChild() ? $this->getParent() : $this;
 
-        $id = $admin->getRequest()->get('id');
-
         $menu->addChild('link_queue_list', [
             'label' => 'Queues',
             'attributes' => ['class' => 'btn', 'icon' => 'fa fa-tasks'],

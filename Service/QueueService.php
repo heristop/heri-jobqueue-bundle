@@ -18,7 +18,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
-use Heri\Bundle\JobQueueBundle\Exception\CommandFindException;
 use Heri\Bundle\JobQueueBundle\Exception\InvalidUnserializedMessageException;
 
 class QueueService

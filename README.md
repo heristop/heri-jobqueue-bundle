@@ -183,6 +183,11 @@ If you use the Doctrine Adapter, you may use Sonata Admin to monitor your jobs:
 
 ![ScreenShot](https://raw.github.com/heristop/HeriJobQueueBundle/master/Resources/doc/sonataadmin.png)
 
+## Retry strategy
+
+By default, number of excecution of failed messages is endless. If you use the Doctrine Adapter you may edit the max number of retries on queue table.
+
+
 ## Configure a daemon
 
 The `jobqueue:listen` command should be runned with the prod environnement and the quiet option to hide output messages:
@@ -207,7 +212,7 @@ To avoid a memory leak caused by the monolog fingers crossed handler, you may co
 Linux ProTip:
 
 To run the command as a service, edit `jobqueue-service` shell in `Resources/bin`.
-Set the correct PROJECT_ROOT_DIR value, and copy this file to `/etc/init.d`.
+Set the correct `PROJECT_ROOT_DIR` value, and copy this file to `/etc/init.d`.
 
 Then use update-rc.d:
 
@@ -239,3 +244,4 @@ A sample config might look like this:
   user=www-data
 ~
 ```
+

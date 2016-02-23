@@ -57,6 +57,7 @@ class QueueAdmin extends Admin
             ->with('General')
                 ->add('name')
                 ->add('timeout')
+                ->add('maxRetries')
             ->end()
         ;
     }
@@ -72,6 +73,7 @@ class QueueAdmin extends Admin
             ->add('id')
             ->add('name', null, ['global_search' => false])
             ->add('timeout')
+            ->add('maxRetries')
         ;
     }
 
@@ -86,6 +88,7 @@ class QueueAdmin extends Admin
             ->addIdentifier('id')
             ->add('name', null, ['editable' => false])
             ->add('timeout', null, ['editable' => true])
+            ->add('maxRetries', null, ['editable' => true])
             ->add('_action', 'actions', [
                 'actions' => [
                     'showMessages' => [
@@ -102,6 +105,7 @@ class QueueAdmin extends Admin
         $showMapper
             ->add('name')
             ->add('timeout')
+            ->add('maxRetries')
         ;
     }
 
