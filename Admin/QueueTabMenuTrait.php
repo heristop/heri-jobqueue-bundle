@@ -12,13 +12,9 @@ trait QueueTabMenuTrait
      */
     protected function configureTabMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
     {
-        $admin = $this->isChild() ? $this->getParent() : $this;
-
         if (!$childAdmin && !in_array($action, ['list'])) {
             return;
         }
-
-        $admin = $this->isChild() ? $this->getParent() : $this;
 
         $menu->addChild('link_queue_list', [
             'label' => 'Queues',
