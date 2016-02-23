@@ -1,4 +1,6 @@
 /vendor
 /Tests/Fixtures/app/sqlite.db
 composer.phar
+ocular.phar
 phpunit.xml
+coverage.clover
