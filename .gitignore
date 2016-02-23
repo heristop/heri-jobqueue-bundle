@@ -1,3 +1,4 @@
 /vendor
 /Tests/Fixtures/app/sqlite.db
 composer.phar
+phpunit.xml

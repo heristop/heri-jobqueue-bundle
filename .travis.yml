@@ -16,7 +16,7 @@ before_script:
     - composer require zendframework/zend-json:2.0.*
 
 script:
-    - phpunit --coverage-clover clover
+    - phpunit --coverage-text
 
 matrix:
     include:
