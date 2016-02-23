@@ -1,4 +1,3 @@
 /vendor
 /Tests/Fixtures/app/sqlite.db
-composer.lock
 composer.phar
