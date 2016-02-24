@@ -64,7 +64,7 @@ class QueueService
     /**
      * var integer.
      */
-    protected $processTimeout = 60;
+    protected $processTimeout = null;
 
     /**
      * @param LoggerInterface $logger
@@ -73,9 +73,8 @@ class QueueService
     public function __construct(LoggerInterface $logger, array $config = array())
     {
         $this->logger = $logger;
-        $this->config = $config;
 
-        $this->processTimeout = isset($this->config['process_timeout']) ? $this->config['process_timeout'] : null;
+        $this->setUp($config);
 
         $this->running = true;
         $this->output = new ConsoleOutput();
@@ -94,6 +93,8 @@ class QueueService
     public function setUp($config)
     {
         $this->config = $config;
+
+        $this->processTimeout = isset($this->config['process_timeout']) ? $this->config['process_timeout'] : null;
     }
 
     /**
