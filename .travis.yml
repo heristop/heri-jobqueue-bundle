@@ -13,14 +13,13 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
-    - composer self-update
-    - if [ "$SYMFONY_VERSION" != "" ]; then composer require symfony/symfony:${SYMFONY_VERSION} --no-interaction --prefer-dist; fi;
+    - if [ "$SYMFONY_VERSION" != "" ]; then composer require symfony/symfony:${SYMFONY_VERSION}; fi;
     - composer require videlalvaro/php-amqplib:2.2.*
     - composer require react/event-loop:0.4.*
     - composer require zendframework/zend-json:2.0.*
 
 install:
-    - composer install
+    - composer self-update
 
 script:
     - phpunit --coverage-text
@@ -29,11 +28,11 @@ matrix:
     fast_finish: true
     include:
       - php: 5.6
-        env: SYMFONY_VERSION=2.3.*
+        env: SYMFONY_VERSION='2.7.*'
       - php: 5.6
-        env: SYMFONY_VERSION=2.7.*
+        env: SYMFONY_VERSION='2.8.*@dev'
       - php: 5.6
-        env: SYMFONY_VERSION=3.0.*
+        env: SYMFONY_VERSION='3.0.*@dev'
 
 services:
     rabbitmq
