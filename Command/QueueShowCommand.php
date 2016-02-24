@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\Table;
 
 class QueueShowCommand extends ContainerAwareCommand
 {
@@ -41,7 +42,7 @@ class QueueShowCommand extends ContainerAwareCommand
         $queue = $this->getContainer()->get('jobqueue');
         $messages = $queue->showMessages($input->getArgument('queue-name'));
 
-        $table = $this->getApplication()->getHelperSet()->get('table');
+        $table = new Table($output);
         $table
             ->setHeaders(array('id', 'body', 'created', 'ended', 'failed'))
             ->setRows($messages)

@@ -14,7 +14,7 @@ cache:
 
 before_script:
     - composer self-update
-    - if [ "$SYMFONY_VERSION" != "" ]; then composer require symfony/symfony:${SYMFONY_VERSION}; fi;
+    - if [ "$SYMFONY_VERSION" != "" ]; then composer require symfony/symfony:${SYMFONY_VERSION} --no-interaction --prefer-dist; fi;
     - composer require videlalvaro/php-amqplib:2.2.*
     - composer require react/event-loop:0.4.*
     - composer require zendframework/zend-json:2.0.*
@@ -28,11 +28,11 @@ script:
 matrix:
     fast_finish: true
     include:
-      - php: 5.4
+      - php: 5.6
         env: SYMFONY_VERSION=2.3.*
-      - php: 5.4
+      - php: 5.6
         env: SYMFONY_VERSION=2.7.*
-      - php: 7.0
+      - php: 5.6
         env: SYMFONY_VERSION=3.0.*
 
 services:

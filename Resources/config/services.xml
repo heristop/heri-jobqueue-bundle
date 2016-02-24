@@ -13,13 +13,10 @@
             <tag name="monolog.logger" channel="jobqueue" />
         </service>
 
-        <service id="jobqueue.factory" class="%jobqueue.factory.class%"/>
+        <service id="jobqueue.factory" class="%jobqueue.factory.class%" />
 
-        <service
-            id="jobqueue.adapter"
-            class="%jobqueue.adapter.interface.class%"
-            factory-service="jobqueue.factory"
-            factory-method="get">
+        <service id="jobqueue.adapter" class="%jobqueue.adapter.interface.class%">
+            <factory service="jobqueue.factory" method="get" />
             <argument>%jobqueue.adapter.type%</argument>
             <argument>%jobqueue.config%</argument>
             <property type="service" id="doctrine.orm.entity_manager" name="em" />

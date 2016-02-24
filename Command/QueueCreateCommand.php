@@ -42,7 +42,7 @@ class QueueCreateCommand extends ContainerAwareCommand
         $timeout = $input->getOption('timeout');
         $name = $input->getArgument('queue-name');
 
-        $dialog = $this->getHelperSet()->get('dialog');
+        $dialog = $this->getHelper('question');
         if (!$timeout) {
             $timeout = $dialog->ask(
                 $output,
@@ -60,3 +60,4 @@ class QueueCreateCommand extends ContainerAwareCommand
         $output->writeLn("<info>Queue \"{$name}\" {$action}</info>");
     }
 }
+
