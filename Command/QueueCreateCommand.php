@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of HeriJobQueueBundle.
  *
  * (c) Alexandre Mogère
@@ -60,4 +60,3 @@ class QueueCreateCommand extends ContainerAwareCommand
         $output->writeLn("<info>Queue \"{$name}\" {$action}</info>");
     }
 }
-

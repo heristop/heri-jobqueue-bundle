@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of HeriJobQueueBundle.
  *
  * (c) Alexandre Mogère
