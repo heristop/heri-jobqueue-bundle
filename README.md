@@ -133,7 +133,7 @@ To process only the first job on the queue, you may use the `jobqueue:work` comm
 To see the pending jobs, run the command below:
 
 ```sh
-    app/console jobqueue:show queue1
+    app/console jobqueue:show [queue-name]
 ```
 
 ## Failed Jobs
@@ -145,7 +145,7 @@ If a job failed, the exception is logged in the database, and the command is cal
 To delete all of your failed jobs, you may use the `jobqueue:flush` command:
 
 ```sh
-    app/console jobqueue:flush
+    app/console jobqueue:flush [queue-name]
 ```
 
 ## Jobs Priority
@@ -187,6 +187,17 @@ If you use the Doctrine Adapter, you may use Sonata Admin to monitor your jobs:
 
 By default, number of excecution of failed messages is endless. If you use the Doctrine Adapter you may edit the max number of retries on queue table.
 
+To retry all of your failed jobs, use this command:
+
+```sh
+    app/console jobqueue:retry [queue-name]
+```
+
+If you would like to delete a failed job, you may use the queue:forget command:
+
+```sh
+    app/console jobqueue:forget [id]
+```
 
 ## Configure a daemon
 
@@ -244,4 +255,3 @@ A sample config might look like this:
   user=www-data
 ~
 ```
-

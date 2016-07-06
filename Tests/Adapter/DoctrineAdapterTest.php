@@ -301,6 +301,23 @@ class DoctrineAdapterTest extends TestCase
         $this->assertEquals($previousTimeout, $messages[0]->getTimeout());
         $exceptions = $this->getMessageLogs();
         $this->assertEquals(3, count($exceptions), 'Exception logged from demo:great');
+
+        // Retry failed message
+        $this->queue->retry();
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(true, $messages[0]->getFailed());
+        $this->assertEquals(0, $messages[0]->getNumRetries());
+        $this->assertNotNull($messages[0]->getTimeout());
+        $exceptions = $this->getMessageLogs();
+        $this->assertEquals(3, count($exceptions), 'Exception logged from demo:great');
+
+        // Forget a failed message
+        sleep(1); // bypass timeout
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(1, count($messages), 'Count number of messages');
+        $this->queue->forget($messages[0]->getId());
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(0, count($messages), 'Count number of messages');
     }
 
     public function testDuplicatedMessages()
@@ -354,12 +371,13 @@ class DoctrineAdapterTest extends TestCase
         $this->em->clear();
 
         // Search for all messages inside our timeout
-        $query = $this->em->createQuery("
+        $query = $this->em->createQuery(<<<EOL
             SELECT m
             FROM Heri\Bundle\JobQueueBundle\Entity\Message m
             LEFT JOIN m.queue q
             WHERE (q.name = :queue_name)
-        ");
+EOL
+        );
         $query->setParameter('queue_name', $this->queueName.'1');
 
         return $query->getResult();

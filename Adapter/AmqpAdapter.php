@@ -202,7 +202,7 @@ class AmqpAdapter extends AbstractAdapter implements AdapterInterface
         $maxMessages = (int) $maxMessages ? (int) $maxMessages : 1;
 
         // default approach: GET
-        for ($i = $maxMessages; $i > 0; $i--) {
+        for ($i = $maxMessages; $i > 0; --$i) {
             $amqpMessage = $this->channel->basic_get($queue->getName());
 
             if (isset($amqpMessage->delivery_info['delivery_tag'])) {

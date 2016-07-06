@@ -184,6 +184,32 @@ class QueueService
     /**
      * @return bool
      */
+    public function retry()
+    {
+        if (!method_exists($this->adapter, 'retry')) {
+            return false;
+        }
+
+        return $this->adapter->retry();
+    }
+
+    /**
+     * @paraam int $id 
+     *
+     * @return bool
+     */
+    public function forget($id)
+    {
+        if (!method_exists($this->adapter, 'forget')) {
+            return false;
+        }
+
+        return $this->adapter->forget($id);
+    }
+
+    /**
+     * @return bool
+     */
     public function flush()
     {
         return $this->adapter->flush();
@@ -344,7 +370,7 @@ class QueueService
                     throw new \Exception($process->getErrorOutput());
                 }
 
-                print $process->getOutput();
+                echo $process->getOutput();
             } else {
                 $input = new ArrayInput(array_merge([''], $arguments));
                 $command = $this->command->getApplication()->find($commandName);

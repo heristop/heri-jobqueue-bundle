@@ -114,7 +114,7 @@ class AmqpAdapterTest extends TestCase
 
     public function testPerf()
     {
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 100; ++$i) {
             // Queue list command
             $command = [
                 'command' => 'list',

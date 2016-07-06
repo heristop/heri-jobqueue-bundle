@@ -320,6 +320,42 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
     }
 
     /**
+     * Retry failed messages.
+     *
+     * @param int $id
+     */
+    public function retry($id = null)
+    {
+        $sql = <<<EOL
+            UPDATE Heri\Bundle\JobQueueBundle\Entity\Message m
+            SET m.numRetries = 0
+EOL;
+
+        $query = $this->em->createQuery($sql);
+        if (!is_null($id)) {
+            $sql .= ' WHERE m.id = ?1';
+
+            $query->setParameter(1, $id);
+        }
+
+        $query->execute();
+    }
+
+    /**
+     * Delete a failed message.
+     *
+     * @param int $id
+     */
+    public function forget($id)
+    {
+        $sql = <<<EOL
+        DELETE FROM Heri\Bundle\JobQueueBundle\Entity\Message m WHERE m.id = ?1
+EOL;
+
+        return $this->em->createQuery($sql)->setParameter(1, $id)->execute();
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setPriority($priority)
@@ -355,9 +391,9 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function flush()
     {
-        return $this->em->createQuery(
-            'DELETE Heri\Bundle\JobQueueBundle\Entity\MessageLog ml'
-        );
+        $sql = 'DELETE Heri\Bundle\JobQueueBundle\Entity\MessageLog';
+
+        return $this->em->createQuery($sql);
     }
 
     /**
