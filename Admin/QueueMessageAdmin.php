@@ -54,6 +54,7 @@ class QueueMessageAdmin extends Admin
                 ->add('handle')
                 ->add('body')
                 ->add('priority')
+                ->add('num_retries')
             ->end()
             ->with('Status')
                 ->add('failed', null, ['required' => false])
@@ -73,6 +74,7 @@ class QueueMessageAdmin extends Admin
             ->add('queue')
             ->add('body', null, ['global_search' => false])
             ->add('priority')
+            ->add('num_retries')
             ->add('failed')
             ->add('ended')
         ;
@@ -91,6 +93,7 @@ class QueueMessageAdmin extends Admin
             ->add('body')
             ->add('handle')
             ->add('priority', null, ['editable' => true])
+            ->add('num_retries')
             ->add('failed', null, ['editable' => true])
             ->add('ended', null, ['editable' => true])
             ->add('_action', 'actions', [
@@ -110,6 +113,8 @@ class QueueMessageAdmin extends Admin
             ->add('queue')
             ->add('handle')
             ->add('body')
+            ->add('priority')
+            ->add('num_retries')
             ->add('failed')
             ->add('ended')
         ;
