@@ -14,7 +14,7 @@ cache:
 
 before_script:
     - if [ "$SYMFONY_VERSION" != "" ]; then composer require symfony/symfony:${SYMFONY_VERSION}; fi;
-    - composer require videlalvaro/php-amqplib:2.2.*
+    - composer require php-amqplib/php-amqplib:2.6.*
     - composer require react/event-loop:0.4.*
     - composer require zendframework/zend-json:2.0.*
 
