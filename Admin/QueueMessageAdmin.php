@@ -42,7 +42,7 @@ class QueueMessageAdmin extends Admin
      */
     protected function configureFormFields(FormMapper $formMapper)
     {
-        // define group zoning
+        // Define group zoning
         $formMapper
             ->with('General', ['class' => 'col-md-8'])->end()
             ->with('Status', ['class' => 'col-md-4'])->end()
@@ -54,7 +54,7 @@ class QueueMessageAdmin extends Admin
                 ->add('handle')
                 ->add('body')
                 ->add('priority')
-                ->add('num_retries')
+                ->add('numRetries')
             ->end()
             ->with('Status')
                 ->add('failed', null, ['required' => false])
@@ -74,7 +74,7 @@ class QueueMessageAdmin extends Admin
             ->add('queue')
             ->add('body', null, ['global_search' => false])
             ->add('priority')
-            ->add('num_retries')
+            ->add('numRetries')
             ->add('failed')
             ->add('ended')
         ;
@@ -93,7 +93,7 @@ class QueueMessageAdmin extends Admin
             ->add('body')
             ->add('handle')
             ->add('priority', null, ['editable' => true])
-            ->add('num_retries')
+            ->add('numRetries', null, ['editable' => true])
             ->add('failed', null, ['editable' => true])
             ->add('ended', null, ['editable' => true])
             ->add('_action', 'actions', [
@@ -114,7 +114,7 @@ class QueueMessageAdmin extends Admin
             ->add('handle')
             ->add('body')
             ->add('priority')
-            ->add('num_retries')
+            ->add('numRetries')
             ->add('failed')
             ->add('ended')
         ;

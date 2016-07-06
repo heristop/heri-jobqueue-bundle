@@ -35,7 +35,7 @@ class QueueForgetCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $queue = $this->getContainer()->get('jobqueue');
-        $id = $input->getArgument('id');
+        $id = $input->getOption('record');
 
         if ($queue->forget($id)) {
             $output->writeLn(sprintf('<info>Forgotten message %s</info>', $id));
