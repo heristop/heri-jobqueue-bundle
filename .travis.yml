@@ -33,6 +33,10 @@ matrix:
         env: SYMFONY_VERSION='2.8.*@dev'
       - php: 5.6
         env: SYMFONY_VERSION='3.0.*@dev'
+      - php: 5.6
+        env: SYMFONY_VERSION='3.1.*@dev'
+      - php: 5.6
+        env: SYMFONY_VERSION='3.2.*@dev'
     allow_failures:
       - env: SYMFONY_VERSION='3.1.*@dev'
       - env: SYMFONY_VERSION='3.2.*@dev'
