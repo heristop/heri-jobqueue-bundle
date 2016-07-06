@@ -50,13 +50,13 @@ class AmqpAdapterTest extends TestCase
             $this->markTestSkipped('AMQP not installed');
         }
 
-        // set default rabbitmq configuration
-        $adapter = new Adapter\AmqpAdapter(array(
+        // Set default rabbitmq configuration
+        $adapter = new Adapter\AmqpAdapter([
             'host' => 'localhost',
             'port' => '5672',
             'user' => 'guest',
             'password' => 'guest',
-        ));
+        ]);
 
         $this->queue = new QueueService(
             $this->container->get('logger'),
@@ -82,9 +82,9 @@ class AmqpAdapterTest extends TestCase
     public function testPushAndReceive()
     {
         // Queue list command
-        $command1 = array(
+        $command1 = [
             'command' => 'list',
-        );
+        ];
         $this->queue->push($command1);
 
         // Queue demo:great command
@@ -103,7 +103,6 @@ class AmqpAdapterTest extends TestCase
         // Run demo:great command using listen method
         try {
             $this->queue->listen($this->queueName.'1');
-            // $this->queue->receive($this->maxMessages);
         } catch (\Exception $e) {
             $this->assertRegExp(
                 '/There are no commands defined in the "demo" namespace/',

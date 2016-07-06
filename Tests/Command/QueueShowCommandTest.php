@@ -14,10 +14,10 @@ class QueueShowCommandTest extends TestCase
 
         $command = $application->find('jobqueue:show');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
+        $commandTester->execute([
             'command' => $command->getName(),
             'queue-name' => 'toto',
-        ));
+        ]);
 
         $this->assertRegExp('/| id | body | created | ended | failed |/', $commandTester->getDisplay());
     }

@@ -27,13 +27,13 @@ abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase
     {
         require_once __DIR__.'/Fixtures/app/AppKernel.php';
 
-        // boot the AppKernel in the test environment and with the debug.
+        // Boot the AppKernel in the test environment and with the debug.
         $this->kernel = new \Heri\Bundle\JobQueueBundle\Tests\AppKernel('test', true);
         $this->kernel->boot();
 
         $this->deleteTmpDir();
 
-        // store the container and the entity manager in test case properties
+        // Store the container and the entity manager in test case properties
         $this->container = $this->kernel->getContainer();
         $this->em = $this->container->get('doctrine')->getManager();
 
@@ -70,7 +70,7 @@ abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase
 
     public function tearDown()
     {
-        // shutdown the kernel.
+        // Shutdown the kernel.
         $this->kernel->shutdown();
 
         parent::tearDown();
@@ -78,11 +78,11 @@ abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase
 
     protected function generateSchema()
     {
-        // get the metadata of the application to create the schema.
+        // Get the metadata of the application to create the schema.
         $metadata = $this->getMetadata();
 
         if (!empty($metadata)) {
-            // create SchemaTool
+            // Create SchemaTool
             $tool = new SchemaTool($this->em);
             $tool->createSchema($metadata);
         } else {
@@ -93,7 +93,7 @@ abstract class TestCase extends \PHPUnit_Extensions_Database_TestCase
     /**
      * Overwrite this method to get specific metadata.
      *
-     * @return Array
+     * @return array
      */
     protected function getMetadata()
     {

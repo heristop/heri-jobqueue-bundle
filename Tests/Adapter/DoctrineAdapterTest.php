@@ -41,7 +41,7 @@ class DoctrineAdapterTest extends TestCase
             $this->markTestSkipped('Doctrine not installed');
         }
 
-        $adapter = new Adapter\DoctrineAdapter(array());
+        $adapter = new Adapter\DoctrineAdapter([]);
         $adapter->em = $this->em;
 
         $this->queue = new QueueService(
@@ -124,7 +124,7 @@ class DoctrineAdapterTest extends TestCase
         $messages = $this->getMessages($queue1);
         $this->assertEquals(2, count($messages), '2 pending message not yet handled');
 
-        // Run list command using listen method  (priority 0)
+        // Run list command using listen method (priority 0)
         $this->queue->listen($this->queueName.'1');
 
         $exceptions = $this->getMessageLogs();
@@ -292,7 +292,7 @@ class DoctrineAdapterTest extends TestCase
         $exceptions = $this->getMessageLogs();
         $this->assertEquals(3, count($exceptions), 'Exception logged from demo:great');
 
-        // no more retries for this message
+        // No more retries for this message
         sleep(1); // bypass timeout
         $this->queue->receive($this->maxMessages, 0);
         $messages = $this->getMessages($queue1);

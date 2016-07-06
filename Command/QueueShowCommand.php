@@ -44,7 +44,7 @@ class QueueShowCommand extends ContainerAwareCommand
 
         $table = new Table($output);
         $table
-            ->setHeaders(array('id', 'body', 'created', 'ended', 'failed'))
+            ->setHeaders(['id', 'body', 'created', 'ended', 'failed'])
             ->setRows($messages)
         ;
         $table->render($output);

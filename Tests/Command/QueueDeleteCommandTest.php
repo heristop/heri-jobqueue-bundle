@@ -15,20 +15,20 @@ class QueueDeleteCommandTest extends TestCase
 
         $command = $application->find('jobqueue:create');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
+        $commandTester->execute([
             'command' => $command->getName(),
             'queue-name' => 'my:queue1',
             '--timeout' => 10,
-        ), array('interactive' => false));
+        ], ['interactive' => false]);
 
         $application->add(new QueueDeleteCommand());
 
         $command = $application->find('jobqueue:delete');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
+        $commandTester->execute([
             'command' => $command->getName(),
             'queue-name' => 'my:queue1',
-        ), array('interactive' => false));
+        ], ['interactive' => false]);
 
         $this->assertRegExp('/Queue "my:queue1" deleted/', $commandTester->getDisplay(), 'Deleted queue');
     }

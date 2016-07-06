@@ -14,7 +14,7 @@ class QueueListenCommandTest extends TestCase
 
         $command = $application->find('jobqueue:work');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array('command' => $command->getName()));
+        $commandTester->execute(['command' => $command->getName()]);
 
         $this->assertRegExp('/Handling the first job on the queue.../', $commandTester->getDisplay());
     }

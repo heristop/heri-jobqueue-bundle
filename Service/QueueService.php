@@ -70,7 +70,7 @@ class QueueService
      * @param LoggerInterface $logger
      * @param array           $config
      */
-    public function __construct(LoggerInterface $logger, array $config = array())
+    public function __construct(LoggerInterface $logger, array $config = [])
     {
         $this->logger = $logger;
 

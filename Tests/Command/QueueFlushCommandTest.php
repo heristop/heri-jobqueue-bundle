@@ -14,7 +14,7 @@ class QueueFlushCommandTest extends TestCase
 
         $command = $application->find('jobqueue:flush');
         $commandTester = new CommandTester($command);
-        $commandTester->execute(array('command' => $command->getName()));
+        $commandTester->execute(['command' => $command->getName()]);
 
         $this->assertRegExp('/Cleaned exceptions/', $commandTester->getDisplay());
     }

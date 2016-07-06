@@ -6,6 +6,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace Heri\Bundle\JobQueueBundle\Adapter;
 
 use ZendQueue\Adapter\AbstractAdapter;
@@ -77,7 +78,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
 
         $queue = new \Heri\Bundle\JobQueueBundle\Entity\Queue();
         $queue->setName($name);
-        $newtimeout = ($timeout === null) ? self::CREATE_TIMEOUT_DEFAULT : (int) $timeout;
+        $newtimeout = (is_null($timeout)) ? self::CREATE_TIMEOUT_DEFAULT : (int) $timeout;
         $queue->setTimeout($newtimeout);
 
         $this->em->persist($queue);
@@ -234,7 +235,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         // Cache microtime
         $microtime = microtime(true);
 
-        if ($queue === null) {
+        if (is_null($queue)) {
             $queue = $this->_queue;
         }
 
@@ -364,15 +365,15 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
      */
     public function logException($message, $e)
     {
-        $sql = <<<SQL
+        $sql = <<<EOL
             UPDATE Heri\Bundle\JobQueueBundle\Entity\Message m
             SET
-              m.ended = 0,
-              m.failed = 1,
-              m.numRetries = m.numRetries + ?1,
-              m.priority = 0
+                m.ended = 0,
+                m.failed = 1,
+                m.numRetries = m.numRetries + ?1,
+                m.priority = 0
             WHERE m.id = ?2
-SQL;
+EOL;
 
         $this->em->createQuery($sql)
             ->setParameter(1, $message->failed ? 1 : 0)
@@ -485,7 +486,7 @@ SQL;
             ]);
 
         if (!$repo) {
-            throw new AdapterRuntimeException("Queue does not exist: {$name}");
+            throw new AdapterRuntimeException(sprintf('Queue does not exist: %s', $name));
         }
 
         return $repo;
