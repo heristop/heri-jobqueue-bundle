@@ -193,7 +193,7 @@ class DoctrineAdapterTest extends TestCase
         $this->assertEquals(1, count($exceptions), 'Exception logged from demo:great');
 
         // 2nd try (1st retry)
-        sleep(1); // bypass timeout
+        usleep(1000000); // bypass timeout
         $this->queue->receive($this->maxMessages, 0);
         $messages = $this->getMessages($queue1);
         $this->assertEquals(true, $messages[0]->getFailed());
@@ -204,7 +204,7 @@ class DoctrineAdapterTest extends TestCase
         $this->assertEquals(2, count($exceptions), 'Exception logged from demo:great');
 
         // 3rd try (2nd retry)
-        sleep(1); // bypass timeout
+        usleep(1000000); // bypass timeout
         $this->queue->receive($this->maxMessages, 0);
         $messages = $this->getMessages($queue1);
         $this->assertEquals(true, $messages[0]->getFailed());
@@ -215,7 +215,7 @@ class DoctrineAdapterTest extends TestCase
         $this->assertEquals(3, count($exceptions), 'Exception logged from demo:great');
 
         // 4th try (3rd retry)
-        sleep(1); // bypass timeout
+        usleep(1000000); // bypass timeout
         $this->queue->receive($this->maxMessages, 0);
         $messages = $this->getMessages($queue1);
         $this->assertEquals(true, $messages[0]->getFailed());
@@ -271,7 +271,7 @@ class DoctrineAdapterTest extends TestCase
         $this->assertEquals(1, count($exceptions), 'Exception logged from demo:great');
 
         // 2nd try (1st retry)
-        sleep(1); // bypass timeout
+        usleep(1000000); // bypass timeout
         $this->queue->receive($this->maxMessages, 0);
         $messages = $this->getMessages($queue1);
         $this->assertEquals(true, $messages[0]->getFailed());
@@ -282,7 +282,7 @@ class DoctrineAdapterTest extends TestCase
         $this->assertEquals(2, count($exceptions), 'Exception logged from demo:great');
 
         // 3rd try (2nd retry)
-        sleep(1); // bypass timeout
+        usleep(1000000); // bypass timeout
         $this->queue->receive($this->maxMessages, 0);
         $messages = $this->getMessages($queue1);
         $this->assertEquals(true, $messages[0]->getFailed());
@@ -293,7 +293,7 @@ class DoctrineAdapterTest extends TestCase
         $this->assertEquals(3, count($exceptions), 'Exception logged from demo:great');
 
         // No more retries for this message
-        sleep(1); // bypass timeout
+        usleep(1000000); // bypass timeout
         $this->queue->receive($this->maxMessages, 0);
         $messages = $this->getMessages($queue1);
         $this->assertEquals(true, $messages[0]->getFailed());
@@ -312,12 +312,68 @@ class DoctrineAdapterTest extends TestCase
         $this->assertEquals(3, count($exceptions), 'Exception logged from demo:great');
 
         // Forget a failed message
-        sleep(1); // bypass timeout
+        usleep(1000000); // bypass timeout
         $messages = $this->getMessages($queue1);
         $this->assertEquals(1, count($messages), 'Count number of messages');
         $this->queue->forget($messages[0]->getId());
         $messages = $this->getMessages($queue1);
         $this->assertEquals(0, count($messages), 'Count number of messages');
+    }
+
+    public function testZeroRetry()
+    {
+        $queue1 = $this->em
+            ->getRepository('Heri\Bundle\JobQueueBundle\Entity\Queue')
+            ->findOneByName($this->queueName.'1');
+        $queue1->setTimeout(0);
+        $queue1->setMaxRetries(0);
+        $this->assertNotNull($queue1, 'Queue created');
+        $this->em->persist($queue1);
+        $this->em->flush();
+
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(0, count($messages), 'Count number of messages');
+
+        // Queue 1 demo:great command
+        $command2 = [
+            'command' => 'demo:great',
+            'argument' => [
+                'name' => 'Alexandre',
+                '--yell' => true,
+            ],
+        ];
+        $this->queue
+            ->highPriority()
+            ->push($command2)
+        ;
+
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(1, count($messages), 'Count number of messages');
+        $this->assertEquals(false, $messages[0]->getFailed());
+        $this->assertEquals(0, $messages[0]->getNumRetries());
+        $this->assertNull($messages[0]->getTimeout());
+        $exceptions = $this->getMessageLogs();
+        $this->assertEquals(0, count($exceptions), 'Exception logged from demo:great');
+
+        // 1st try
+        $this->queue->receive($this->maxMessages);
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(true, $messages[0]->getFailed());
+        $this->assertEquals(0, $messages[0]->getNumRetries());
+        $this->assertNotNull($messages[0]->getTimeout());
+        $previousTimeout = $messages[0]->getTimeout();
+        $exceptions = $this->getMessageLogs();
+        $this->assertEquals(1, count($exceptions), 'Exception logged from demo:great');
+
+        // No more retries for this message
+        usleep(1000000); // bypass timeout
+        $this->queue->receive($this->maxMessages, 0);
+        $messages = $this->getMessages($queue1);
+        $this->assertEquals(true, $messages[0]->getFailed());
+        $this->assertEquals(0, $messages[0]->getNumRetries());
+        $this->assertEquals($previousTimeout, $messages[0]->getTimeout());
+        $exceptions = $this->getMessageLogs();
+        $this->assertEquals(1, count($exceptions), 'Exception logged from demo:great');
     }
 
     public function testDuplicatedMessages()

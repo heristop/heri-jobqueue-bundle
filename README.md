@@ -2,7 +2,7 @@
 
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd/mini.png)](https://insight.sensiolabs.com/projects/a6f86442-5e9c-4adf-bb23-d734c637b8cd) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/heristop/HeriJobQueueBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/heristop/HeriJobQueueBundle/?branch=master) [![Build Status](https://travis-ci.org/heristop/HeriJobQueueBundle.svg)](https://travis-ci.org/heristop/HeriJobQueueBundle)
 
-This bundle provides the use of `Zend Queue` from Zend Framework. It allows your Symfony application to schedule multiple console commands as server-side jobs.
+This bundle provides the use of `Zend Queue` from Zend Framework. It allows your Symfony 2/3 application to schedule multiple console commands as server-side jobs.
 
 See the [Programmer's Reference Guide](http://framework.zend.com/manual/1.9/en/zend.queue.html) for more information.
 
@@ -12,7 +12,9 @@ Features:
  - Schedule your Symfony commands
  - Monitor messages and log exceptions
  - Retry logic
+ - Prioritizing jobs
  - RabbitMQ or database support
+ - Easy-to-use :)
 
 ## Installation
 
@@ -187,13 +189,13 @@ If you use the Doctrine Adapter, you may use Sonata Admin to monitor your jobs:
 
 By default, number of excecution of failed messages is endless. If you use the Doctrine Adapter you may edit the max number of retries on queue table.
 
-To retry all of your failed jobs, use this command:
+To retry all of your failed jobs, you may use this command:
 
 ```sh
     app/console jobqueue:retry [queue-name]
 ```
 
-If you would like to delete a failed job, you may use the queue:forget command:
+If you would like to delete a failed job, you may use this command:
 
 ```sh
     app/console jobqueue:forget [id]

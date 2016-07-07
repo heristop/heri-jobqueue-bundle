@@ -202,7 +202,7 @@ class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
         }
 
         if (!$this->isExists($queue->getName())) {
-            throw new AdapterRuntimeException("Queue does not exist: {$queue->getName()}");
+            throw new AdapterRuntimeException(sprintf('Queue does not exist: %s', $queue->getName()));
         }
 
         $entity = $this->createMessage($queue, $body);
@@ -471,18 +471,20 @@ EOL;
      */
     protected function getMessages($maxMessages, $timeout, $queue = null, $microtime = null)
     {
-        if ($maxMessages === null) {
+        if (is_null($maxMessages)) {
             $maxMessages = 1;
         }
 
-        if ($timeout === null) {
+        if (is_null($timeout)) {
             $timeout = self::RECEIVE_TIMEOUT_DEFAULT;
         }
 
         $andWhere = '';
         if ($queue instanceof Queue) {
-            $andWhere = 'AND (m.queue = :queue) AND (q.maxRetries IS NULL OR m.numRetries < q.maxRetries)';
+            $andWhere = 'AND (m.queue = :queue) ';
         }
+
+        $andWhere .= 'AND (q.maxRetries IS NULL OR (q.maxRetries = 0 AND m.failed = false) OR m.numRetries < q.maxRetries)';
 
         // Search for all messages inside the timeout
         $sql = 'SELECT m '.
