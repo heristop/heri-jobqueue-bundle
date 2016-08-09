@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\StreamOutput;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Process\Process;
 use Psr\Log\LoggerInterface;
 use Heri\Bundle\JobQueueBundle\Exception\InvalidUnserializedMessageException;
@@ -359,8 +360,13 @@ class QueueService
             $this->output->writeLn("<fg=yellow> [x] [{$this->queue->getName()}] {$commandName} received</> ");
 
             if (!isset($this->command)) {
+                $console = 'app/console';
+                if (Kernel::VERSION >= 3) {
+                    $console = 'bin/console';
+                }
+                
                 $process = new Process(sprintf('%s %s %s %s',
-                    '/usr/bin/php', 'app/console', $commandName,
+                    '/usr/bin/php', $console, $commandName,
                     implode(' ', $arguments)
                 ));
                 $process->setTimeout($this->processTimeout);
