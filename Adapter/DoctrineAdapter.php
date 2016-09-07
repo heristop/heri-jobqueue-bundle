@@ -24,12 +24,12 @@ use Heri\Bundle\JobQueueBundle\Exception\AdapterRuntimeException;
 class DoctrineAdapter extends AbstractAdapter implements AdapterInterface
 {
     /**
-     * @var Doctrine\ORM\EntityManager.
+     * @var Doctrine\ORM\EntityManager
      */
     public $em;
 
     /**
-     * @var int.
+     * @var int
      */
     public $priority = 0;
 

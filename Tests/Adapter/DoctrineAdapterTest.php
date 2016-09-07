@@ -1,4 +1,3 @@
-
 <?php
 
 use Heri\Bundle\JobQueueBundle\Tests\TestCase;

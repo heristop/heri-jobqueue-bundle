@@ -195,7 +195,7 @@ class QueueService
     }
 
     /**
-     * @paraam int $id 
+     * @paraam int $id
      *
      * @return bool
      */
@@ -364,7 +364,7 @@ class QueueService
                 if (Kernel::VERSION >= 3) {
                     $console = 'bin/console';
                 }
-                
+
                 $process = new Process(sprintf('%s %s %s %s',
                     '/usr/bin/php', $console, $commandName,
                     implode(' ', $arguments)

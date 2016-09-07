@@ -1,7 +1,7 @@
 <?php
 
 if (!($loader = @include __DIR__.'/../vendor/autoload.php')) {
-    $message = <<<EOF
+    $message = <<<'EOF'
 You need to install the project dependencies using Composer:
 $ wget http://getcomposer.org/composer.phar
 OR
