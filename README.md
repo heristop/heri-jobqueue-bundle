@@ -23,7 +23,8 @@ Require `heristop/jobqueue-bundle` to your `composer.json` file:
 ```js
 {
     "require": {
-        "heristop/jobqueue-bundle": "dev-master"
+        "heristop/jobqueue-bundle": "1.0.1",
+        "zendframework/zend-queue": "2.*@dev"
     }
 }
 ```
